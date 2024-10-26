@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
-
 class LocalizationManager {
-  static const String _localeKey = 'locale';
+  static const supportedLocales = [
+    Locale('en', ''),
+    Locale('ru', ''),
+  ];
 
-  // Получение сохраненной локали
   static Future<Locale> getSavedLocale() async {
-    final prefs = await SharedPreferences.getInstance();
-    final localeCode = prefs.getString(_localeKey) ?? 'en';
-    return Locale(localeCode);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? localeCode = prefs.getString('locale');
+    if (localeCode == null) return supportedLocales[0];
+    return supportedLocales.firstWhere((locale) => locale.languageCode == localeCode, orElse: () => supportedLocales[0]);
   }
 
-  // Установка новой локали
-  static Future<void> setLocale(String localeCode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_localeKey, localeCode);
-  }
-
-  // Метод для обновления локали в приложении
-  static void changeLocale(BuildContext context, String localeCode) {
-    setLocale(localeCode);
-    MyApp.setLocale(context, Locale(localeCode));
+  static void changeLocale(BuildContext context, String code) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('locale', code);
+    (context as Element).markNeedsBuild();
   }
 }

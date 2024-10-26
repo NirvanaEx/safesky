@@ -1,5 +1,7 @@
 {
-  "title": "Добро пожаловать",
-  "greeting": "Привет",
-  "login": "Войти"
+  "loginToAccount": "Войти в аккаунт",
+  "email": "Email",
+  "password": "Пароль",
+  "login": "Войти",
+  "register": "Зарегистрироваться"
 }

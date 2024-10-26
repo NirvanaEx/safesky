@@ -1,5 +1,7 @@
 {
-  "title": "Welcome",
-  "greeting": "Hello",
-  "login": "Login"
+  "loginToAccount": "Log in to your account",
+  "email": "Email",
+  "password": "Password",
+  "login": "Login",
+  "register": "Register"
 }
