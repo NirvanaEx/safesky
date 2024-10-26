@@ -1,0 +1,52 @@
+lib/
+│
+├── main.dart                          // Главный файл приложения
+│
+├── models/                            // Модели данных
+│   ├── user_model.dart                // Модель данных пользователя
+│   └── request_model.dart             // Модель данных заявки
+│
+├── services/                          // Сервисы для взаимодействия с API
+│   ├── auth_service.dart              // Сервис авторизации
+│   ├── request_service.dart           // Сервис заявок
+│   └── data_cache_service.dart        // Сервис локального кэширования данных
+│
+├── viewmodels/                        // ViewModels для управления логикой и состоянием
+│   ├── auth_viewmodel.dart            // ViewModel для авторизации
+│   ├── request_viewmodel.dart         // ViewModel для заявок
+│   └── profile_viewmodel.dart         // ViewModel для профиля
+│
+├── views/                             // Экранные страницы, которые отображают данные
+│   ├── auth/
+│   │   ├── login_view.dart            // Экран входа
+│   │   └── registration/
+│   │       ├── email_view.dart        // Окно ввода email
+│   │       ├── verify_view.dart       // Окно подтверждения кода
+│   │       └── info_view.dart         // Окно ввода данных
+│   │
+│   ├── home/
+│   │   ├── main_view.dart             // Главный экран с навигацией
+│   │   ├── requests_view.dart         // Экран заявок
+│   │   ├── add_request_view.dart      // Экран добавления заявки
+│   │   ├── scan_view.dart             // Экран сканирования
+│   │   └── profile_view.dart          // Экран профиля
+│   │
+│   └── side_menu/
+│       ├── support_view.dart          // Экран техподдержки
+│       ├── settings_view.dart         // Экран настроек
+│       └── logout_view.dart           // Экран выхода
+│
+├── l10n/                               // Файлы локализации
+│   ├── app_en.arb                    // Английская локализация
+│   └── app_ru.arb                    // Русская локализация
+│
+├── utils/                              // Утилиты и вспомогательные функции
+│   └── localization_manager.dart      // Логика управления языковыми настройками и локализацией
+│
+├── widgets/                            // Повторяющиеся и общие виджеты
+│   ├── custom_button.dart             // Компоненты кнопок
+│   ├── form_input.dart                // Компоненты ввода
+│   └── bottom_nav_bar.dart            // Нижняя панель навигации
+│
+└── config/                             // Настройки и конфигурации приложения
+    └── app_settings.dart              // Основные настройки, включая начальную локаль и кэш
