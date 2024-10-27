@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import '../../../viewmodels/auth_viewmodel.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'registration/registration_view.dart';
+import '../login_view.dart';
 
-class LoginView extends StatefulWidget {
+class EmailView extends StatefulWidget {
+  final ValueChanged<String> onNext;
+
+  EmailView({required this.onNext});
+
   @override
-  _LoginViewState createState() => _LoginViewState();
+  _EmailViewState createState() => _EmailViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _EmailViewState extends State<EmailView> {
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isPasswordVisible = false;
+  DateTime? _lastSnackBarTime; // Переменная для отслеживания времени последнего SnackBar
+
+  // Метод для проверки правильного формата email
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  // Метод для обработки нажатия кнопки "Продолжить"
+  void _onContinue() {
+    // Скрываем клавиатуру
+    FocusScope.of(context).unfocus();
+
+    final email = _emailController.text.trim();
+    final now = DateTime.now();
+
+    // Проверяем валидность email и частоту показа SnackBar
+    if (isValidEmail(email)) {
+      widget.onNext(email); // Переходим на следующий экран, если email валиден
+    } else if (_lastSnackBarTime == null || now.difference(_lastSnackBarTime!) > Duration(seconds: 5)) {
+      // Показываем SnackBar только если прошло 5 секунд с последнего показа
+      _lastSnackBarTime = now; // Обновляем время последнего показа SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.invalidEmailFormat)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +92,7 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(localizations.loginToAccount, style: TextStyle(fontSize: 22, color: Colors.white)),
+                    Text(localizations.register, style: TextStyle(fontSize: 22, color: Colors.white)),
                     SizedBox(height: 20),
                     TextField(
                       controller: _emailController,
@@ -79,37 +108,9 @@ class _LoginViewState extends State<LoginView> {
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock, color: Colors.grey),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                        ),
-                        hintText: localizations.password,
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      ),
-                    ),
                     SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
-                        authViewModel.login(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                      },
+                      onPressed: _onContinue,
                       style: ElevatedButton.styleFrom(
                         primary: Colors.black,
                         padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
@@ -120,15 +121,14 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       child: authViewModel.isLoading
                           ? CircularProgressIndicator(color: Colors.white)
-                          : Text(localizations.login, style: TextStyle(fontSize: 16)),
+                          : Text(localizations.continueLabel, style: TextStyle(fontSize: 16)),
                     ),
                     SizedBox(height: 16),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => RegistrationView()),
-
+                          MaterialPageRoute(builder: (context) => LoginView()),
                         );
                       },
                       style: TextButton.styleFrom(
@@ -139,17 +139,14 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         minimumSize: Size(double.infinity, 48),
                       ),
-                      child: Text(localizations.register, style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: Text(localizations.alreadyHaveAccount, style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
-
-                    if (authViewModel.errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          authViewModel.errorMessage!,
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
+                    SizedBox(height: 16),
+                    Text(
+                      localizations.termsOfService,
+                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ),

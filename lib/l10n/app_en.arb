@@ -3,5 +3,15 @@
   "email": "Email",
   "password": "Password",
   "login": "Login",
-  "register": "Register"
+  "register": "Register",
+  "continueLabel": "Continue",
+  "alreadyHaveAccount": "Already have an account? Log in",
+  "termsOfService": "By clicking 'Continue', you accept the Terms of Service",
+  "verificationSent": "We have sent a verification code to",
+  "acceptTerms": "By clicking 'Continue', you accept the Terms of Service",
+  "phone": "Phone",
+  "name": "Name",
+  "surname": "Surname",
+  "invalidEmailFormat": "Invalid email format"
+
 }

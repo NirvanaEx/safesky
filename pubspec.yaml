@@ -29,7 +29,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/images/login_back.png
+    - assets/images/auth_back.png
     - assets/svg/logo.svg
 
 flutter_gen_l10n:

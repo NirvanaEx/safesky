@@ -1,4 +1,10 @@
 assets/                                // Ассеты
+│
+├── images/
+│   └── auth_back.png                  // Фон для окон авторизации
+├── svg/
+│   └── logo.svg                       // Логотип приложения
+│
 lib/
 │
 ├── main.dart                          // Главный файл приложения
@@ -21,6 +27,7 @@ lib/
 │   ├── auth/
 │   │   ├── login_view.dart            // Экран входа
 │   │   └── registration/
+│   │       ├── registration_view.dart // Окно ввода email
 │   │       ├── email_view.dart        // Окно ввода email
 │   │       ├── verify_view.dart       // Окно подтверждения кода
 │   │       └── info_view.dart         // Окно ввода данных
