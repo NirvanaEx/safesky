@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../../../viewmodels/auth_viewmodel.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../home/main_view.dart';
+import '../../../models/user_model.dart';
 
 class InfoView extends StatefulWidget {
   @override
@@ -15,18 +17,15 @@ class _InfoViewState extends State<InfoView> {
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isPasswordVisible = false;
-  String _selectedCountryCode = "+998"; // Код страны по умолчанию (Узбекистан)
-  String _selectedFlag = "🇺🇿"; // Флаг страны по умолчанию
+  String _selectedCountryCode = "+998";
+  String _selectedFlag = "🇺🇿";
 
-  // Список стран для выбора
   final List<Map<String, String>> _countries = [
     {"code": "+998", "flag": "🇺🇿"},
     {"code": "+1", "flag": "🇺🇸"},
     {"code": "+44", "flag": "🇬🇧"},
     {"code": "+7", "flag": "🇷🇺"},
     {"code": "+997", "flag": "🇰🇿"},
-
-    // Добавьте другие страны по мере необходимости
   ];
 
   @override
@@ -72,7 +71,6 @@ class _InfoViewState extends State<InfoView> {
                 ),
               ),
               Spacer(),
-
               Align(
                 alignment: Alignment.bottomCenter,
                 child: SingleChildScrollView(
@@ -187,12 +185,25 @@ class _InfoViewState extends State<InfoView> {
                       ),
                       SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: () {
-                          // Скрываем клавиатуру перед выполнением логики регистрации
+                        onPressed: () async {
                           FocusScope.of(context).unfocus();
 
-                          // Логика завершения регистрации
-                          // authViewModel.register(...) или другая логика регистрации
+                          UserModel? user = await authViewModel.register(
+                            _nameController.text,
+                            _passwordController.text,
+                          );
+
+                          user = new UserModel(id: 1, email: 'my@mail.com', name: 'Dias', token: 'GDX');
+                          if (user != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => MainView()),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(authViewModel.errorMessage ?? 'Ошибка при регистрации')),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.black,
@@ -223,7 +234,6 @@ class _InfoViewState extends State<InfoView> {
     );
   }
 
-  // Метод для отображения выбора страны
   void _showCountryPicker() {
     showModalBottomSheet(
       context: context,

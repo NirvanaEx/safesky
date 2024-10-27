@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/user_model.dart';
 
 class AuthService {
-  final String _baseUrl = 'https://your-api-url.com/api'; // Замените на ваш URL API
+  final String _baseUrl = 'https://your-api-url.com/api';
 
   // Метод для входа пользователя
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<UserModel> login(String email, String password) async {
     final url = Uri.parse('$_baseUrl/login');
 
     final response = await http.post(
@@ -15,16 +16,15 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      // Если успешный запрос, возвращаем данные
-      return jsonDecode(response.body);
+      // Парсим JSON в модель
+      return UserModel.fromJson(jsonDecode(response.body));
     } else {
-      // Если ошибка, генерируем исключение
       throw Exception('Failed to login');
     }
   }
 
   // Метод для регистрации пользователя
-  Future<Map<String, dynamic>> register(String email, String password) async {
+  Future<UserModel> register(String email, String password) async {
     final url = Uri.parse('$_baseUrl/register');
 
     final response = await http.post(
@@ -34,7 +34,7 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return UserModel.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to register');
     }

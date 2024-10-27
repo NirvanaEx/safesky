@@ -12,6 +12,24 @@
   "phone": "Phone",
   "name": "Name",
   "surname": "Surname",
-  "invalidEmailFormat": "Invalid email format"
-
+  "invalidEmailFormat": "Invalid email format",
+  "requests": "Requests",
+  "add": "Add",
+  "scan": "Scan",
+  "profile": "Profile",
+  "hi": "Hi",
+  "support": "Support",
+  "settings": "Settings",
+  "logout": "Logout",
+  "available24": "Operators available 24/7",
+  "search": "Search",
+  "confirmed": "Confirmed",
+  "pending": "Pending",
+  "rejected": "Rejected",
+  "noDataFound": "No data found",
+  "changePassword": "Change password",
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "save": "Save",
+  "change": "Change"
 }

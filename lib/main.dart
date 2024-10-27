@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:safe_sky/views/auth/registration/registration_view.dart';
+import 'package:safe_sky/views/home/main_view.dart';
 import 'utils/localization_manager.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'views/auth/login_view.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: LocalizationManager.supportedLocales,
-      home: RegistrationView(),
+      home: MainView(),
     );
   }
 }

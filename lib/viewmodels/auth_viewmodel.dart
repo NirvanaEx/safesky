@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../models/user_model.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -10,13 +11,15 @@ class AuthViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  UserModel? _user;
+  UserModel? get user => _user;
+
   // Метод для авторизации
   Future<void> login(String email, String password) async {
     _setLoading(true);
     try {
-      await _authService.login(email, password);
+      _user = await _authService.login(email, password);
       _setLoading(false);
-      // Обработка успешного логина (перенаправление на другой экран и т.д.)
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
@@ -25,16 +28,17 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   // Метод для регистрации
-  Future<void> register(String email, String password) async {
+  Future<UserModel?> register(String email, String password) async {
     _setLoading(true);
     try {
-      await _authService.register(email, password);
+      _user = await _authService.register(email, password);
       _setLoading(false);
-      // Обработка успешной регистрации
+      return _user;
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
       notifyListeners();
+      return null;
     }
   }
 

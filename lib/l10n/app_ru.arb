@@ -12,6 +12,24 @@
   "phone": "Телефон",
   "name": "Имя",
   "surname": "Фамилия",
-  "invalidEmailFormat": "Неправильный формат email"
-
+  "invalidEmailFormat": "Неправильный формат email",
+  "requests": "Заявки",
+  "add": "Добавить",
+  "scan": "Сканировать",
+  "profile": "Профиль",
+  "hi": "Привет",
+  "support": "Тех. поддержка",
+  "settings": "Настройки",
+  "logout": "Выйти",
+  "available24": "Операторы доступны 24/7",
+  "search": "Поиск",
+  "confirmed": "Подтверждён",
+  "pending": "На рассмотрении",
+  "rejected": "Отклонён",
+  "noDataFound": "Данных не найдено",
+  "changePassword": "Изменить пароль",
+  "newPassword": "Новый пароль",
+  "confirmPassword": "Повторите пароль",
+  "save": "Сохранить",
+  "change": "Изменить"
 }
