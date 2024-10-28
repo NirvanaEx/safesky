@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Импорт локализации
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
+import 'add_request_view.dart';
 import 'requests_view.dart';
 
 class MainView extends StatefulWidget {
@@ -15,7 +16,7 @@ class _MainViewState extends State<MainView> {
 
   final List<Widget> _screens = [
     RequestsView(),
-    Center(child: Text('Добавить')),  // Это место тоже можно локализовать, если потребуется
+    AddRequestView(),
     EmptyView(),  // Пустой виджет, который не будет интерактивным
     ProfileView(),
   ];
@@ -68,7 +69,10 @@ class _MainViewState extends State<MainView> {
         ],
       ),
       drawer: _buildDrawer(localizations),
-      body: _screens[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,

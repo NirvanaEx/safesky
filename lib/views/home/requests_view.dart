@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import '../show_request_view.dart';
 
 class RequestsView extends StatefulWidget {
   @override
@@ -12,6 +14,8 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
   String _searchQuery = "";
 
   final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController = RefreshController();
+
   bool _isLoadingMore = false;
   bool _isFirstLoad = true;
 
@@ -33,6 +37,7 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
   void dispose() {
     _scrollController.dispose();
     _controller.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -47,17 +52,15 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
       _isLoadingMore = true;
     });
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(milliseconds: 500));
 
     List<Map<String, String>> newRequests = List.generate(
       _loadBatchSize,
           (index) => {
         "number": "№ ${135 + _currentBatch * _loadBatchSize + index}SW",
-        "status": index % 3 == 0
-            ? "confirmed"
-            : index % 3 == 1
-            ? "pending"
-            : "rejected"
+        "status": index % 3 == 0 ? "confirmed" : index % 3 == 1 ? "pending" : "rejected",
+        "dateStart": "01/01/2023", // примерные данные для отображения
+        "applicantName": "Имя заявителя",
       },
     );
 
@@ -68,6 +71,18 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
       _applySearch();
       _isLoadingMore = false;
     });
+  }
+
+  Future<void> _refreshRequests() async {
+    setState(() {
+      _allRequests.clear();
+      _filteredRequests.clear();
+      _currentBatch = 0;
+      _isFirstLoad = true;
+    });
+
+    await _loadMoreRequests();
+    _refreshController.refreshCompleted();
   }
 
   void _onSearchChanged(String query) {
@@ -81,9 +96,7 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
     if (_searchQuery.isEmpty) {
       _filteredRequests = _allRequests;
     } else {
-      _filteredRequests = _allRequests
-          .where((request) => request["number"]!.contains(_searchQuery))
-          .toList();
+      _filteredRequests = _allRequests.where((request) => request["number"]!.contains(_searchQuery)).toList();
     }
   }
 
@@ -117,39 +130,54 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
             _buildNoDataContainer(localizations)
           else
             Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _filteredRequests.length + (_isLoadingMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index >= _filteredRequests.length) {
-                    return _buildLoadingIndicator();
-                  }
+              child: SmartRefresher(
+                controller: _refreshController,
+                onRefresh: _refreshRequests,
+                enablePullDown: true,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _filteredRequests.length + (_isLoadingMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index >= _filteredRequests.length) {
+                      return _buildLoadingIndicator();
+                    }
 
-                  final request = _filteredRequests[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
-                    child: Card(
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ListTile(
-                        title: Text(request['number']!),
-                        trailing: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(request['status']!),
-                            borderRadius: BorderRadius.circular(20),
+                    final request = _filteredRequests[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+                      child: Card(
+                        elevation: 1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          title: Text(request['number']!),
+                          trailing: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(request['status']!),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _getStatusText(request['status']!, localizations),
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                          child: Text(
-                            _getStatusText(request['status']!, localizations),
-                            style: TextStyle(color: Colors.white),
-                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ShowRequestView(
+                                  request: request,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
         ],
@@ -157,7 +185,6 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
     );
   }
 
-  // Скелетон для отображения в виде списка
   Widget _buildSkeletonList() {
     return ListView.builder(
       itemCount: 10,
@@ -173,11 +200,7 @@ class _RequestsViewState extends State<RequestsView> with SingleTickerProviderSt
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [Colors.grey[300]!, Colors.grey[100]!, Colors.grey[300]!],
-          stops: [
-            _controller.value - 0.3,
-            _controller.value,
-            _controller.value + 0.3,
-          ],
+          stops: [_controller.value - 0.3, _controller.value, _controller.value + 0.3],
         ).createShader(bounds),
         child: Container(
           height: 70,

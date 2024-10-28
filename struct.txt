@@ -39,10 +39,13 @@ lib/
 │   │   ├── scan_view.dart             // Экран сканирования
 │   │   └── profile_view.dart          // Экран профиля
 │   │
-│   └── side_menu/
-│       ├── support_view.dart          // Экран техподдержки
-│       ├── settings_view.dart         // Экран настроек
-│       └── logout_view.dart           // Экран выхода
+│   ├── side_menu/
+│   │   ├── support_view.dart          // Экран техподдержки
+│   │   ├── settings_view.dart         // Экран настроек
+│   │   └── logout_view.dart           // Экран выхода
+│   ├── show_request_view.dart
+│   ├── map_select_location.dart
+│   └── map_share_location_view.dart
 │
 ├── l10n/                               // Файлы локализации
 │   ├── app_en.arb                    // Английская локализация

@@ -6,6 +6,7 @@ class LocalizationManager {
   static const supportedLocales = [
     Locale('en', ''),
     Locale('ru', ''),
+    Locale('uz', ''),
   ];
 
   static Future<Locale> getSavedLocale() async {

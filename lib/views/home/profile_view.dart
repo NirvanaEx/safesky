@@ -74,6 +74,7 @@ class _ProfileViewState extends State<ProfileView> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                  minimumSize: Size(double.infinity, 48),
                 ),
                 child: Text(localizations.save, style: TextStyle(fontSize: 16)),
               ),
