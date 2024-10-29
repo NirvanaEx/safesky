@@ -31,6 +31,14 @@ dev_dependencies:
   flutter_map_tile_caching: ^8.0.1
   pull_to_refresh: ^2.0.0
 
+  flutter_chat_bubble: ^2.0.2
+  file_picker: ^5.2.6
+  image_picker: ^0.8.7+4
+  photo_view: ^0.14.0
+  url_launcher: ^6.0.20
+  open_file: ^3.2.1
+
+
 
 
 

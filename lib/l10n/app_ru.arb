@@ -32,7 +32,6 @@
   "confirmPassword": "Повторите пароль",
   "save": "Сохранить",
   "change": "Изменить",
-
   "submitRequest": "Подать заявку",
   "flightStartDate": "Дата начала выполнения полета",
   "requesterName": "Наименование заявителя",
@@ -47,10 +46,8 @@
   "flightPurpose": "Цель полета (вид работы)",
   "operatorName": "Ф.И.О. оператора БПЛА",
   "operatorPhone": "Номер оператора",
-  "flightHeight" : "Высота полета (м)",
-  "flightRadius" : "Радиус полета (м)",
-
-
+  "flightHeight": "Высота полета (м)",
+  "flightRadius": "Радиус полета (м)",
   "specialPermit": "Спец. разрешение МО РУз",
   "permitNumber": "№ Разрешения",
   "contract": "Номер и дата договора",
@@ -59,13 +56,21 @@
   "note": "Примечание (не обязательно)",
   "submit": "Отправить",
   "cancel": "Отменить заявку",
-
-
   "startLocationSharing": "Начать трансляцию",
   "sharingLocation": "Идет трансляция",
   "stop": "Завершить",
   "pause": "Пауза",
   "resume": "Продолжить",
-  "paused": "Пауза"
+  "paused": "Пауза",
+
+  "language" : "Язык",
+  "theme": "Тема",
+  "dark": "Темная",
+  "light": "Светлая",
+  "russian": "Русский",
+  "english": "Английский",
+  "uzbek": "Узбекский",
+
+  "typeYourMessage": "Напишите сообщение..."
 
 }

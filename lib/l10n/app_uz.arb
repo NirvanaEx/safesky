@@ -64,5 +64,16 @@
   "stop": "To‘xtatish",
   "pause": "Pauza",
   "resume": "Davom ettirish",
-  "paused": "To‘xtatilgan"
+  "paused": "To‘xtatilgan",
+
+  "language" : "Til",
+  "theme": "Mavzui",
+  "dark": "Qorong'i",
+  "light": "Yorqin",
+  "russian": "Rus",
+  "english": "Ingliz",
+  "uzbek": "O'zbek",
+
+  "typeYourMessage": "Xabaringizni yozing..."
+
 }

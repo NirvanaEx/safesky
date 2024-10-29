@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Импорт локализации
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
+import '../side_menu/settings_view.dart';
+import '../side_menu/support_view.dart';
 import 'add_request_view.dart';
 import 'requests_view.dart';
 
@@ -130,12 +132,22 @@ class _MainViewState extends State<MainView> {
                     ListTile(
                       leading: Icon(Icons.support_agent, color: Colors.black),
                       title: Text(localizations.support),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SupportView()),
+                        );
+                      },
                     ),
                     ListTile(
                       leading: Icon(Icons.settings, color: Colors.black),
                       title: Text(localizations.settings),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SettingsView()),
+                        );
+                      },
                     ),
                     ListTile(
                       leading: Icon(Icons.logout, color: Colors.black),

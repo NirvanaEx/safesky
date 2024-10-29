@@ -32,7 +32,6 @@
   "confirmPassword": "Confirm password",
   "save": "Save",
   "change": "Change",
-
   "submitRequest": "Submit Request",
   "flightStartDate": "Flight Start Date",
   "requesterName": "Requester Name",
@@ -47,9 +46,8 @@
   "flightPurpose": "Purpose of Flight",
   "operatorName": "Operator Name",
   "operatorPhone": "Operator Phone",
-  "flightHeight" : "Flight height (m)",
-  "flightRadius" : "Flight radius (m)",
-
+  "flightHeight": "Flight height (m)",
+  "flightRadius": "Flight radius (m)",
   "specialPermit": "Special Permit from MoD",
   "permitNumber": "Permit Number",
   "contract": "Contract Number and Date",
@@ -58,14 +56,21 @@
   "note": "Note (optional)",
   "submit": "Submit",
   "cancel": "Cancel request",
-
-
   "startLocationSharing": "Start location sharing",
   "sharingLocation": "Sharing location",
   "stop": "Stop",
   "pause": "Pause",
   "resume": "Resume",
-  "paused": "Paused"
+  "paused": "Paused",
+
+  "language" : "Language",
+  "theme": "Theme",
+  "dark": "Dark",
+  "light": "Light",
+  "russian": "Russian",
+  "english": "English",
+  "uzbek": "Uzbek",
 
 
+  "typeYourMessage": "Type your message..."
 }
