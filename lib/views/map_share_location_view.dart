@@ -5,44 +5,23 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:lottie/lottie.dart';
 
 class MapShareLocationView extends StatefulWidget {
   @override
   _MapShareLocationViewState createState() => _MapShareLocationViewState();
 }
 
-class _MapShareLocationViewState extends State<MapShareLocationView> with SingleTickerProviderStateMixin {
+class _MapShareLocationViewState extends State<MapShareLocationView> {
   bool _isSharingLocation = false; // Статус трансляции
   bool _isPaused = false; // Статус паузы трансляции
-  late AnimationController _rippleController;
   late MapController _mapController;
+
 
   @override
   void initState() {
     super.initState();
-    _rippleController = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 2),
-    )..repeat(); // Повторяющаяся анимация для ряби
-
     _mapController = MapController();
-  }
-
-  @override
-  void dispose() {
-    _rippleController.dispose();
-    super.dispose();
-  }
-
-  void _togglePause() {
-    setState(() {
-      _isPaused = !_isPaused;
-      if (_isPaused) {
-        _rippleController.stop();
-      } else {
-        _rippleController.repeat();
-      }
-    });
   }
 
   Future<void> _animateToUserLocation() async {
@@ -128,9 +107,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> with Single
       onSubmit: () {
         setState(() {
           _isSharingLocation = true;
-          _isPaused = false; // Снимаем паузу, если она была включена
+          _isPaused = false;
         });
-        _rippleController.repeat();
         _startLocationSharing();
       },
       sliderButtonIcon: Icon(
@@ -145,49 +123,34 @@ class _MapShareLocationViewState extends State<MapShareLocationView> with Single
   Widget _buildSharingMenu(AppLocalizations localizations) {
     return Column(
       children: [
-        // Полупрозрачный контейнер с индикатором "Идет трансляция" и анимацией ряби
+        // Полупрозрачный контейнер с индикатором "Идет трансляция" и анимацией
         Container(
+          height: 55,
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           margin: EdgeInsets.only(bottom: 12), // Отступ снизу для разделения
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85), // Полупрозрачный фон
+            color: Colors.white.withOpacity(0.85),
             borderRadius: BorderRadius.circular(30),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Первая волна ряби с использованием Fixed OverflowBox
-                  Positioned.fill(
-                    child: AnimatedBuilder(
-                      animation: _rippleController,
-                      builder: (context, child) {
-                        return Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red.withOpacity(0.5 * (1 - _rippleController.value)),
-                          ),
-                          child: Transform.scale(
-                            scale: 1 + _rippleController.value * 0.8,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.red.withOpacity(0.2),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+              if (!_isPaused) // Условие для отображения анимации только при активной трансляции
+                SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: Lottie.asset(
+                    'assets/json/live.json', // Путь к анимации
+                    repeat: true,
+                    fit: BoxFit.contain,
                   ),
-                  Icon(Icons.fiber_manual_record, color: Colors.red, size: 18), // Основная красная точка
-                ],
-              ),
-              SizedBox(width: 10),
+                ),
+              if (_isPaused)
+                Icon(
+                  Icons.pause, // Иконка паузы
+                  color: Colors.red,
+                  size: 24,
+                ),
               Text(
                 _isPaused ? localizations.paused : localizations.sharingLocation,
                 style: TextStyle(color: Colors.red, fontSize: 18),
@@ -198,38 +161,36 @@ class _MapShareLocationViewState extends State<MapShareLocationView> with Single
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Кнопка "Завершить" с белым фоном и красным текстом
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: _stopLocationSharing,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14), // Увеличен отступ по вертикали
+                  padding: EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                icon: Icon(Icons.stop, color: Colors.white, size: 28), // Увеличен размер иконки
+                icon: Icon(Icons.stop, color: Colors.white, size: 28),
                 label: Text(
                   localizations.stop,
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
             ),
-            SizedBox(width: 12), // Увеличен промежуток между кнопками
-            // Кнопка "Пауза" / "Продолжить" с черной иконкой и без границ
+            SizedBox(width: 12),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _togglePause,
+                onPressed: _togglePause, // Вызов функции _togglePause
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14), // Увеличен отступ по вертикали
+                  padding: EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 icon: Icon(
-                  _isPaused ? Icons.play_arrow : Icons.pause, // Иконка "Pause" или "Play"
+                  _isPaused ? Icons.play_arrow : Icons.pause,
                   color: Colors.black,
                   size: 28,
                 ),
@@ -245,16 +206,20 @@ class _MapShareLocationViewState extends State<MapShareLocationView> with Single
     );
   }
 
+  // Функция для переключения паузы
+  void _togglePause() {
+    setState(() {
+      _isPaused = !_isPaused;
+    });
+  }
+
   void _startLocationSharing() {
-    // Логика для начала трансляции геолокации
     print("Location sharing started");
   }
 
   void _stopLocationSharing() {
-    // Логика для остановки трансляции геолокации
     setState(() {
       _isSharingLocation = false;
-      _rippleController.stop();
     });
     print("Location sharing stopped");
   }
