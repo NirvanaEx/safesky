@@ -63,6 +63,7 @@ flutter:
     - assets/docs/user_agreement_uz.pdf
     - assets/json/drone_loading.json
     - assets/json/live.json
+    - assets/json/my_position.json
     - assets/mov/drone_loading.mov
     - assets/mov/drone_loading.mp4
 

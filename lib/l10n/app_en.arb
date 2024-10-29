@@ -57,12 +57,14 @@
   "note": "Note (optional)",
   "submit": "Submit",
   "cancel": "Cancel request",
+
   "startLocationSharing": "Start location sharing",
   "sharingLocation": "Sharing location",
   "stop": "Stop",
   "pause": "Pause",
   "resume": "Resume",
   "paused": "Paused",
+  "searchingYourLocation": "Searching your location",
 
   "language" : "Language",
   "theme": "Theme",

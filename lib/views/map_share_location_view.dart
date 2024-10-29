@@ -5,9 +5,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
 import '../viewmodels/location_viewmodel.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:flutter_map/flutter_map.dart' as flutter_map;
 
 class MapShareLocationView extends StatefulWidget {
   @override
@@ -21,6 +22,47 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   void initState() {
     super.initState();
     _mapController = MapController();
+
+    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+
+    // Загружаем текущее местоположение при инициализации
+    locationVM.loadCurrentLocation();
+
+    // Добавляем слушатель изменений для автоматического перехода к местоположению при его загрузке
+    locationVM.addListener(() {
+      if (locationVM.currentLocation != null && !locationVM.isLoadingLocation) {
+        _animateToUserLocation();
+      }
+    });
+  }
+
+  Future<void> _animateToUserLocation() async {
+    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+
+    if (locationVM.currentLocation == null) return;
+
+    LatLng startLocation = _mapController.center;
+    double startZoom = _mapController.zoom;
+    double startRotation = _mapController.rotation;
+    LatLng targetLocation = locationVM.currentLocation!;
+    double targetZoom = locationVM.defaultZoom;
+    double targetRotation = 0.0;
+
+    const int steps = 30;
+    const int delayMilliseconds = 16;
+
+    for (int i = 0; i <= steps; i++) {
+      final double lat = startLocation.latitude +
+          (targetLocation.latitude - startLocation.latitude) * (i / steps);
+      final double lng = startLocation.longitude +
+          (targetLocation.longitude - startLocation.longitude) * (i / steps);
+      final double zoom = startZoom + (targetZoom - startZoom) * (i / steps);
+      final double rotation = startRotation +
+          (targetRotation - startRotation) * (i / steps);
+
+      _mapController.moveAndRotate(LatLng(lat, lng), zoom, rotation);
+      await Future.delayed(Duration(milliseconds: delayMilliseconds));
+    }
   }
 
   @override
@@ -42,7 +84,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: LatLng(41.2995, 69.2401),
+              center: locationVM.currentLocation ?? LatLng(41.2995, 69.2401),
               zoom: 13.0,
             ),
             children: [
@@ -51,13 +93,42 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 subdomains: ['a', 'b', 'c'],
                 tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
+              if (locationVM.currentLocation != null)
+                flutter_map.MarkerLayer(
+                  markers: [
+                    flutter_map.Marker(
+                      width: 25,
+                      height: 25,
+                      point: locationVM.currentLocation!,
+                      builder: (ctx) => Lottie.asset(
+                        'assets/json/my_position.json',
+                        width: 20,
+                        height: 20,
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
+          if (locationVM.isLoadingLocation)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text(
+                    localizations.searchingYourLocation,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           Positioned(
             bottom: locationVM.isSharingLocation ? 180 : 120,
             right: 20,
             child: FloatingActionButton(
-              onPressed: () => locationVM.animateToUserLocation(_mapController),
+              onPressed: () => _animateToUserLocation(),
               mini: true,
               backgroundColor: Colors.white,
               child: Icon(Icons.my_location, color: Colors.black),

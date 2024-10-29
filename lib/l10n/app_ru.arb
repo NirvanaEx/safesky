@@ -57,12 +57,15 @@
   "note": "Примечание (не обязательно)",
   "submit": "Отправить",
   "cancel": "Отменить заявку",
+
   "startLocationSharing": "Начать трансляцию",
   "sharingLocation": "Идет трансляция",
   "stop": "Завершить",
   "pause": "Пауза",
   "resume": "Продолжить",
   "paused": "Пауза",
+  "searchingYourLocation": "Поиск вашего местоположения",
+
 
   "language" : "Язык",
   "theme": "Тема",
