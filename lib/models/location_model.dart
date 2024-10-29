@@ -1,19 +1,19 @@
 import 'package:safe_sky/models/user_model.dart';
 
-class Location {
+class LocationModel {
   final double latitude;
   final double longitude;
   final UserModel? user; // Опциональный пользователь
 
-  Location({
+  LocationModel({
     required this.latitude,
     required this.longitude,
     this.user,
   });
 
   // Фабричный метод для создания Location из JSON
-  factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
+  factory LocationModel.fromJson(Map<String, dynamic> json) {
+    return LocationModel(
       latitude: json['latitude'],
       longitude: json['longitude'],
       user: json['user'] != null ? UserModel.fromJson(json['user']) : null,

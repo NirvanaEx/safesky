@@ -6,6 +6,9 @@ import 'package:slide_to_act/slide_to_act.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:lottie/lottie.dart';
+import 'package:workmanager/workmanager.dart';
+
+import '../services/notification_service.dart';
 
 class MapShareLocationView extends StatefulWidget {
   @override
@@ -22,6 +25,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   void initState() {
     super.initState();
     _mapController = MapController();
+    NotificationService.init();
+
   }
 
   Future<void> _animateToUserLocation() async {
@@ -206,6 +211,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     );
   }
 
+
+
   // Функция для переключения паузы
   void _togglePause() {
     setState(() {
@@ -214,6 +221,17 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   }
 
   void _startLocationSharing() {
+    setState(() {
+      _isSharingLocation = true;
+    });
+
+    NotificationService.showLocationSharingNotification();
+    Workmanager().registerPeriodicTask(
+      "1",
+      "locationSharingTask",
+      frequency: Duration(minutes: 15),
+    );
+
     print("Location sharing started");
   }
 
@@ -221,6 +239,10 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     setState(() {
       _isSharingLocation = false;
     });
+
+    NotificationService.cancelNotification();
+    Workmanager().cancelByUniqueName("locationSharingTask");
+
     print("Location sharing stopped");
   }
 }
