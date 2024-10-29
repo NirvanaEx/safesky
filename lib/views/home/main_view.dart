@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Импорт локализации
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart'; // Импорт Provider
+import '../../viewmodels/auth_viewmodel.dart';
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
+import '../auth/login_view.dart';
 import '../side_menu/about_app_view.dart';
 import '../side_menu/settings_view.dart';
 import '../side_menu/support_view.dart';
@@ -20,19 +23,17 @@ class _MainViewState extends State<MainView> {
   final List<Widget> _screens = [
     RequestsView(),
     AddRequestView(),
-    EmptyView(),  // Пустой виджет, который не будет интерактивным
+    EmptyView(),
     ProfileView(),
   ];
 
   void _onTabTapped(int index) {
     if (index == 2) {
-      // Открываем ScanView как отдельное окно
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ScanView()),
       );
     } else {
-      // Переключаем вкладку
       setState(() {
         _currentIndex = index;
       });
@@ -163,7 +164,18 @@ class _MainViewState extends State<MainView> {
                     ListTile(
                       leading: Icon(Icons.logout, color: Colors.black),
                       title: Text(localizations.logout),
-                      onTap: () {},
+                      onTap: () async {
+                        // Получаем AuthViewModel и выполняем logout
+                        final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+                        await authViewModel.logout();
+
+                        // Переход на LoginView после logout
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginView()),
+                              (route) => false,
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -211,6 +223,6 @@ class _MainViewState extends State<MainView> {
 class EmptyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SizedBox.shrink();  // Пустое отображение
+    return SizedBox.shrink();
   }
 }

@@ -6,6 +6,7 @@ import 'package:safe_sky/views/auth/registration/registration_view.dart';
 import 'package:safe_sky/views/home/main_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:safe_sky/views/splash_screen_view.dart';
 
 import 'utils/localization_manager.dart';
 import 'viewmodels/auth_viewmodel.dart';
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
             ],
             supportedLocales: LocalizationManager.supportedLocales,
-            home: MainView(),
+            home: SplashScreenView(), // Используем SplashScreen как начальный экран
           );
         },
       ),

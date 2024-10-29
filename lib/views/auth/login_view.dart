@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../home/main_view.dart';
 import 'registration/registration_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -15,6 +16,7 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -24,10 +26,22 @@ class _LoginViewState extends State<LoginView> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/images/auth_back.png', fit: BoxFit.cover),
+          // Фон с фиксированным положением
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/auth_back.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           Container(color: Colors.black.withOpacity(0.5)),
+
+          // Основной контент
           Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Верхняя часть с логотипом и заголовком
               Padding(
                 padding: const EdgeInsets.only(top: 80),
                 child: Row(
@@ -40,7 +54,11 @@ class _LoginViewState extends State<LoginView> {
                       children: [
                         Text(
                           'Uzaeronavigation',
-                          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Container(
                           width: 140,
@@ -57,13 +75,17 @@ class _LoginViewState extends State<LoginView> {
                   ],
                 ),
               ),
-              Spacer(),
+
+              // Нижняя часть с формой логина
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(localizations.loginToAccount, style: TextStyle(fontSize: 22, color: Colors.white)),
+                    Text(
+                      localizations.loginToAccount,
+                      style: TextStyle(fontSize: 22, color: Colors.white),
+                    ),
                     SizedBox(height: 20),
                     TextField(
                       controller: _emailController,
@@ -103,15 +125,24 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                     SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        authViewModel.login(
+                    TextButton(
+                      onPressed: () async {
+                        bool success = await authViewModel.login(
                           _emailController.text,
                           _passwordController.text,
                         );
+
+                        if (success) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => MainView()),
+                          );
+                        } else {
+                          // Обработка неудачного входа, например, вывод сообщения об ошибке
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black, // Устанавливаем черный фон
                         padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -120,7 +151,10 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       child: authViewModel.isLoading
                           ? CircularProgressIndicator(color: Colors.white)
-                          : Text(localizations.login, style: TextStyle(fontSize: 16)),
+                          : Text(
+                        localizations.login,
+                        style: TextStyle(fontSize: 16, color: Colors.white), // Белый цвет текста
+                      ),
                     ),
                     SizedBox(height: 16),
                     TextButton(
@@ -128,7 +162,6 @@ class _LoginViewState extends State<LoginView> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => RegistrationView()),
-
                         );
                       },
                       style: TextButton.styleFrom(
@@ -141,15 +174,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       child: Text(localizations.register, style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
-
-                    if (authViewModel.errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          authViewModel.errorMessage!,
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
                   ],
                 ),
               ),

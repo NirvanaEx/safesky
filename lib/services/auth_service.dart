@@ -7,6 +7,8 @@ class AuthService {
 
   // Метод для входа пользователя
   Future<UserModel> login(String email, String password) async {
+
+    return UserModel(id: 1, email: 'my@mail.com', name: 'Dias', token: 'token');
     final url = Uri.parse('$_baseUrl/login');
 
     final response = await http.post(
