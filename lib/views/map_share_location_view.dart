@@ -3,12 +3,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:slide_to_act/slide_to_act.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:lottie/lottie.dart';
-import 'package:workmanager/workmanager.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
-import '../services/notification_service.dart';
+import '../viewmodels/location_viewmodel.dart';
 
 class MapShareLocationView extends StatefulWidget {
   @override
@@ -16,36 +15,17 @@ class MapShareLocationView extends StatefulWidget {
 }
 
 class _MapShareLocationViewState extends State<MapShareLocationView> {
-  bool _isSharingLocation = false; // Статус трансляции
-  bool _isPaused = false; // Статус паузы трансляции
   late MapController _mapController;
-
 
   @override
   void initState() {
     super.initState();
     _mapController = MapController();
-    NotificationService.init();
-
-  }
-
-  Future<void> _animateToUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    LatLng userLocation = LatLng(position.latitude, position.longitude);
-    LatLng startLocation = _mapController.center;
-
-    // Плавное перемещение от текущей позиции карты к позиции пользователя
-    const int steps = 25;
-    for (int i = 0; i <= steps; i++) {
-      final double lat = startLocation.latitude + (userLocation.latitude - startLocation.latitude) * (i / steps);
-      final double lng = startLocation.longitude + (userLocation.longitude - startLocation.longitude) * (i / steps);
-      _mapController.move(LatLng(lat, lng), _mapController.zoom);
-      await Future.delayed(Duration(milliseconds: 5));
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final locationVM = Provider.of<LocationViewModel>(context);
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -59,80 +39,64 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       ),
       body: Stack(
         children: [
-          // OpenStreetMap с использованием flutter_map и кэширования
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: LatLng(41.2995, 69.2401), // Центр карты, например, Ташкент
+              center: LatLng(41.2995, 69.2401),
               zoom: 13.0,
             ),
             children: [
               TileLayer(
                 urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 subdomains: ['a', 'b', 'c'],
-                tileProvider: FMTC.instance('openstreetmap').getTileProvider(), // Подключаем кэш для тайлов
+                tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
             ],
           ),
-
-          // Иконка для поиска моего местоположения, поднятая вверх
           Positioned(
-            bottom: _isSharingLocation ? 180 : 120, // Изменено положение при включении трансляции
+            bottom: locationVM.isSharingLocation ? 180 : 120,
             right: 20,
             child: FloatingActionButton(
-              onPressed: _animateToUserLocation,
+              onPressed: () => locationVM.animateToUserLocation(_mapController),
               mini: true,
               backgroundColor: Colors.white,
               child: Icon(Icons.my_location, color: Colors.black),
             ),
           ),
-
-          // Нижнее меню
           Positioned(
             bottom: 30,
             left: 20,
             right: 20,
-            child: _isSharingLocation ? _buildSharingMenu(localizations) : _buildSlideToStart(localizations),
+            child: locationVM.isSharingLocation
+                ? _buildSharingMenu(localizations, locationVM)
+                : _buildSlideToStart(localizations, locationVM),
           ),
         ],
       ),
     );
   }
 
-  // Слайдер для начала трансляции
-  Widget _buildSlideToStart(AppLocalizations localizations) {
+  Widget _buildSlideToStart(AppLocalizations localizations, LocationViewModel locationVM) {
     return SlideAction(
       text: localizations.startLocationSharing,
-      textStyle: TextStyle(
-        fontSize: 18,
-        color: Colors.black,
-      ),
+      textStyle: TextStyle(fontSize: 18, color: Colors.black),
       innerColor: Colors.black,
       outerColor: Colors.white,
       onSubmit: () {
-        setState(() {
-          _isSharingLocation = true;
-          _isPaused = false;
-        });
-        _startLocationSharing();
+        locationVM.startLocationSharing();
       },
-      sliderButtonIcon: Icon(
-        Icons.play_arrow,
-        color: Colors.white,
-      ),
+      sliderButtonIcon: Icon(Icons.play_arrow, color: Colors.white),
       borderRadius: 30,
     );
   }
 
-  // Нижнее меню с кнопками "Завершить" и "Пауза"
-  Widget _buildSharingMenu(AppLocalizations localizations) {
+  Widget _buildSharingMenu(AppLocalizations localizations, LocationViewModel locationVM) {
     return Column(
       children: [
-        // Полупрозрачный контейнер с индикатором "Идет трансляция" и анимацией
         Container(
           height: 55,
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          margin: EdgeInsets.only(bottom: 12), // Отступ снизу для разделения
+          margin: EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.85),
             borderRadius: BorderRadius.circular(30),
@@ -140,24 +104,16 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (!_isPaused) // Условие для отображения анимации только при активной трансляции
+              if (!locationVM.isPaused)
                 SizedBox(
                   width: 35,
                   height: 35,
-                  child: Lottie.asset(
-                    'assets/json/live.json', // Путь к анимации
-                    repeat: true,
-                    fit: BoxFit.contain,
-                  ),
+                  child: Lottie.asset('assets/json/live.json', repeat: true, fit: BoxFit.contain),
                 ),
-              if (_isPaused)
-                Icon(
-                  Icons.pause, // Иконка паузы
-                  color: Colors.red,
-                  size: 24,
-                ),
+              if (locationVM.isPaused)
+                Icon(Icons.pause, color: Colors.red, size: 24),
               Text(
-                _isPaused ? localizations.paused : localizations.sharingLocation,
+                locationVM.isPaused ? localizations.paused : localizations.sharingLocation,
                 style: TextStyle(color: Colors.red, fontSize: 18),
               ),
             ],
@@ -168,7 +124,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _stopLocationSharing,
+                onPressed: locationVM.stopLocationSharing,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.black,
@@ -177,16 +133,13 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   ),
                 ),
                 icon: Icon(Icons.stop, color: Colors.white, size: 28),
-                label: Text(
-                  localizations.stop,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+                label: Text(localizations.stop, style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
             SizedBox(width: 12),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _togglePause, // Вызов функции _togglePause
+                onPressed: locationVM.togglePause,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.white,
@@ -195,12 +148,12 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   ),
                 ),
                 icon: Icon(
-                  _isPaused ? Icons.play_arrow : Icons.pause,
+                  locationVM.isPaused ? Icons.play_arrow : Icons.pause,
                   color: Colors.black,
                   size: 28,
                 ),
                 label: Text(
-                  _isPaused ? localizations.resume : localizations.pause,
+                  locationVM.isPaused ? localizations.resume : localizations.pause,
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
@@ -209,40 +162,5 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
         ),
       ],
     );
-  }
-
-
-
-  // Функция для переключения паузы
-  void _togglePause() {
-    setState(() {
-      _isPaused = !_isPaused;
-    });
-  }
-
-  void _startLocationSharing() {
-    setState(() {
-      _isSharingLocation = true;
-    });
-
-    NotificationService.showLocationSharingNotification();
-    Workmanager().registerPeriodicTask(
-      "1",
-      "locationSharingTask",
-      frequency: Duration(minutes: 15),
-    );
-
-    print("Location sharing started");
-  }
-
-  void _stopLocationSharing() {
-    setState(() {
-      _isSharingLocation = false;
-    });
-
-    NotificationService.cancelNotification();
-    Workmanager().cancelByUniqueName("locationSharingTask");
-
-    print("Location sharing stopped");
   }
 }

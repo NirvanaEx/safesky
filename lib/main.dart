@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:safe_sky/services/notification_service.dart';
+import 'package:safe_sky/viewmodels/location_viewmodel.dart';
 import 'package:safe_sky/views/auth/registration/registration_view.dart';
 import 'package:safe_sky/views/home/main_view.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -54,6 +55,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LocalizationManager>(
           create: (_) => LocalizationManager(),
         ),
+        ChangeNotifierProvider<LocationViewModel>( // Добавляем LocationViewModel
+          create: (_) => LocationViewModel(),
+        ),
       ],
       child: Consumer<LocalizationManager>(
         builder: (context, localizationManager, child) {
@@ -72,6 +76,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 Future<void> requestPermissions() async {
   // Проверка и запрос разрешения на доступ к геолокации
