@@ -20,6 +20,8 @@
   "hi": "Salom",
   "support": "Qo‘llab-quvvatlash",
   "settings": "Sozlamalar",
+  "aboutApp": "Ilova haqida",
+
   "logout": "Chiqish",
   "available24": "Operatorlar 24/7 xizmatda",
   "search": "Qidiruv",
@@ -73,6 +75,10 @@
   "russian": "Rus",
   "english": "Ingliz",
   "uzbek": "O'zbek",
+
+  "version": "Vesriya",
+  "userAgreement": "Foydalanuvchi kelishuvi",
+  "privacyPolicy": "Maxfiylik siyosati",
 
   "typeYourMessage": "Xabaringizni yozing..."
 

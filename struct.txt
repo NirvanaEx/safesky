@@ -42,6 +42,7 @@ lib/
 │   ├── side_menu/
 │   │   ├── support_view.dart          // Экран техподдержки
 │   │   ├── settings_view.dart         // Экран настроек
+│   │   ├── about_app_view.dart        // Экран настроек
 │   │   └── logout_view.dart           // Экран выхода
 │   ├── show_request_view.dart
 │   ├── map_select_location.dart

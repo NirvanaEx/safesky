@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Импорт локализации
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
+import '../side_menu/about_app_view.dart';
 import '../side_menu/settings_view.dart';
 import '../side_menu/support_view.dart';
 import 'add_request_view.dart';
@@ -146,6 +147,16 @@ class _MainViewState extends State<MainView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => SettingsView()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.info_outline, color: Colors.black),
+                      title: Text(localizations.aboutApp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AboutAppView()),
                         );
                       },
                     ),

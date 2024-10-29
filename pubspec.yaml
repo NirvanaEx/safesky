@@ -38,6 +38,8 @@ dev_dependencies:
   url_launcher: ^6.0.20
   open_file: ^3.2.1
 
+  syncfusion_flutter_pdfviewer: ^20.3.47
+
 
 
 
@@ -53,6 +55,9 @@ flutter:
   assets:
     - assets/images/auth_back.png
     - assets/svg/logo.svg
+    - assets/docs/user_agreement_en.pdf
+    - assets/docs/user_agreement_ru.pdf
+    - assets/docs/user_agreement_uz.pdf
 
 flutter_gen_l10n:
   arb-dir: lib/l10n
