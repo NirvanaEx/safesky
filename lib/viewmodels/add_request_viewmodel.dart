@@ -5,9 +5,9 @@ import 'package:latlong2/latlong.dart';
 class AddRequestViewModel extends ChangeNotifier {
   // Текстовые контроллеры для полей ввода
   final TextEditingController requesterNameController = TextEditingController();
-  final TextEditingController operatorNameController = TextEditingController(text: "Закиров Аслиддин Темурович");
-  final TextEditingController operatorPhoneController = TextEditingController(text: "+998 ");
-  final TextEditingController emailController = TextEditingController(text: "sample@gmail.com");
+  final TextEditingController operatorNameController = TextEditingController();
+  final TextEditingController operatorPhoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController permitNumberController = TextEditingController();
   final TextEditingController contractNumberController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
@@ -52,9 +52,7 @@ class AddRequestViewModel extends ChangeNotifier {
     {"code": "+997", "flag": "🇰🇿"},
   ];
 
-  AddRequestViewModel() {
-    phoneController.text = formatPhoneNumber("+998 99 333 11 22");
-  }
+
 
   String formatPhoneNumber(String phoneNumber) {
     final countryCode = '+998';

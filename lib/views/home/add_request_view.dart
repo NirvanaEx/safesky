@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -51,13 +52,13 @@ class _AddRequestViewState extends State<AddRequestView> {
               children: [
                 _buildDatePickerField(
                   date: viewModel.flightStartDateTime,
-                  hintText: "01.01.2023 15:03",
+                  hintText: "01.01.2023 15:00",
                   onDateSelected: (date) => viewModel.updateFlightStartDateTime(date!),
                 ),
                 SizedBox(height: 16),
                 _buildDatePickerField(
                   date: viewModel.flightEndDateTime,
-                  hintText: "01.01.2023 17:06",
+                  hintText: "01.01.2023 17:00",
                   onDateSelected: (date) => viewModel.updateFlightEndDateTime(date!),
                 ),
               ],
@@ -98,7 +99,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabel(localizations.flightHeight),
-                      _buildTextField(viewModel.flightHeightController, hintText: localizations.height),
+                      _buildTextField(viewModel.flightHeightController, hintText: '0', isDecimal: true)
                     ],
                   ),
                 ),
@@ -108,7 +109,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabel(localizations.flightRadius),
-                      _buildTextField(viewModel.radiusController, hintText: localizations.radius),
+                      _buildTextField(viewModel.radiusController, hintText: '0', isDecimal: true)
                     ],
                   ),
                 ),
@@ -125,7 +126,7 @@ class _AddRequestViewState extends State<AddRequestView> {
             _buildPhoneField(viewModel, context),
             SizedBox(height: 16),
             _buildLabel(localizations.email),
-            _buildTextField(viewModel.emailController, hintText: localizations.email),
+            _buildTextField(viewModel.emailController, hintText: 'my@mail.com'),
             SizedBox(height: 16),
             _buildLabel(localizations.specialPermit),
             Row(
@@ -185,10 +186,21 @@ class _AddRequestViewState extends State<AddRequestView> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, {required String hintText, bool readOnly = false}) {
+  Widget _buildTextField(
+      TextEditingController controller, {
+        required String hintText,
+        bool readOnly = false,
+        bool isDecimal = false, // Новый параметр для выбора типа чисел
+      }) {
     return TextField(
       controller: controller,
       readOnly: readOnly,
+      keyboardType: isDecimal ? TextInputType.numberWithOptions(decimal: true) : TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(
+          isDecimal ? RegExp(r'^\d*\.?\d*') : RegExp(r'^\d*'), // Разрешает ввод с десятичными или без
+        ),
+      ],
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
@@ -237,7 +249,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: localizations.phone,
+                hintText: '991234567',
                 contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 18),
               ),
               style: TextStyle(fontSize: 16),
