@@ -8,6 +8,7 @@ import 'package:safe_sky/views/auth/registration/registration_view.dart';
 import 'package:safe_sky/views/home/main_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:safe_sky/views/map_share_location_view.dart';
 import 'package:safe_sky/views/splash_screen_view.dart';
 
 import 'utils/localization_manager.dart';
@@ -18,11 +19,14 @@ import 'package:workmanager/workmanager.dart';
 
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    String newText = 'Current Location: ${position.latitude}, ${position.longitude}';
-
-    NotificationService.updateLocationNotification(newText);
-    print("Background location sharing is active with position: $newText");
+    // Загружайте данные о местоположении и отправляйте уведомление
+    if (LocationViewModel().isSharingLocation) { // Убедитесь, что LocationViewModel доступен
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      String newText = 'Current Location: ${position.latitude}, ${position
+          .longitude}';
+      NotificationService.updateLocationNotification(newText);
+    }
 
     return Future.value(true);
   });
@@ -35,7 +39,7 @@ void main() async {
   FMTC.instance('openstreetmap').manage.createAsync();
 
   // Инициализация WorkManager и NotificationService
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
   await NotificationService.init();
 
   await requestPermissions(); // Запрос разрешений перед запуском приложения
@@ -55,13 +59,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LocalizationManager>(
           create: (_) => LocalizationManager(),
         ),
-        ChangeNotifierProvider<LocationViewModel>( // Добавляем LocationViewModel
+        ChangeNotifierProvider<LocationViewModel>(
           create: (_) => LocationViewModel(),
         ),
       ],
       child: Consumer<LocalizationManager>(
         builder: (context, localizationManager, child) {
           return MaterialApp(
+            navigatorKey: NotificationService.navigatorKey, // Используем navigatorKey из NotificationService
             locale: localizationManager.currentLocale,
             localizationsDelegates: [
               AppLocalizations.delegate,
@@ -69,7 +74,10 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
             ],
             supportedLocales: LocalizationManager.supportedLocales,
-            home: SplashScreenView(), // Используем SplashScreen как начальный экран
+            home: SplashScreenView(),
+            routes: {
+              '/location_view': (context) => MapShareLocationView(), // Маршрут для нужного view
+            },
           );
         },
       ),

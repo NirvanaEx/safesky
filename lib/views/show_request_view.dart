@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'map_share_location_view.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/location_viewmodel.dart';
 
 class ShowRequestView extends StatelessWidget {
   final Map<String, String> request;
@@ -56,12 +58,8 @@ class ShowRequestView extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Переход на карту для трансляции
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => MapShareLocationView()),
-                          );
+                        onPressed: () async {
+                          await _handleLocationSharing(context); // Проверка перед переходом
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
@@ -119,6 +117,49 @@ class ShowRequestView extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+
+  Future<void> _handleLocationSharing(BuildContext context) async {
+    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+
+    // Если уже есть активная задача, показываем диалоговое окно
+    if (locationVM.currentRequestId != null) {
+      final shouldStop = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Stop Existing Location Sharing?"),
+            content: Text("A location sharing task is already active. Would you like to stop it and start a new one?"),
+            actions: <Widget>[
+              TextButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: Text("Stop & Start New"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      if (shouldStop != true) {
+        return;
+      } else {
+        await locationVM.stopLocationSharing();
+      }
+    }
+
+    // Выполняем переход на страницу с картой после остановки задачи или если задач не было
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapShareLocationView()),
     );
   }
 

@@ -154,6 +154,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       innerColor: Colors.black,
       outerColor: Colors.white,
       onSubmit: () {
+        // Начинаем передачу местоположения без проверки, так как она выполняется в ShowRequestView
         locationVM.startLocationSharing();
       },
       sliderButtonIcon: Icon(Icons.play_arrow, color: Colors.white),

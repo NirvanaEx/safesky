@@ -10,12 +10,57 @@ class LocationViewModel extends ChangeNotifier {
   bool _isPaused = false;
   bool _isLoadingLocation = true;
   LatLng? _currentLocation;
-  final double defaultZoom = 13.0; // Уровень зума по умолчанию
+  String? _currentRequestId;
+  final double defaultZoom = 13.0;
 
   bool get isSharingLocation => _isSharingLocation;
   bool get isPaused => _isPaused;
   bool get isLoadingLocation => _isLoadingLocation;
   LatLng? get currentLocation => _currentLocation;
+
+  void setSharingLocation(bool isSharing) {
+    _isSharingLocation = isSharing;
+    notifyListeners();
+  }
+
+  String? get currentRequestId => _currentRequestId;
+
+  void resetLocationSharing() {
+    _isSharingLocation = false;
+    _currentRequestId = null;
+    notifyListeners();
+  }
+
+  Future<void> startLocationSharing() async {
+    _isSharingLocation = true;
+    _isPaused = false;
+
+    // Инициализируем requestId для отслеживания задачи
+    _currentRequestId = 'unique_location_sharing_task';
+
+    notifyListeners();
+
+    NotificationService.showLocationSharingNotification();
+    Workmanager().registerPeriodicTask(
+      _currentRequestId!, // Используем _currentRequestId для отслеживания
+      "locationSharingTask",
+      frequency: Duration(minutes: 15),
+    );
+    print("Location sharing started with requestId: $_currentRequestId");
+  }
+
+  Future<void> stopLocationSharing() async {
+    if (_currentRequestId != null) {
+      _isSharingLocation = false; // Устанавливаем в false при остановке
+      notifyListeners();
+
+      NotificationService.cancelNotification();
+      Workmanager().cancelByUniqueName(_currentRequestId!);
+      print("Location sharing stopped for requestId: $_currentRequestId");
+
+      _currentRequestId = null;
+    }
+  }
 
   Future<void> loadCurrentLocation() async {
     _isLoadingLocation = true;
@@ -42,28 +87,5 @@ class LocationViewModel extends ChangeNotifier {
   void togglePause() {
     _isPaused = !_isPaused;
     notifyListeners();
-  }
-
-  Future<void> startLocationSharing() async {
-    _isSharingLocation = true;
-    _isPaused = false;
-    notifyListeners();
-
-    NotificationService.showLocationSharingNotification();
-    Workmanager().registerPeriodicTask(
-      "1",
-      "locationSharingTask",
-      frequency: Duration(minutes: 1),
-    );
-    print("Location sharing started");
-  }
-
-  Future<void> stopLocationSharing() async {
-    _isSharingLocation = false;
-    notifyListeners();
-
-    NotificationService.cancelNotification();
-    Workmanager().cancelByUniqueName("locationSharingTask");
-    print("Location sharing stopped");
   }
 }
