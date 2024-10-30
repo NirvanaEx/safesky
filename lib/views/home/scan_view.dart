@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:safe_sky/views/map_share_location_view.dart';
 
 class ScanView extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class ScanView extends StatefulWidget {
 
 class _ScanViewState extends State<ScanView> {
   bool _isFlashOn = false;
+  final MobileScannerController _controller = MobileScannerController(); // Создаем один контроллер
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +17,12 @@ class _ScanViewState extends State<ScanView> {
       body: Stack(
         children: [
           MobileScanner(
+            controller: _controller, // Используем созданный контроллер
             onDetect: (capture) {
               final List<Barcode> barcodes = capture.barcodes;
               for (final barcode in barcodes) {
                 final String? code = barcode.rawValue;
                 if (code != null) {
-                  // Обработка захваченного QR-кода
                   _onQRCodeScanned(code);
                 }
               }
@@ -48,15 +50,19 @@ class _ScanViewState extends State<ScanView> {
   }
 
   void _onQRCodeScanned(String code) {
-    // Закрываем сканер и возвращаем результат
-    Navigator.pop(context, code);
+    if (code.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MapShareLocationView()),
+      );
+    }
   }
 
   Future<void> _toggleFlash() async {
     setState(() {
       _isFlashOn = !_isFlashOn;
     });
-    MobileScannerController().toggleTorch();
+    _controller.toggleTorch(); // Используем контроллер для управления фонариком
   }
 
   Widget _buildOverlay() {

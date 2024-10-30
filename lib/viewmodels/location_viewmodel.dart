@@ -53,7 +53,7 @@ class LocationViewModel extends ChangeNotifier {
     Workmanager().registerPeriodicTask(
       "1",
       "locationSharingTask",
-      frequency: Duration(minutes: 15),
+      frequency: Duration(minutes: 1),
     );
     print("Location sharing started");
   }
