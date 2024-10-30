@@ -80,6 +80,10 @@
   "privacyPolicy": "Политика конфиденциальности",
 
 
-  "typeYourMessage": "Напишите сообщение..."
+  "typeYourMessage": "Напишите сообщение...",
 
+  "notifications": "Уведомления",
+  "noNotifications": "Нет уведомлений",
+  "news": "Новости",
+  "noNews": "Нет новостей."
 }

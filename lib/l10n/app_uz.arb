@@ -82,6 +82,11 @@
   "userAgreement": "Foydalanuvchi kelishuvi",
   "privacyPolicy": "Maxfiylik siyosati",
 
-  "typeYourMessage": "Xabaringizni yozing..."
+  "typeYourMessage": "Xabaringizni yozing...",
+
+  "notifications" : "Bildirishnomalar",
+  "noNotifications": "Bildirishnomalar yo'q",
+  "news": "Yangiliklar",
+  "noNews": "Yangiliklar yo'q."
 
 }

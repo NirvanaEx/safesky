@@ -78,5 +78,10 @@
   "userAgreement": "User agreement",
   "privacyPolicy": "Privacy policy",
 
-  "typeYourMessage": "Type your message..."
+  "typeYourMessage": "Type your message...",
+
+  "notifications": "Notifications",
+  "noNotifications": "No notifications",
+  "news": "News",
+  "noNews": "No news available."
 }

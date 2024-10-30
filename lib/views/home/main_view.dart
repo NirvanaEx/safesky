@@ -6,6 +6,7 @@ import '../../viewmodels/auth_viewmodel.dart';
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
 import '../auth/login_view.dart';
+import '../notification_view.dart';
 import '../side_menu/about_app_view.dart';
 import '../side_menu/settings_view.dart';
 import '../side_menu/support_view.dart';
@@ -68,7 +69,12 @@ class _MainViewState extends State<MainView> {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationView()),
+              );
+            },
           ),
         ],
       ),
