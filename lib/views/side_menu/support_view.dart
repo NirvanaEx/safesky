@@ -11,6 +11,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:open_file/open_file.dart';
 import '../../models/message_model.dart';
+import 'package:lottie/lottie.dart';
 
 class SupportView extends StatefulWidget {
   @override
@@ -56,7 +57,14 @@ class _SupportViewState extends State<SupportView> {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: ListView.builder(
+                  child: messages.isEmpty
+                      ? Center(
+                      child: Text(
+                        'Нет сообщений',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                    )
+                      : ListView.builder(
                     reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
@@ -104,7 +112,6 @@ class _SupportViewState extends State<SupportView> {
                 ),
               ),
             ),
-
             _buildInputArea(context),
           ],
         ),
