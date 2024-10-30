@@ -16,8 +16,8 @@ class AddRequestViewModel extends ChangeNotifier {
   final TextEditingController radiusController = TextEditingController();
   final TextEditingController flightHeightController = TextEditingController(); // Контроллер для высоты полета
   final TextEditingController startDateController = TextEditingController(); // Контроллер для даты начала
-  final TextEditingController flightStartDateController = TextEditingController(); // Контроллер для времени начала полета
-  final TextEditingController flightEndDateController = TextEditingController(); // Контроллер для времени окончания полета
+  final TextEditingController flightStartDateControllerTime = TextEditingController(); // Контроллер для времени начала полета
+  final TextEditingController flightEndDateTimeController = TextEditingController(); // Контроллер для времени окончания полета
   final TextEditingController permitDateController = TextEditingController(); // Контроллер для даты разрешения
   final TextEditingController contractDateController = TextEditingController(); // Контроллер для даты контракта
 
@@ -31,8 +31,8 @@ class AddRequestViewModel extends ChangeNotifier {
   // Переменные для работы с датами
   DateTime? startDate;
   DateTime? endDate;
-  DateTime? flightStartDate;
-  DateTime? flightEndDate;
+  DateTime? flightStartDateTime;
+  DateTime? flightEndDateTime;
   DateTime? permitDate;
   DateTime? contractDate;
 
@@ -83,6 +83,37 @@ class AddRequestViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Методы обновления даты
+  void updateStartDate(DateTime date) {
+    startDate = date;
+    startDateController.text = DateFormat('dd.MM.yyyy').format(date);
+    notifyListeners();
+  }
+
+  void updateFlightStartDateTime(DateTime date) {
+    flightStartDateTime = date;
+    flightStartDateControllerTime.text = DateFormat('dd.MM.yyyy HH:mm').format(date);
+    notifyListeners();
+  }
+
+  void updateFlightEndDateTime(DateTime date) {
+    flightEndDateTime = date;
+    flightEndDateTimeController.text = DateFormat('dd.MM.yyyy HH:mm').format(date);
+    notifyListeners();
+  }
+
+  void updatePermitDate(DateTime date) {
+    permitDate = date;
+    permitDateController.text = DateFormat('dd.MM.yyyy').format(date);
+    notifyListeners();
+  }
+
+  void updateContractDate(DateTime date) {
+    contractDate = date;
+    contractDateController.text = DateFormat('dd.MM.yyyy').format(date);
+    notifyListeners();
+  }
+
   void setModel(String model) {
     selectedModel = model;
     notifyListeners();
@@ -118,15 +149,15 @@ class AddRequestViewModel extends ChangeNotifier {
     radiusController.clear();
     flightHeightController.clear();
     startDateController.clear();
-    flightStartDateController.clear();
-    flightEndDateController.clear();
+    flightStartDateControllerTime.clear();
+    flightEndDateTimeController.clear();
     permitDateController.clear();
     contractDateController.clear();
 
     startDate = null;
     endDate = null;
-    flightStartDate = null;
-    flightEndDate = null;
+    flightStartDateTime = null;
+    flightEndDateTime = null;
     permitDate = null;
     contractDate = null;
     selectedModel = null;
@@ -149,8 +180,8 @@ class AddRequestViewModel extends ChangeNotifier {
     radiusController.dispose();
     flightHeightController.dispose();
     startDateController.dispose();
-    flightStartDateController.dispose();
-    flightEndDateController.dispose();
+    flightStartDateControllerTime.dispose();
+    flightEndDateTimeController.dispose();
     permitDateController.dispose();
     contractDateController.dispose();
     super.dispose();

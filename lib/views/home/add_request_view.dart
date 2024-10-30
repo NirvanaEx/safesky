@@ -33,8 +33,8 @@ class _AddRequestViewState extends State<AddRequestView> {
             _buildLabel(localizations.flightStartDate),
             _buildDateOnlyPickerField(
               date: viewModel.startDate,
-              hintText: "05.09.2024",
-              onDateSelected: (date) => viewModel.updateDateField(date!, viewModel.startDateController),
+              hintText: "01.01.2023",
+              onDateSelected: (date) => viewModel.updateStartDate(date!),
             ),
             SizedBox(height: 16),
             _buildLabel(localizations.requesterName),
@@ -50,15 +50,15 @@ class _AddRequestViewState extends State<AddRequestView> {
             Column(
               children: [
                 _buildDatePickerField(
-                  date: viewModel.flightStartDate,
-                  hintText: ".01.2023 15:03",
-                  onDateSelected: (date) => viewModel.updateDateField(date!, viewModel.flightStartDateController),
+                  date: viewModel.flightStartDateTime,
+                  hintText: "01.01.2023 15:03",
+                  onDateSelected: (date) => viewModel.updateFlightStartDateTime(date!),
                 ),
                 SizedBox(height: 16),
                 _buildDatePickerField(
-                  date: viewModel.flightEndDate,
+                  date: viewModel.flightEndDateTime,
                   hintText: "01.01.2023 17:06",
-                  onDateSelected: (date) => viewModel.updateDateField(date!, viewModel.flightEndDateController),
+                  onDateSelected: (date) => viewModel.updateFlightEndDateTime(date!),
                 ),
               ],
             ),
@@ -136,7 +136,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                   child: _buildDateOnlyPickerField(
                     date: viewModel.permitDate,
                     hintText: "05.09.2024",
-                    onDateSelected: (date) => viewModel.updateDateField(date!, viewModel.permitDateController),
+                    onDateSelected: (date) => viewModel.updatePermitDate(date!),
                   ),
                 ),
               ],
@@ -151,7 +151,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                   child: _buildDateOnlyPickerField(
                     date: viewModel.contractDate,
                     hintText: "05.09.2024",
-                    onDateSelected: (date) => viewModel.updateDateField(date!, viewModel.contractDateController),
+                    onDateSelected: (date) => viewModel.updateContractDate(date!),
                   ),
                 ),
               ],
@@ -289,7 +289,7 @@ class _AddRequestViewState extends State<AddRequestView> {
           }
         }
       },
-      child: _buildDateDisplay(date, hintText),
+      child: _buildDateDisplay(date, hintText, dateFormat: 'dd.MM.yyyy HH:mm'),
     );
   }
 
@@ -307,11 +307,11 @@ class _AddRequestViewState extends State<AddRequestView> {
 
         }
       },
-      child: _buildDateDisplay(date, hintText),
+      child: _buildDateDisplay(date, hintText, dateFormat: 'dd.MM.yyyy'),
     );
   }
 
-  Widget _buildDateDisplay(DateTime? date, String hintText) {
+  Widget _buildDateDisplay(DateTime? date, String hintText, {required String dateFormat}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
@@ -322,7 +322,7 @@ class _AddRequestViewState extends State<AddRequestView> {
         children: [
           Expanded(
             child: Text(
-              date == null ? hintText : DateFormat('dd.MM.yyyy').format(date),
+              date == null ? hintText : DateFormat(dateFormat).format(date),
               style: TextStyle(color: Colors.black, fontSize: 16),
             ),
           ),
