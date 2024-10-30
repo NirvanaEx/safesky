@@ -1,4 +1,5 @@
 class RequestModel {
+  String? id; // Добавленное поле id
   String? requesterName;
   String? operatorName;
   String? operatorPhone;
@@ -13,6 +14,7 @@ class RequestModel {
   double? radius;
 
   RequestModel({
+    this.id, // Инициализация id в конструкторе
     this.requesterName,
     this.operatorName,
     this.operatorPhone,
@@ -29,6 +31,7 @@ class RequestModel {
 
   factory RequestModel.fromJson(Map<String, dynamic> json) {
     return RequestModel(
+      id: json['id'], // Инициализация id при десериализации
       requesterName: json['requesterName'],
       operatorName: json['operatorName'],
       operatorPhone: json['operatorPhone'],
@@ -45,6 +48,7 @@ class RequestModel {
   }
 
   Map<String, dynamic> toJson() => {
+    'id': id, // Добавлено поле id для сериализации
     'requesterName': requesterName,
     'operatorName': operatorName,
     'operatorPhone': operatorPhone,

@@ -183,6 +183,7 @@ class _SupportViewState extends State<SupportView> {
 
   void _sendMessage(String text) {
     final newMessage = Message(
+      id: '1',
       type: 'text',
       content: text.trim(),
       isUser: true,
@@ -249,6 +250,7 @@ class _SupportViewState extends State<SupportView> {
       PlatformFile file = result.files.first;
 
       final newMessage = Message(
+        id: '2',
         type: 'file',
         content: file.name,
         isUser: true,
@@ -270,6 +272,7 @@ class _SupportViewState extends State<SupportView> {
 
     if (image != null) {
       final newMessage = Message(
+        id: '3',
         type: 'image',
         content: image.path,
         isUser: true,

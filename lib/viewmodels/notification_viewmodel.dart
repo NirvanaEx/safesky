@@ -28,6 +28,7 @@ class NotificationViewModel extends ChangeNotifier {
       // Статически заданные данные
       _newsList = [
         NewsModel(
+          id: '1',
           dateTime: "2024-10-31 12:00",
           shortDescription: "Breaking News",
           imageUrl: "https://example.com/news_image.jpg",
@@ -35,6 +36,7 @@ class NotificationViewModel extends ChangeNotifier {
           lang: "en",
         ),
         NewsModel(
+          id: '2',
           dateTime: "2024-10-30 10:30",
           shortDescription: "Новости дня",
           imageUrl: "https://example.com/news_image2.jpg",
@@ -60,12 +62,14 @@ class NotificationViewModel extends ChangeNotifier {
       // Статически заданные данные
       _notificationList = [
         NotificationModel(
+          id: '1',
           dateTime: "2024-10-31 08:30",
           shortDescription: "Urgent Update",
           description: "Notification in English",
           lang: "en",
         ),
         NotificationModel(
+          id: '2',
           dateTime: "2024-10-30 14:00",
           shortDescription: "Системное сообщение",
           description: "Уведомление на русском языке.",
