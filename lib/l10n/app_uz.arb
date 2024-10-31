@@ -87,6 +87,27 @@
   "notifications" : "Bildirishnomalar",
   "noNotifications": "Bildirishnomalar yo'q",
   "news": "Yangiliklar",
-  "noNews": "Yangiliklar yo'q."
+  "noNews": "Yangiliklar yo'q.",
+
+
+  "invalidRadius": "Radius qiymati noto'g'ri",
+  "invalidFlightHeight": "Parvoz balandligi qiymati noto'g'ri",
+  "invalidPermitNumber": "Ruxsatnoma raqami noto'g'ri",
+  "invalidContractNumber": "Shartnoma raqami noto'g'ri",
+  "invalidLatLngFormat": "Koordinatalar formati noto'g'ri. Formatni 'kenglik uzunlik' shaklida kiriting",
+  "invalidLatitudeLongitude": "Kenglik yoki uzunlik qiymatlari noto'g'ri",
+  "invalidStartDate": "Boshlanish sanasi noto'g'ri",
+  "invalidFlightStartDateTime": "Parvoz boshlanish vaqti noto'g'ri",
+  "invalidFlightEndDateTime": "Parvoz tugash vaqti noto'g'ri",
+  "invalidPermitDate": "Ruxsatnoma sanasi noto'g'ri",
+  "invalidContractDate": "Shartnoma sanasi noto'g'ri",
+  "invalidRequesterName": "Ariza beruvchi nomi bo'sh bo'lishi mumkin emas",
+  "invalidModel": "Model tanlanishi kerak",
+  "invalidRegion": "Hudud tanlanishi kerak",
+  "invalidPurpose": "Maqsad tanlanishi kerak",
+  "invalidPhoneNumber": "Noto'g'ri telefon raqami",
+  "invalidEmail": "Email formati noto'g'ri",
+  "invalidFlightSign": "Parvoz belgisi tanlanishi kerak",
+  "invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas"
 
 }

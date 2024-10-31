@@ -85,5 +85,28 @@
   "notifications": "Уведомления",
   "noNotifications": "Нет уведомлений",
   "news": "Новости",
-  "noNews": "Нет новостей."
+  "noNews": "Нет новостей.",
+
+
+  "invalidRadius": "Некорректное значение радиуса",
+  "invalidFlightHeight": "Некорректное значение высоты полета",
+  "invalidPermitNumber": "Некорректное значение номера разрешения",
+  "invalidContractNumber": "Некорректное значение номера договора",
+  "invalidLatLngFormat": "Некорректный формат координат. Используйте формат 'широта долгота'",
+  "invalidLatitudeLongitude": "Некорректные значения для широты или долготы",
+  "invalidStartDate": "Некорректное значение даты начала",
+  "invalidFlightStartDateTime": "Некорректное значение времени начала полета",
+  "invalidFlightEndDateTime": "Некорректное значение времени окончания полета",
+  "invalidPermitDate": "Некорректное значение даты разрешения",
+  "invalidContractDate": "Некорректное значение даты договора",
+  "invalidRequesterName": "Наименование заявителя не может быть пустым",
+  "invalidModel": "Модель должна быть выбрана",
+  "invalidRegion": "Регион должен быть выбран",
+  "invalidPurpose": "Цель полета должна быть выбрана",
+  "invalidPhoneNumber": "Некорректный номер телефона",
+  "invalidEmail": "Некорректный формат email",
+  "invalidFlightSign": "Знак полета должен быть выбран",
+  "invalidOperatorName": "Имя оператора не может быть пустым"
+
+
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/request_model.dart';
 import '../services/request_service.dart';
 
-class AddRequestViewModel extends ChangeNotifier {
+class RequestViewModel extends ChangeNotifier {
   final RequestService _requestService = RequestService();
   RequestModel _requestModel = RequestModel();
 
@@ -47,9 +47,25 @@ class AddRequestViewModel extends ChangeNotifier {
   }
 
   void updateCoordinates(String value) {
-    _requestModel.coordinates = value;
+    List<String> latLngParts = value.split(" ");
+
+    if (latLngParts.length == 2) {
+      double? latitude = double.tryParse(latLngParts[0]);
+      double? longitude = double.tryParse(latLngParts[1]);
+
+      if (latitude != null && longitude != null) {
+        _requestModel.latitude = latitude;
+        _requestModel.longitude = longitude;
+      } else {
+        print("Ошибка: Некорректные значения для широты или долготы");
+      }
+    } else {
+      print("Ошибка: Некорректный формат координат. Используйте формат 'широта долгота'");
+    }
+
     notifyListeners();
   }
+
 
   void updateRadius(double? value) {
     _requestModel.radius = value;

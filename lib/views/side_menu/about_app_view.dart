@@ -5,7 +5,7 @@ import 'package:safe_sky/views/pdf_page_view.dart';
 
 class AboutAppView extends StatelessWidget {
   Future<String> _getAppVersion() async {
-    return '1.0.0.12392';
+    return '2.0.0.32392';
   }
 
   @override

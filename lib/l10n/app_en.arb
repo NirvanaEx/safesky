@@ -83,5 +83,27 @@
   "notifications": "Notifications",
   "noNotifications": "No notifications",
   "news": "News",
-  "noNews": "No news available."
+  "noNews": "No news available.",
+
+
+  "invalidRadius": "Invalid radius value",
+  "invalidFlightHeight": "Invalid flight height value",
+  "invalidPermitNumber": "Invalid permit number",
+  "invalidContractNumber": "Invalid contract number",
+  "invalidLatLngFormat": "Invalid coordinates format. Use 'latitude longitude' format",
+  "invalidLatitudeLongitude": "Invalid values for latitude or longitude",
+  "invalidStartDate": "Invalid start date",
+  "invalidFlightStartDateTime": "Invalid flight start date and time",
+  "invalidFlightEndDateTime": "Invalid flight end date and time",
+  "invalidPermitDate": "Invalid permit date",
+  "invalidContractDate": "Invalid contract date",
+  "invalidRequesterName": "Requester name cannot be empty",
+  "invalidModel": "Model must be selected",
+  "invalidRegion": "Region must be selected",
+  "invalidPurpose": "Purpose must be selected",
+  "invalidPhoneNumber": "Invalid phone number",
+  "invalidEmail": "Invalid email format",
+  "invalidFlightSign": "Flight sign must be selected",
+  "invalidOperatorName": "Operator name cannot be empty"
+
 }

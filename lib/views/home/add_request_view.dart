@@ -39,13 +39,13 @@ class _AddRequestViewState extends State<AddRequestView> {
             ),
             SizedBox(height: 16),
             _buildLabel(localizations.requesterName),
-            _buildTextField(viewModel.requesterNameController, hintText: localizations.requesterName),
+            _buildTextField(viewModel.requesterNameController, hintText: localizations.requesterName, isText: true),
             SizedBox(height: 16),
             _buildLabel(localizations.model),
             _buildDropdown(viewModel.models, viewModel.selectedModel, (value) => viewModel.setModel(value!), hint: localizations.model),
             SizedBox(height: 16),
             _buildLabel(localizations.flightSign),
-            _buildDropdown(viewModel.purposes, viewModel.selectedPurpose, (value) => viewModel.setPurpose(value!), hint: localizations.flightPurpose),
+            _buildDropdown(viewModel.flightSigns, viewModel.selectedFlightSign, (value) => viewModel.setFlightSign(value!), hint: localizations.flightSign),
             SizedBox(height: 16),
             _buildLabel(localizations.flightTimes),
             Column(
@@ -120,23 +120,23 @@ class _AddRequestViewState extends State<AddRequestView> {
             _buildDropdown(viewModel.purposes, viewModel.selectedPurpose, (value) => viewModel.setPurpose(value!), hint: localizations.flightPurpose),
             SizedBox(height: 16),
             _buildLabel(localizations.operatorName),
-            _buildTextField(viewModel.operatorNameController, hintText: localizations.operatorName),
+            _buildTextField(viewModel.operatorNameController, hintText: localizations.operatorName, isText: true),
             SizedBox(height: 16),
             _buildLabel(localizations.operatorPhone),
             _buildPhoneField(viewModel, context),
             SizedBox(height: 16),
             _buildLabel(localizations.email),
-            _buildTextField(viewModel.emailController, hintText: 'my@mail.com'),
+            _buildTextField(viewModel.emailController, hintText: 'my@mail.com', isText: true),
             SizedBox(height: 16),
             _buildLabel(localizations.specialPermit),
             Row(
               children: [
-                Expanded(child: _buildTextField(viewModel.permitNumberController, hintText: localizations.permitNumber)),
+                Expanded(child: _buildTextField(viewModel.permitNumberController, hintText: localizations.permitNumber, isDecimal: true)),
                 SizedBox(width: 16),
                 Expanded(
                   child: _buildDateOnlyPickerField(
                     date: viewModel.permitDate,
-                    hintText: "05.09.2024",
+                    hintText: "01.01.2023",
                     onDateSelected: (date) => viewModel.updatePermitDate(date!),
                   ),
                 ),
@@ -146,12 +146,12 @@ class _AddRequestViewState extends State<AddRequestView> {
             _buildLabel(localizations.contract),
             Row(
               children: [
-                Expanded(child: _buildTextField(viewModel.contractNumberController, hintText: localizations.contractNumber)),
+                Expanded(child: _buildTextField(viewModel.contractNumberController, hintText: localizations.contractNumber, isDecimal: true)),
                 SizedBox(width: 16),
                 Expanded(
                   child: _buildDateOnlyPickerField(
                     date: viewModel.contractDate,
-                    hintText: "05.09.2024",
+                    hintText: "01.01.2023",
                     onDateSelected: (date) => viewModel.updateContractDate(date!),
                   ),
                 ),
@@ -159,11 +159,22 @@ class _AddRequestViewState extends State<AddRequestView> {
             ),
             SizedBox(height: 16),
             _buildLabel(localizations.note),
-            _buildTextField(viewModel.noteController, hintText: localizations.optional),
+            _buildTextField(viewModel.noteController, hintText: localizations.optional, isText: true),
             SizedBox(height: 30),
             Center(
               child: ElevatedButton(
-                onPressed: () => viewModel.submitRequest(),
+                onPressed: () {
+                  String? error = viewModel.submitRequest(context);
+                  if (error != null) {
+                    // Показываем SnackBar с текстом ошибки
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(error)),
+                    );
+                  } else {
+                    // Продолжить действия после успешной отправки
+                    print("Запрос успешно отправлен!");
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.black,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -190,13 +201,18 @@ class _AddRequestViewState extends State<AddRequestView> {
       TextEditingController controller, {
         required String hintText,
         bool readOnly = false,
-        bool isDecimal = false, // Новый параметр для выбора типа чисел
+        bool isDecimal = false, // Параметр для выбора типа чисел
+        bool isText = false, // Новый параметр для текста
       }) {
     return TextField(
       controller: controller,
       readOnly: readOnly,
-      keyboardType: isDecimal ? TextInputType.numberWithOptions(decimal: true) : TextInputType.number,
-      inputFormatters: [
+      keyboardType: isText
+          ? TextInputType.text
+          : (isDecimal ? TextInputType.numberWithOptions(decimal: true) : TextInputType.number),
+      inputFormatters: isText
+          ? [] // Для текста не требуется ограничений
+          : [
         FilteringTextInputFormatter.allow(
           isDecimal ? RegExp(r'^\d*\.?\d*') : RegExp(r'^\d*'), // Разрешает ввод с десятичными или без
         ),
