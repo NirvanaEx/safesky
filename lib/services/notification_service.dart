@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import '../viewmodels/location_viewmodel.dart';
+import '../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 
@@ -97,7 +97,7 @@ class NotificationService {
   }
 
   static Future<void> _stopLocationSharing() async {
-    final locationVM = navigatorKey.currentContext?.read<LocationViewModel>();
+    final locationVM = navigatorKey.currentContext?.read<MapShareLocationViewModel>();
     if (locationVM != null) {
       locationVM.resetLocationSharing(); // Останавливаем задачу и сбрасываем статус
     }

@@ -5,7 +5,7 @@ import 'package:workmanager/workmanager.dart';
 import 'package:flutter_map/flutter_map.dart';
 import '../services/notification_service.dart';
 
-class LocationViewModel extends ChangeNotifier {
+class MapShareLocationViewModel extends ChangeNotifier {
   bool _isSharingLocation = false;
   bool _isPaused = false;
   bool _isLoadingLocation = true;

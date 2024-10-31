@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'map_share_location_view.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/location_viewmodel.dart';
+import '../viewmodels/map_share_location_viewmodel.dart';
 
 class ShowRequestView extends StatelessWidget {
   final Map<String, String> request;
@@ -121,7 +121,7 @@ class ShowRequestView extends StatelessWidget {
   }
 
   Future<void> _handleLocationSharing(BuildContext context) async {
-    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+    final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
     // Если уже есть активная задача, показываем диалоговое окно
     if (locationVM.currentRequestId != null) {

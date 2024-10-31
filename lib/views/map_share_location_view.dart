@@ -6,7 +6,7 @@ import 'package:slide_to_act/slide_to_act.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../viewmodels/location_viewmodel.dart';
+import '../viewmodels/map_share_location_viewmodel.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
 
@@ -23,7 +23,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     super.initState();
     _mapController = MapController();
 
-    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+    final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
     // Загружаем текущее местоположение при инициализации
     locationVM.loadCurrentLocation();
@@ -37,7 +37,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   }
 
   Future<void> _animateToUserLocation() async {
-    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+    final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
     if (locationVM.currentLocation == null) return;
 
@@ -67,7 +67,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
 
   @override
   Widget build(BuildContext context) {
-    final locationVM = Provider.of<LocationViewModel>(context);
+    final locationVM = Provider.of<MapShareLocationViewModel>(context);
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -147,7 +147,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     );
   }
 
-  Widget _buildSlideToStart(AppLocalizations localizations, LocationViewModel locationVM) {
+  Widget _buildSlideToStart(AppLocalizations localizations, MapShareLocationViewModel locationVM) {
     return SlideAction(
       text: localizations.startLocationSharing,
       textStyle: TextStyle(fontSize: 18, color: Colors.black),
@@ -162,7 +162,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     );
   }
 
-  Widget _buildSharingMenu(AppLocalizations localizations, LocationViewModel locationVM) {
+  Widget _buildSharingMenu(AppLocalizations localizations, MapShareLocationViewModel locationVM) {
     return Column(
       children: [
         Container(

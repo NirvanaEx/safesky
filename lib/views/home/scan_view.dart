@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:safe_sky/views/map_share_location_view.dart';
 
-import '../../viewmodels/location_viewmodel.dart';
+import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ScanView extends StatefulWidget {
@@ -57,7 +57,7 @@ class _ScanViewState extends State<ScanView> {
     if (code.isNotEmpty && !isDialogOpen) { // Проверяем флаг перед вызовом диалога
       isDialogOpen = true; // Устанавливаем флаг перед показом диалога
 
-      final locationVM = Provider.of<LocationViewModel>(context, listen: false);
+      final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
       // Проверяем, активна ли задача
       if (locationVM.isSharingLocation) {

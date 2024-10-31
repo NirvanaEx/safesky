@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:safe_sky/services/notification_service.dart';
 import 'package:safe_sky/viewmodels/add_request_viewmodel.dart';
-import 'package:safe_sky/viewmodels/location_viewmodel.dart';
+import 'package:safe_sky/viewmodels/map_share_location_viewmodel.dart';
 import 'package:safe_sky/viewmodels/notification_viewmodel.dart';
 import 'package:safe_sky/views/auth/registration/registration_view.dart';
 import 'package:safe_sky/views/home/main_view.dart';
@@ -22,7 +22,7 @@ import 'package:workmanager/workmanager.dart';
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     // Загружайте данные о местоположении и отправляйте уведомление
-    if (LocationViewModel().isSharingLocation) { // Убедитесь, что LocationViewModel доступен
+    if (MapShareLocationViewModel().isSharingLocation) { // Убедитесь, что LocationViewModel доступен
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       String newText = 'Current Location: ${position.latitude}, ${position
@@ -61,8 +61,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LocalizationManager>(
           create: (_) => LocalizationManager(),
         ),
-        ChangeNotifierProvider<LocationViewModel>(
-          create: (_) => LocationViewModel(),
+        ChangeNotifierProvider<MapShareLocationViewModel>(
+          create: (_) => MapShareLocationViewModel(),
         ),
         ChangeNotifierProvider<AddRequestViewModel>(
           create: (_) => AddRequestViewModel(),
