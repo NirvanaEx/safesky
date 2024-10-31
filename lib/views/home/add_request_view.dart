@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import '../../models/request/flight_sign_model.dart';
+import '../../models/request/model_model.dart';
+import '../../models/request/purpose_model.dart';
+import '../../models/request/region_model.dart';
 import '../../viewmodels/add_request_viewmodel.dart';
 import '../map_select_location_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -13,6 +17,13 @@ class AddRequestView extends StatefulWidget {
 }
 
 class _AddRequestViewState extends State<AddRequestView> {
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<AddRequestViewModel>(context, listen: false).initializeData(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<AddRequestViewModel>(context, listen: true);
@@ -42,10 +53,22 @@ class _AddRequestViewState extends State<AddRequestView> {
             _buildTextField(viewModel.requesterNameController, hintText: localizations.requesterName, isText: true),
             SizedBox(height: 16),
             _buildLabel(localizations.model),
-            _buildDropdown(viewModel.models, viewModel.selectedModel, (value) => viewModel.setModel(value!), hint: localizations.model),
+            _buildDropdown<ModelModel>(
+              items: viewModel.models,
+              selectedValue: viewModel.selectedModel,
+              onChanged: (value) => viewModel.setModel(value!),
+              hint: localizations.model,
+              getItemName: (model) => model.name, // Вытягиваем свойство `name`
+            ),
             SizedBox(height: 16),
             _buildLabel(localizations.flightSign),
-            _buildDropdown(viewModel.flightSigns, viewModel.selectedFlightSign, (value) => viewModel.setFlightSign(value!), hint: localizations.flightSign),
+            _buildDropdown<FlightSignModel>(
+              items: viewModel.flightSigns,
+              selectedValue: viewModel.selectedFlightSign,
+              onChanged: (value) => viewModel.setFlightSign(value!),
+              hint: localizations.flightSign,
+              getItemName: (sign) => sign.name,
+            ),
             SizedBox(height: 16),
             _buildLabel(localizations.flightTimes),
             Column(
@@ -65,7 +88,13 @@ class _AddRequestViewState extends State<AddRequestView> {
             ),
             SizedBox(height: 16),
             _buildLabel(localizations.region),
-            _buildDropdown(viewModel.regions, viewModel.selectedRegion, (value) => viewModel.setRegion(value!), hint: localizations.region),
+            _buildDropdown<RegionModel>(
+              items: viewModel.regions,
+              selectedValue: viewModel.selectedRegion,
+              onChanged: (value) => viewModel.setRegion(value!),
+              hint: localizations.region,
+              getItemName: (region) => region.name,
+            ),
             SizedBox(height: 16),
             _buildLabel(localizations.coordinates),
             Row(
@@ -117,7 +146,13 @@ class _AddRequestViewState extends State<AddRequestView> {
             ),
             SizedBox(height: 16),
             _buildLabel(localizations.flightPurpose),
-            _buildDropdown(viewModel.purposes, viewModel.selectedPurpose, (value) => viewModel.setPurpose(value!), hint: localizations.flightPurpose),
+            _buildDropdown<PurposeModel>(
+              items: viewModel.purposes,
+              selectedValue: viewModel.selectedPurpose,
+              onChanged: (value) => viewModel.setPurpose(value!),
+              hint: localizations.flightPurpose,
+              getItemName: (purpose) => purpose.name,
+            ),
             SizedBox(height: 16),
             _buildLabel(localizations.operatorName),
             _buildTextField(viewModel.operatorNameController, hintText: localizations.operatorName, isText: true),
@@ -163,16 +198,26 @@ class _AddRequestViewState extends State<AddRequestView> {
             SizedBox(height: 30),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  String? error = viewModel.submitRequest(context);
-                  if (error != null) {
-                    // Показываем SnackBar с текстом ошибки
+                onPressed: () async {
+                  // Ожидание результата submitRequest с помощью await
+                  Map<String, String>? result = await viewModel.submitRequest(context);
+
+                  if (result != null) {
+                    // Получаем статус и сообщение из результата
+                    String status = result['status']!;
+                    String message = result['message']!;
+
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(error)),
+                      SnackBar(
+                        content: Text(message),
+                        backgroundColor: status == 'success' ? Colors.green : Colors.red,
+                      ),
                     );
-                  } else {
-                    // Продолжить действия после успешной отправки
-                    print("Запрос успешно отправлен!");
+
+                    if (status == 'success') {
+                      print("Запрос успешно отправлен!");
+                      // Здесь можно добавить действия для успешного запроса
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -276,7 +321,14 @@ class _AddRequestViewState extends State<AddRequestView> {
     );
   }
 
-  Widget _buildDropdown(List<String> items, String? selectedValue, ValueChanged<String?> onChanged, {required String hint}) {
+  // Обновленный метод для выпадающих списков моделей
+  Widget _buildDropdown<T>({
+    required List<T> items,
+    required T? selectedValue,
+    required ValueChanged<T?> onChanged,
+    required String hint,
+    required String Function(T) getItemName,
+  }) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -284,14 +336,14 @@ class _AddRequestViewState extends State<AddRequestView> {
         borderRadius: BorderRadius.circular(30),
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
+        child: DropdownButton<T>(
           value: selectedValue,
           isExpanded: true,
           hint: Text(hint, style: TextStyle(fontSize: 16)),
-          items: items.map((String value) {
-            return DropdownMenuItem<String>(
+          items: items.map((T value) {
+            return DropdownMenuItem<T>(
               value: value,
-              child: Text(value),
+              child: Text(getItemName(value)), // Отображение имени из модели
             );
           }).toList(),
           onChanged: onChanged,

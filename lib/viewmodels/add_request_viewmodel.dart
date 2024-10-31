@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../models/request/flight_sign_model.dart';
+import '../models/request/model_model.dart';
+import '../models/request/purpose_model.dart';
+import '../models/request/region_model.dart';
 import '../models/request_model.dart';
+import '../services/request_service.dart';
 import '../utils/localization_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddRequestViewModel extends ChangeNotifier {
+  final RequestService requestService = RequestService();
+
   // Текстовые контроллеры для полей ввода
   final TextEditingController requesterNameController = TextEditingController();
   final TextEditingController operatorNameController = TextEditingController();
@@ -26,11 +33,11 @@ class AddRequestViewModel extends ChangeNotifier {
   final TextEditingController permitDateController = TextEditingController(); // Контроллер для даты разрешения
   final TextEditingController contractDateController = TextEditingController(); // Контроллер для даты контракта
 
-  // Списки для выпадающих полей
-  final List<String> models = ["Модель 1", "Модель 2", "Модель 3"];
-  final List<String> regions = ["Ташкент", "Самарканд", "Бухара"];
-  final List<String> purposes = ["Туризм", "Научные исследования", "Грузоперевозки"];
-  final List<String> flightSigns = ["Знак 1", "Знак 2", "Знак 3"];
+  List<ModelModel> models = [];
+  List<FlightSignModel> flightSigns = [];
+  List<PurposeModel> purposes = [];
+  List<RegionModel> regions = [];
+
 
 
   // Переменные для работы с датами
@@ -42,10 +49,10 @@ class AddRequestViewModel extends ChangeNotifier {
   DateTime? contractDate;
 
   // Поля для выпадающих списков
-  String? selectedModel;
-  String? selectedRegion;
-  String? selectedPurpose;
-  String? selectedFlightSign;
+  ModelModel? selectedModel;
+  RegionModel? selectedRegion;
+  PurposeModel? selectedPurpose;
+  FlightSignModel? selectedFlightSign;
 
   String selectedCountryCode = "+998";
 
@@ -57,6 +64,38 @@ class AddRequestViewModel extends ChangeNotifier {
     {"code": "+7", "flag": "🇷🇺"},
     {"code": "+997", "flag": "🇰🇿"},
   ];
+
+
+  Future<void> loadModels(String lang) async {
+    models = await requestService.fetchModels(lang);
+    notifyListeners();
+  }
+
+  Future<void> loadFlightSigns(String lang) async {
+    flightSigns = await requestService.fetchFlightSigns(lang);
+    notifyListeners();
+  }
+
+  Future<void> loadPurposes(String lang) async {
+    purposes = await requestService.fetchPurposes(lang);
+    notifyListeners();
+  }
+
+  Future<void> loadRegions(String lang) async {
+    regions = await requestService.fetchRegions(lang);
+    notifyListeners();
+  }
+
+  // Метод для инициализации всех списков данных сразу
+  Future<void> initializeData(BuildContext context) async {
+    String lang = context.read<LocalizationManager>().currentLocale.languageCode;
+    await Future.wait([
+      loadModels(lang),
+      loadFlightSigns(lang),
+      loadPurposes(lang),
+      loadRegions(lang),
+    ]);
+  }
 
 
 
@@ -118,137 +157,136 @@ class AddRequestViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setModel(String model) {
+  void setModel(ModelModel model) {
     selectedModel = model;
     notifyListeners();
   }
 
-  void setRegion(String region) {
+  void setRegion(RegionModel region) {
     selectedRegion = region;
     notifyListeners();
   }
 
-  void setPurpose(String purpose) {
+  void setPurpose(PurposeModel purpose) {
     selectedPurpose = purpose;
     notifyListeners();
   }
 
-
-  void setFlightSign(String flightSign) {
+  void setFlightSign(FlightSignModel flightSign) {
     selectedFlightSign = flightSign;
     notifyListeners();
   }
 
 
 
-  String? submitRequest(BuildContext context) {
+  Future<Map<String, String>?> submitRequest(BuildContext context) async {
     final localizations = AppLocalizations.of(context);
 
     // Проверка даты начала
     if (startDate == null) {
-      return localizations?.invalidStartDate;
+      return {'status': 'error', 'message': localizations?.invalidStartDate ?? "Invalid start date"};
     }
 
-    // Проверка наименование заявителя
+    // Проверка наименования заявителя
     if (requesterNameController.text.isEmpty) {
-      return localizations?.invalidRequesterName;
+      return {'status': 'error', 'message': localizations?.invalidRequesterName ?? "Invalid requester name"};
     }
 
     // Проверка модели
-    if (selectedModel == null || selectedModel!.isEmpty) {
-      return localizations?.invalidModel;
+// Проверка модели
+    if (selectedModel == null || selectedModel!.name.isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidModel ?? "Invalid model"};
     }
 
     // Проверка знака полета
-    if (selectedFlightSign == null || selectedFlightSign!.isEmpty) {
-      return localizations?.invalidFlightSign;
+    if (selectedFlightSign == null || selectedFlightSign!.name.isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidFlightSign ?? "Invalid flight sign"};
     }
 
     // Проверка времени начала полета
     if (flightStartDateTime == null) {
-      return localizations?.invalidFlightStartDateTime;
+      return {'status': 'error', 'message': localizations?.invalidFlightStartDateTime ?? "Invalid flight start date"};
     }
 
     // Проверка времени окончания полета
     if (flightEndDateTime == null) {
-      return localizations?.invalidFlightEndDateTime;
+      return {'status': 'error', 'message': localizations?.invalidFlightEndDateTime ?? "Invalid flight end date"};
     }
 
     // Проверка региона полета
-    if (selectedRegion == null || selectedRegion!.isEmpty) {
-      return localizations?.invalidRegion;
+    if (selectedRegion == null || selectedRegion!.name.isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidRegion ?? "Invalid region"};
     }
 
     // Проверка координат
     List<String> latLngParts = latLngController.text.split(" ");
     if (latLngParts.length != 2) {
-      return localizations?.invalidLatLngFormat;
+      return {'status': 'error', 'message': localizations?.invalidLatLngFormat ?? "Invalid coordinates format"};
     }
 
     double? latitude = double.tryParse(latLngParts[0]);
     double? longitude = double.tryParse(latLngParts[1]);
     if (latitude == null || longitude == null) {
-      return localizations?.invalidLatitudeLongitude;
+      return {'status': 'error', 'message': localizations?.invalidLatitudeLongitude ?? "Invalid latitude/longitude"};
     }
 
     // Проверка высоты полета
     double? flightHeight = double.tryParse(flightHeightController.text);
     if (flightHeight == null) {
-      return localizations?.invalidFlightHeight;
+      return {'status': 'error', 'message': localizations?.invalidFlightHeight ?? "Invalid flight height"};
     }
 
     // Проверка радиуса
     double? radius = double.tryParse(radiusController.text);
     if (radius == null) {
-      return localizations?.invalidRadius;
+      return {'status': 'error', 'message': localizations?.invalidRadius ?? "Invalid radius"};
     }
 
     // Проверка цели полета
-    if (selectedPurpose == null || selectedPurpose!.isEmpty) {
-      return localizations?.invalidPurpose;
+    if (selectedPurpose == null || selectedPurpose!.name.isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidPurpose ?? "Invalid purpose"};
     }
 
     // Проверка имени оператора
     if (operatorNameController.text.isEmpty) {
-      return localizations?.invalidOperatorName;
-    }
-
-    // Проверка номера контракта
-    int? contractNumber = int.tryParse(contractNumberController.text);
-    if (contractNumber == null) {
-      return localizations?.invalidContractNumber;
-    }
-
-
-    // Проверка email
-    String email = emailController.text;
-    if (email.isEmpty || !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email)) {
-      return localizations?.invalidEmail;
-    }
-
-    // Проверка номера разрешения
-    int? permitNumber = int.tryParse(permitNumberController.text);
-    if (permitNumber == null) {
-      return localizations?.invalidPermitNumber;
-    }
-
-    // Проверка даты разрешения
-    if (permitDate == null) {
-      return localizations?.invalidPermitDate;
-    }
-
-
-    // Проверка даты контракта
-    if (contractDate == null) {
-      return localizations?.invalidContractDate;
+      return {'status': 'error', 'message': localizations?.invalidOperatorName ?? "Invalid operator name"};
     }
 
     // Проверка номера телефона
     String phoneNumber = "$selectedCountryCode ${phoneController.text}";
     if (phoneController.text.isEmpty || phoneController.text.length < 7) {
-      return localizations?.invalidPhoneNumber;
+      return {'status': 'error', 'message': localizations?.invalidPhoneNumber ?? "Invalid phone number"};
     }
 
+    // Проверка email
+    String email = emailController.text;
+    if (email.isEmpty || !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email)) {
+      return {'status': 'error', 'message': localizations?.invalidEmail ?? "Invalid email"};
+    }
+
+    // Проверка номера контракта
+    int? contractNumber = int.tryParse(contractNumberController.text);
+    if (contractNumber == null) {
+      return {'status': 'error', 'message': localizations?.invalidContractNumber ?? "Invalid contract number"};
+    }
+
+
+
+    // Проверка номера разрешения
+    int? permitNumber = int.tryParse(permitNumberController.text);
+    if (permitNumber == null) {
+      return {'status': 'error', 'message': localizations?.invalidPermitNumber ?? "Invalid permit number"};
+    }
+
+    // Проверка даты разрешения
+    if (permitDate == null) {
+      return {'status': 'error', 'message': localizations?.invalidPermitDate ?? "Invalid permit date"};
+    }
+
+    // Проверка даты контракта
+    if (contractDate == null) {
+      return {'status': 'error', 'message': localizations?.invalidContractDate ?? "Invalid contract date"};
+    }
 
 
     // Получаем текущий язык через context.read
@@ -262,9 +300,9 @@ class AddRequestViewModel extends ChangeNotifier {
       permitNumber: permitNumber.toString(),
       contractNumber: contractNumber.toString(),
       note: noteController.text,
-      model: selectedModel,
-      region: selectedRegion,
-      purpose: selectedPurpose,
+      model: selectedModel?.name,
+      region: selectedRegion?.name,
+      purpose: selectedPurpose?.name,
       latitude: latitude,
       longitude: longitude,
       radius: radius,
@@ -273,14 +311,28 @@ class AddRequestViewModel extends ChangeNotifier {
       flightEndDateTime: flightEndDateTime,
       permitDate: permitDate,
       contractDate: contractDate,
-      flightSign: selectedFlightSign, // Добавлен знак полета
+      flightSign: selectedFlightSign?.name, // Добавлен знак полета
       lang: lang, // Используем текущий язык
     );
 
-    print("Submitting request: ${requestModel.toJson()}");
 
-    return null; // Если ошибок нет, возвращаем null
+    try {
+      final response = await requestService.submitRequest(requestModel);
+      if (response.statusCode == 201) {
+        print("Submitting request: ${requestModel.toJson()}");
+        return {'status': 'success', 'message': "Запрос успешно отправлен!"};
+
+      } else {
+        // Дополнительная обработка ошибок, если статус не 201
+        return {'status': 'error', 'message': 'Не удалось отправить запрос'};
+      }
+    } catch (e) {
+      // Обработка исключений
+      return {'status': 'error', 'message': e.toString()};
+    }
+
   }
+
 
 
 
