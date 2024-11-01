@@ -25,19 +25,27 @@ class _EmailViewState extends State<EmailView> {
   }
 
   // Метод для обработки нажатия кнопки "Продолжить"
-  void _onContinue() {
-    // Скрываем клавиатуру
+  void _onContinue() async {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+
     FocusScope.of(context).unfocus();
 
     final email = _emailController.text.trim();
     final now = DateTime.now();
 
-    // Проверяем валидность email и частоту показа SnackBar
     if (isValidEmail(email)) {
-      widget.onNext(email); // Переходим на следующий экран, если email валиден
+      // Отправляем email через authViewModel
+      await authViewModel.sendEmail(email);
+
+      if (authViewModel.errorMessage == null) {
+        widget.onNext(email); // Переход к следующему экрану при успехе
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(authViewModel.errorMessage!)),
+        );
+      }
     } else if (_lastSnackBarTime == null || now.difference(_lastSnackBarTime!) > Duration(seconds: 5)) {
-      // Показываем SnackBar только если прошло 5 секунд с последнего показа
-      _lastSnackBarTime = now; // Обновляем время последнего показа SnackBar
+      _lastSnackBarTime = now;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.invalidEmailFormat)),
       );

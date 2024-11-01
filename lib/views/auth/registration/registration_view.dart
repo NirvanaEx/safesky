@@ -56,8 +56,8 @@ class _RegistrationViewState extends State<RegistrationView> {
           physics: NeverScrollableScrollPhysics(),
           children: [
             EmailView(onNext: _nextPage),
-            VerifyView(onNext: () => _nextPage(_email), email: _email), // Передаем email в VerifyView
-            InfoView(),
+            VerifyView(onNext: (email) => _nextPage(email), email: _email),
+            InfoView(email: _email), // Передаем email в InfoView
           ],
         ),
       ),

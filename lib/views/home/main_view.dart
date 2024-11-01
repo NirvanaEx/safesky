@@ -112,6 +112,9 @@ class _MainViewState extends State<MainView> {
   }
 
   Widget _buildDrawer(AppLocalizations localizations) {
+    final authViewModel = Provider.of<AuthViewModel>(context);
+
+
     return FractionallySizedBox(
       widthFactor: 0.6,
       child: Drawer(
@@ -133,7 +136,7 @@ class _MainViewState extends State<MainView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${localizations.hi}, John Doe',
+                      '${localizations.hi}, ${authViewModel.user?.surname} ${authViewModel.user?.name}',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Divider(),

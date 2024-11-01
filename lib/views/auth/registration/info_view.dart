@@ -7,6 +7,10 @@ import '../../home/main_view.dart';
 import '../../../models/user_model.dart';
 
 class InfoView extends StatefulWidget {
+  final String email;
+
+  InfoView({required this.email});
+
   @override
   _InfoViewState createState() => _InfoViewState();
 }
@@ -188,12 +192,15 @@ class _InfoViewState extends State<InfoView> {
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
 
+
                           UserModel? user = await authViewModel.register(
                             _nameController.text,
+                            _surnameController.text,
+                            widget.email,
                             _passwordController.text,
+                            _selectedCountryCode + _phoneController.text
                           );
 
-                          user = new UserModel(id: 1, email: 'my@mail.com', name: 'Dias', token: 'GDX');
                           if (user != null) {
                             Navigator.pushReplacement(
                               context,

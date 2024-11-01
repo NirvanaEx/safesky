@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../viewmodels/auth_viewmodel.dart';
+import 'package:provider/provider.dart';
+
 class ProfileView extends StatefulWidget {
   @override
   _ProfileViewState createState() => _ProfileViewState();
 }
 
 class _ProfileViewState extends State<ProfileView> {
+
+
   final _nameController = TextEditingController(text: "John");
   final _surnameController = TextEditingController(text: "Doe");
   final _phoneController = TextEditingController(text: "");
@@ -14,7 +19,12 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   void initState() {
     super.initState();
-    _phoneController.text = formatPhoneNumber("+998 99 333 11 22");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false); // listen: false, чтобы избежать перерисовок
+      _nameController.text = authViewModel.user?.name ?? '';
+      _surnameController.text = authViewModel.user?.surname ?? '';
+      _phoneController.text = formatPhoneNumber(authViewModel.user?.phoneNumber ?? '');
+    });
   }
 
   // Метод для форматирования номера телефона (отделение кода страны)
@@ -25,6 +35,7 @@ class _ProfileViewState extends State<ProfileView> {
     }
     return phoneNumber;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +175,9 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  // Метод для отображения диалогового окна смены пароля
   void _showChangePasswordDialog(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
     showDialog(
       context: context,
@@ -245,9 +256,22 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
-                      // Логика для смены пароля
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      final isSuccess = await authViewModel.changePassword(
+                        newPasswordController.text,
+                        confirmPasswordController.text,
+                      );
+
+                      if (isSuccess) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(localizations.passwordChanged)),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(authViewModel.errorMessage ?? 'Error changing password')),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Colors.black,
@@ -266,4 +290,5 @@ class _ProfileViewState extends State<ProfileView> {
       },
     );
   }
+
 }

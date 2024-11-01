@@ -13,6 +13,9 @@
   "name": "Name",
   "surname": "Surname",
   "invalidEmailFormat": "Invalid email format",
+  "invalidCodeFormat": "Invalid code format. Please enter a 6-digit code.",
+
+
   "requests": "Requests",
   "add": "Add",
   "scan": "Scan",
@@ -28,12 +31,17 @@
   "pending": "Pending",
   "rejected": "Rejected",
   "noDataFound": "No data found",
+
+
   "changePassword": "Change password",
   "newPassword": "New password",
   "confirmPassword": "Confirm password",
   "save": "Save",
   "change": "Change",
   "submitRequest": "Submit Request",
+  "passwordChanged": "Your password has been changed successfully.",
+
+
   "flightStartDate": "Flight Start Date",
   "requesterName": "Requester Name",
   "model": "Model",

@@ -6,7 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VerifyView extends StatefulWidget {
   final String email;
-  final VoidCallback onNext;
+  final ValueChanged<String> onNext; // Изменен тип на ValueChanged<String>
 
   VerifyView({required this.email, required this.onNext});
 
@@ -18,10 +18,28 @@ class _VerifyViewState extends State<VerifyView> {
   final _codeController = TextEditingController();
 
   // Метод для обработки нажатия кнопки "Продолжить"
-  void _onContinue() {
-    // Скрываем клавиатуру перед переходом
+  void _onContinue() async {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+
     FocusScope.of(context).unfocus();
-    widget.onNext();
+
+    final code = _codeController.text.trim();
+
+    if (code.length == 6) { // Проверка, что код из 6 символов
+      final isVerified = await authViewModel.checkCode(widget.email, code);
+
+      if (isVerified) {
+        widget.onNext(widget.email); // Передаем email в onNext
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(authViewModel.errorMessage ?? 'Ошибка при проверке кода')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.invalidCodeFormat)),
+      );
+    }
   }
 
   @override

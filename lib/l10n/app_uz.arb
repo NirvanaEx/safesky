@@ -13,6 +13,9 @@
   "name": "Ism",
   "surname": "Familiya",
   "invalidEmailFormat": "Noto‘g‘ri elektron pochta formati",
+  "invalidCodeFormat": "Noto'g'ri kod formati. Iltimos, 6 xonali kodni kiriting.",
+
+
   "requests": "So‘rovlar",
   "add": "Qo‘shish",
   "scan": "Skanerlash",
@@ -29,11 +32,14 @@
   "pending": "Kutilmoqda",
   "rejected": "Rad etilgan",
   "noDataFound": "Ma’lumot topilmadi",
+
   "changePassword": "Parolni o'zgartirish",
   "newPassword": "Yangi parol",
   "confirmPassword": "Parolni tasdiqlash",
   "save": "Saqlash",
   "change": "O'zgartirish",
+  "passwordChanged": "Parolingiz muvaffaqiyatli o'zgartirildi.",
+
 
   "submitRequest": "So'rov yuborish",
   "flightStartDate": "Parvoz boshlanish sanasi",

@@ -13,6 +13,9 @@
   "name": "Имя",
   "surname": "Фамилия",
   "invalidEmailFormat": "Неправильный формат email",
+  "invalidCodeFormat": "Неверный формат кода. Пожалуйста, введите 6-значный код.",
+
+
   "requests": "Заявки",
   "add": "Добавить",
   "scan": "Сканировать",
@@ -27,12 +30,16 @@
   "confirmed": "Подтверждён",
   "pending": "На рассмотрении",
   "rejected": "Отклонён",
+
   "noDataFound": "Данных не найдено",
   "changePassword": "Изменить пароль",
   "newPassword": "Новый пароль",
   "confirmPassword": "Повторите пароль",
   "save": "Сохранить",
   "change": "Изменить",
+  "passwordChanged": "Ваш пароль был успешно изменен.",
+
+
   "submitRequest": "Подать заявку",
   "flightStartDate": "Дата начала выполнения полета",
   "requesterName": "Наименование заявителя",
