@@ -15,6 +15,7 @@ class RequestModel {
   String? flightSign;
   double? latitude;
   double? longitude;
+  double? flightHeight; // Новый параметр
   double? radius;
   DateTime? startDate;
   DateTime? flightStartDateTime;
@@ -40,6 +41,7 @@ class RequestModel {
     this.flightSign,
     this.latitude,
     this.longitude,
+    this.flightHeight, // Новый параметр
     this.radius,
     this.startDate,
     this.flightStartDateTime,
@@ -67,6 +69,7 @@ class RequestModel {
       flightSign: json['flightSign'],
       latitude: json['latitude'] != null ? json['latitude'].toDouble() : null,
       longitude: json['longitude'] != null ? json['longitude'].toDouble() : null,
+      flightHeight: json['flightHeight'] != null ? json['flightHeight'].toDouble() : null, // Новый параметр
       radius: json['radius'] != null ? json['radius'].toDouble() : null,
       startDate: json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
       flightStartDateTime: json['flightStartDateTime'] != null ? DateTime.parse(json['flightStartDateTime']) : null,
@@ -94,6 +97,7 @@ class RequestModel {
     'flightSign': flightSign,
     'latitude': latitude,
     'longitude': longitude,
+    'flightHeight': flightHeight, // Новый параметр
     'radius': radius,
     'startDate': startDate?.toIso8601String(),
     'flightStartDateTime': flightStartDateTime?.toIso8601String(),

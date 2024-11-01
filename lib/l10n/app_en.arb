@@ -65,6 +65,9 @@
   "note": "Note (optional)",
   "submit": "Submit",
   "cancel": "Cancel request",
+  "stopExistingLocationSharing": "Stop Existing Location Sharing?",
+  "locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
+  "back": "Back",
 
   "startLocationSharing": "Start location sharing",
   "sharingLocation": "Sharing location",
@@ -112,6 +115,22 @@
   "invalidPhoneNumber": "Invalid phone number",
   "invalidEmail": "Invalid email format",
   "invalidFlightSign": "Flight sign must be selected",
-  "invalidOperatorName": "Operator name cannot be empty"
+  "invalidOperatorName": "Operator name cannot be empty",
+
+
+  "m": "m",
+  "latitude": "Latitude",
+  "longitude": "Longitude",
+  "@m": {
+    "description": "Abbreviation for meters"
+  },
+  "@latitude": {
+    "description": "Label for latitude coordinate"
+  },
+  "@longitude": {
+    "description": "Label for longitude coordinate"
+  }
+
+
 
 }

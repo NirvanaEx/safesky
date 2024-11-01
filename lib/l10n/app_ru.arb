@@ -64,6 +64,10 @@
   "note": "Примечание (не обязательно)",
   "submit": "Отправить",
   "cancel": "Отменить заявку",
+  "stopExistingLocationSharing": "Остановить существующую задачу обмена местоположением?",
+  "locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
+  "back": "Назад",
+
 
   "startLocationSharing": "Начать трансляцию",
   "sharingLocation": "Идет трансляция",
@@ -113,7 +117,21 @@
   "invalidPhoneNumber": "Некорректный номер телефона",
   "invalidEmail": "Некорректный формат email",
   "invalidFlightSign": "Знак полета должен быть выбран",
-  "invalidOperatorName": "Имя оператора не может быть пустым"
+  "invalidOperatorName": "Имя оператора не может быть пустым",
+
+  "m": "м",
+  "latitude": "Широта",
+  "longitude": "Долгота",
+  "@m": {
+    "description": "Сокращение для метров"
+  },
+  "@latitude": {
+    "description": "Метка для координаты широты"
+  },
+  "@longitude": {
+    "description": "Метка для координаты долготы"
+  }
+
 
 
 }

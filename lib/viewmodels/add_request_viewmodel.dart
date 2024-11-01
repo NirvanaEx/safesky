@@ -315,6 +315,8 @@ class AddRequestViewModel extends ChangeNotifier {
       lang: lang, // Используем текущий язык
     );
 
+    print("Submitting request: ${requestModel.toJson()}");
+
 
     try {
       final response = await requestService.submitRequest(requestModel);

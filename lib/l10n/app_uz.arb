@@ -57,7 +57,6 @@
   "operatorPhone": "Operator telefoni",
   "flightHeight" : "Parvoz balandligi (m)",
   "flightRadius" : "Parvoz radiusi (m)",
-
   "specialPermit": "Mudofaa vazirligidan maxsus ruxsat",
   "permitNumber": "Ruxsat raqami",
   "contract": "Shartnoma raqami va sanasi",
@@ -66,6 +65,10 @@
   "note": "Izoh (ixtiyoriy)",
   "submit": "Yuborish",
   "cancel": "So'rovni bekor qilish",
+  "stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
+  "locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
+  "back": "Orqaga",
+
 
   "startLocationSharing": "Joylashuv ulashishni boshlash",
   "sharingLocation": "Joylashuv ulashilmoqda",
@@ -114,6 +117,20 @@
   "invalidPhoneNumber": "Noto'g'ri telefon raqami",
   "invalidEmail": "Email formati noto'g'ri",
   "invalidFlightSign": "Parvoz belgisi tanlanishi kerak",
-  "invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas"
+  "invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas",
+
+
+  "m": "m",
+  "latitude": "Kenglik",
+  "longitude": "Uzunlik",
+  "@m": {
+    "description": "Metr uchun qisqartma"
+  },
+  "@latitude": {
+    "description": "Kenglik koordinatasi uchun yorliq"
+  },
+  "@longitude": {
+    "description": "Uzunlik koordinatasi uchun yorliq"
+  }
 
 }

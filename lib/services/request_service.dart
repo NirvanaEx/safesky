@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../config/api_routes.dart';
 import '../config/config.dart';
@@ -123,20 +124,74 @@ class RequestService {
     }
   }
 
-  // Метод для получения списка запросов
-  Future<List<RequestModel>> fetchRequests(String token, {int batch = 0, int batchSize = 10}) async {
+  // Временная функция для генерации тестовых данных
+  List<RequestModel> generateTestRequests(int batch, int batchSize) {
+    final random = Random();
     return List.generate(
       batchSize,
-          (index) => RequestModel(
-        id: '${batch * batchSize + index}',
-        number: '${batch * batchSize + index + 1}',
-        status: index % 3 == 0
+          (index) {
+        final id = '${batch * batchSize + index}';
+        final number = '${batch * batchSize + index + 1}';
+        final status = index % 3 == 0
             ? 'confirmed'
             : index % 3 == 1
             ? 'pending'
-            : 'rejected',
-      ),
+            : 'rejected';
+        final requesterName = 'Requester ${batch * batchSize + index + 1}';
+        final operatorName = 'Operator ${index + 1}';
+        final operatorPhone = '+99899${random.nextInt(9000000) + 1000000}';
+        final email = 'test${index}@example.com';
+        final permitNumber = '${random.nextInt(1000000)}';
+        final contractNumber = '${random.nextInt(1000000)}';
+        final note = 'Sample note for request ${number}';
+        final model = 'Model ${index + 1}';
+        final region = 'Region ${index + 1}';
+        final purpose = 'Purpose ${index + 1}';
+        final flightSign = 'Sign ${index + 1}';
+        final latitude = 41.0 + random.nextDouble();
+        final longitude = 69.0 + random.nextDouble();
+        final flightHeight = 50.0 + random.nextDouble() * 150; // Генерация высоты полета
+        final radius = 1000.0 + random.nextDouble() * 500;
+        final startDate = DateTime.now().subtract(Duration(days: random.nextInt(30)));
+        final flightStartDateTime = DateTime.now().subtract(Duration(days: random.nextInt(10)));
+        final flightEndDateTime = DateTime.now().add(Duration(days: random.nextInt(10)));
+        final permitDate = DateTime.now().subtract(Duration(days: random.nextInt(60)));
+        final contractDate = DateTime.now().subtract(Duration(days: random.nextInt(60)));
+        final lang = 'en';
+
+        return RequestModel(
+          id: id,
+          number: number,
+          status: status,
+          requesterName: requesterName,
+          operatorName: operatorName,
+          operatorPhone: operatorPhone,
+          email: email,
+          permitNumber: permitNumber,
+          contractNumber: contractNumber,
+          note: note,
+          model: model,
+          region: region,
+          purpose: purpose,
+          flightSign: flightSign,
+          latitude: latitude,
+          longitude: longitude,
+          flightHeight: flightHeight, // Новый параметр
+          radius: radius,
+          startDate: startDate,
+          flightStartDateTime: flightStartDateTime,
+          flightEndDateTime: flightEndDateTime,
+          permitDate: permitDate,
+          contractDate: contractDate,
+          lang: lang,
+        );
+      },
     );
+  }
+
+// Метод для получения списка запросов
+  Future<List<RequestModel>> fetchRequests(String token, {int batch = 0, int batchSize = 10}) async {
+    return generateTestRequests(batch, batchSize);
 
     // Реальный API запрос:
     // final response = await http.get(
@@ -152,5 +207,7 @@ class RequestService {
     // } else {
     //   throw Exception('Failed to load requests');
     // }
+
   }
+
 }

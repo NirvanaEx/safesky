@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:safe_sky/models/request_model.dart';
+import 'map/show_map_location_view.dart';
 import 'map_share_location_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
@@ -13,6 +15,10 @@ class ShowRequestView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    // Формат для даты
+    final dateFormat = DateFormat('dd.MM.yyyy');
+    // Формат для даты и времени
+    final dateTimeFormat = DateFormat('dd.MM.yyyy HH:mm');
 
     return Scaffold(
       appBar: AppBar(
@@ -75,22 +81,57 @@ class ShowRequestView extends StatelessWidget {
                   SizedBox(height: 20),
 
                   // Данные заявки
-                  _buildRequestInfo(localizations.flightStartDate, '01.01.2023'),
-                  _buildRequestInfo(localizations.requesterName, 'Наименование заявителя', isBold: true),
-                  _buildRequestInfo(localizations.model, 'Модель'),
-                  _buildRequestInfo(localizations.flightSign, 'Знак'),
-                  _buildRequestInfo(localizations.flightTimes, '01.01.2023 15:03:26\n01.01.2023 15:03:26'),
-                  _buildRequestInfo(localizations.region, 'Ташкент'),
-                  _buildRequestInfo(localizations.coordinates, '41.40338, 2.17403', linkText: localizations.map, icon: Icons.visibility),
-                  _buildRequestInfo(localizations.flightHeight, '130 м'),
-                  _buildRequestInfo(localizations.flightRadius, '500 м'),
-                  _buildRequestInfo(localizations.flightPurpose, 'Цель полета'),
-                  _buildRequestInfo(localizations.operatorName, 'Закиров Аслиддин Темурович'),
-                  _buildRequestInfo(localizations.operatorPhone, '+99899 111 2244'),
-                  _buildRequestInfo(localizations.email, 'sample@gmail.com'),
-                  _buildRequestInfo(localizations.specialPermit, '№ 123456   01.01.2023'),
-                  _buildRequestInfo(localizations.contract, '№ 123456   01.01.2023'),
-                  _buildRequestInfo(localizations.optional, 'Lorem ipsum pellentesque in cras tortor erat.'),
+                  _buildRequestInfo(localizations.flightStartDate,
+                      requestModel?.flightStartDateTime != null
+                          ? dateFormat.format(requestModel!.flightStartDateTime!)
+                          : '-'),
+                  _buildRequestInfo(localizations.requesterName,
+                      requestModel?.requesterName ?? '-', isBold: true),
+                  _buildRequestInfo(localizations.model,
+                      requestModel?.model ?? '-'),
+                  _buildRequestInfo(localizations.flightSign,
+                      requestModel?.flightSign ?? '-'),
+                  _buildRequestInfo(localizations.flightTimes,
+                      '${requestModel?.flightStartDateTime != null
+                          ? dateTimeFormat.format(requestModel!.flightStartDateTime!)
+                          : '-'}\n${requestModel?.flightEndDateTime != null
+                          ? dateTimeFormat.format(requestModel!.flightEndDateTime!)
+                          : '-'}'),
+                  _buildRequestInfo(localizations.region,
+                      requestModel?.region ?? '-'),
+                  _buildRequestInfo(localizations.coordinates,
+                      '${requestModel?.latitude != null
+                          ? requestModel!.latitude!.toStringAsFixed(5)
+                          : '-'}, ${requestModel?.longitude != null
+                          ? requestModel!.longitude!.toStringAsFixed(5)
+                          : '-'}',
+                      linkText: localizations.map, icon: Icons.visibility, context: context),
+                  _buildRequestInfo(localizations.flightHeight,
+                      '${requestModel?.flightHeight != null
+                          ? requestModel!.flightHeight!.round()
+                          : '-'} ${localizations?.m}'),
+                  _buildRequestInfo(localizations.flightRadius,
+                      '${requestModel?.radius != null
+                          ? requestModel!.radius!.round()
+                          : '-'} ${localizations?.m} '),
+                  _buildRequestInfo(localizations.flightPurpose,
+                      requestModel?.purpose ?? '-'),
+                  _buildRequestInfo(localizations.operatorName,
+                      requestModel?.operatorName ?? '-'),
+                  _buildRequestInfo(localizations.operatorPhone,
+                      requestModel?.operatorPhone ?? '-'),
+                  _buildRequestInfo(localizations.email,
+                      requestModel?.email ?? '-'),
+                  _buildRequestInfo(localizations.specialPermit,
+                      '№ ${requestModel?.permitNumber ?? '-'}   ${requestModel?.permitDate != null
+                          ? dateFormat.format(requestModel!.permitDate!)
+                          : '-'}'),
+                  _buildRequestInfo(localizations.contract,
+                      '№ ${requestModel?.contractNumber ?? '-'}   ${requestModel?.contractDate != null
+                          ? dateFormat.format(requestModel!.contractDate!)
+                          : '-'}'),
+                  _buildRequestInfo(localizations.optional,
+                      requestModel?.note ?? '-'),
                   SizedBox(height: 20),
                 ],
               ),
@@ -130,17 +171,17 @@ class ShowRequestView extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Stop Existing Location Sharing?"),
-            content: Text("A location sharing task is already active. Would you like to stop it and start a new one?"),
+            title: Text(AppLocalizations.of(context)!.stopExistingLocationSharing),
+            content: Text(AppLocalizations.of(context)!.locationSharingActive),
             actions: <Widget>[
               TextButton(
-                child: Text("Cancel"),
+                child: Text(AppLocalizations.of(context)!.back),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
               TextButton(
-                child: Text("Stop & Start New"),
+                child: Text(AppLocalizations.of(context)!.stop),
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },
@@ -164,7 +205,7 @@ class ShowRequestView extends StatelessWidget {
     );
   }
 
-  Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon}) {
+  Widget _buildRequestInfo( String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -183,10 +224,22 @@ class ShowRequestView extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
-              if (linkText != null)
+              if (linkText != null && context!=null)
                 GestureDetector(
                   onTap: () {
-                    // Логика перехода по ссылке
+                    // Проверяем, что это нажатие на карту, и переходим на MapShowLocationView
+                    if (label == AppLocalizations.of(context)!.coordinates) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MapShowLocationView(
+                            latitude: requestModel?.latitude ?? 0.0,
+                            longitude: requestModel?.longitude ?? 0.0,
+                            radius: requestModel?.radius ?? 0.0,
+                          ),
+                        ),
+                      );
+                    }
                   },
                   child: Row(
                     children: [
@@ -201,6 +254,7 @@ class ShowRequestView extends StatelessWidget {
       ),
     );
   }
+
 
   Color _getStatusColor(String status) {
     switch (status) {
