@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:safe_sky/models/request_model.dart';
-import 'map/show_map_location_view.dart';
-import 'map_share_location_view.dart';
+import 'map/map_show_location_view.dart';
+import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:safe_sky/views/map_share_location_view.dart';
+import 'package:safe_sky/views/map/map_share_location_view.dart';
 
 import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';

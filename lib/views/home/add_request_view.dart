@@ -8,7 +8,7 @@ import '../../models/request/model_model.dart';
 import '../../models/request/purpose_model.dart';
 import '../../models/request/region_model.dart';
 import '../../viewmodels/add_request_viewmodel.dart';
-import '../map_select_location_view.dart';
+import '../map/map_select_location_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddRequestView extends StatefulWidget {
