@@ -124,25 +124,33 @@ class RequestService {
   }
 
   // Метод для получения списка запросов
-  Future<List<RequestModel>> fetchRequests() async {
-    // Заглушка для тестирования
-    // return [
-    //   RequestModel(requesterName: 'John Doe', operatorName: 'Operator 1', ...),
-    //   RequestModel(requesterName: 'Jane Doe', operatorName: 'Operator 2', ...)
-    // ];
-
-    final response = await http.get(
-      Uri.parse(ApiRoutes.fetch_requests),
-      headers: {
-        'Authorization': Config.basicAuth,
-      },
+  Future<List<RequestModel>> fetchRequests(String token, {int batch = 0, int batchSize = 10}) async {
+    return List.generate(
+      batchSize,
+          (index) => RequestModel(
+        id: '${batch * batchSize + index}',
+        number: '${batch * batchSize + index + 1}',
+        status: index % 3 == 0
+            ? 'confirmed'
+            : index % 3 == 1
+            ? 'pending'
+            : 'rejected',
+      ),
     );
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      return data.map((item) => RequestModel.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load requests');
-    }
+    // Реальный API запрос:
+    // final response = await http.get(
+    //   Uri.parse('${ApiRoutes.requests}'),
+    //   headers: {
+    //     'Authorization': 'Bearer $token',
+    //   },
+    // );
+
+    // if (response.statusCode == 200) {
+    //   final List<dynamic> data = jsonDecode(response.body);
+    //   return data.map((item) => RequestModel.fromJson(item)).toList();
+    // } else {
+    //   throw Exception('Failed to load requests');
+    // }
   }
 }

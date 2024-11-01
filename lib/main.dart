@@ -6,6 +6,7 @@ import 'package:safe_sky/services/notification_service.dart';
 import 'package:safe_sky/viewmodels/add_request_viewmodel.dart';
 import 'package:safe_sky/viewmodels/map_share_location_viewmodel.dart';
 import 'package:safe_sky/viewmodels/notification_viewmodel.dart';
+import 'package:safe_sky/viewmodels/request_list_viewmodel.dart';
 import 'package:safe_sky/views/auth/registration/registration_view.dart';
 import 'package:safe_sky/views/home/main_view.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -69,6 +70,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<NotificationViewModel>(
           create: (_) => NotificationViewModel(),
+        ),
+        ChangeNotifierProvider<RequestListViewModel>(
+          create: (_) => RequestListViewModel(),
         ),
       ],
       child: Consumer<LocalizationManager>(

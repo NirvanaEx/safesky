@@ -1,5 +1,7 @@
 class RequestModel {
-  String? id; // Добавленное поле id
+  String? id;
+  String? number;
+  String? status;
   String? requesterName;
   String? operatorName;
   String? operatorPhone;
@@ -10,19 +12,21 @@ class RequestModel {
   String? model;
   String? region;
   String? purpose;
-  String? flightSign; // Новое поле для знака полета
-  double? latitude; // Поле для широты
-  double? longitude; // Поле для долготы
+  String? flightSign;
+  double? latitude;
+  double? longitude;
   double? radius;
-  DateTime? startDate; // Новое поле для даты начала
-  DateTime? flightStartDateTime; // Новое поле для времени начала полета
-  DateTime? flightEndDateTime; // Новое поле для времени окончания полета
-  DateTime? permitDate; // Новое поле для даты разрешения
-  DateTime? contractDate; // Новое поле для даты контракта
-  String? lang; // Новое поле для языка (ru, en, uz)
+  DateTime? startDate;
+  DateTime? flightStartDateTime;
+  DateTime? flightEndDateTime;
+  DateTime? permitDate;
+  DateTime? contractDate;
+  String? lang;
 
   RequestModel({
     this.id,
+    this.number,
+    this.status,
     this.requesterName,
     this.operatorName,
     this.operatorPhone,
@@ -48,6 +52,8 @@ class RequestModel {
   factory RequestModel.fromJson(Map<String, dynamic> json) {
     return RequestModel(
       id: json['id'],
+      number: json['number'],
+      status: json['status'],
       requesterName: json['requesterName'],
       operatorName: json['operatorName'],
       operatorPhone: json['operatorPhone'],
@@ -58,7 +64,7 @@ class RequestModel {
       model: json['model'],
       region: json['region'],
       purpose: json['purpose'],
-      flightSign: json['flightSign'], // Добавлено поле знака полета
+      flightSign: json['flightSign'],
       latitude: json['latitude'] != null ? json['latitude'].toDouble() : null,
       longitude: json['longitude'] != null ? json['longitude'].toDouble() : null,
       radius: json['radius'] != null ? json['radius'].toDouble() : null,
@@ -73,6 +79,8 @@ class RequestModel {
 
   Map<String, dynamic> toJson() => {
     'id': id,
+    'number': number,
+    'status': status,
     'requesterName': requesterName,
     'operatorName': operatorName,
     'operatorPhone': operatorPhone,

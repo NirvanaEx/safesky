@@ -18,5 +18,5 @@ class ApiRoutes {
   static const String flightSigns = '${Config.apiUrl}/flightSigns';
   static const String purposes = '${Config.apiUrl}/purposes';
   static const String regions = '${Config.apiUrl}/regions';
-  static const String fetch_requests = '${Config.apiUrl}/requests';
+  static const String requests = '${Config.apiUrl}/requests';
 }

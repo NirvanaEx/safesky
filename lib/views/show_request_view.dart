@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:safe_sky/models/request_model.dart';
 import 'map_share_location_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
 
 class ShowRequestView extends StatelessWidget {
-  final Map<String, String> request;
+  final RequestModel? requestModel;
 
-  ShowRequestView({required this.request});
+  ShowRequestView({required this.requestModel});
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +37,17 @@ class ShowRequestView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        request['number']!,
+                        "№ ${requestModel?.number}",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(request['status']!),
+                          color: _getStatusColor(requestModel?.status ?? ''),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          _getStatusText(request['status']!, localizations),
+                          _getStatusText(requestModel?.status ?? '', localizations),
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -54,7 +55,7 @@ class ShowRequestView extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
 
-                  if (request['status'] == 'confirmed')
+                  if (requestModel?.status == 'confirmed')
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -96,7 +97,7 @@ class ShowRequestView extends StatelessWidget {
             ),
           ),
 
-          if (request['status'] == 'pending')
+          if (requestModel?.status == 'pending')
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(

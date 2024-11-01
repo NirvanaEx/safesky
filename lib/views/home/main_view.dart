@@ -11,7 +11,7 @@ import '../side_menu/about_app_view.dart';
 import '../side_menu/settings_view.dart';
 import '../side_menu/support_view.dart';
 import 'add_request_view.dart';
-import 'requests_view.dart';
+import 'request_list_view.dart';
 
 class MainView extends StatefulWidget {
   @override
@@ -22,7 +22,7 @@ class _MainViewState extends State<MainView> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    RequestsView(),
+    RequestListView(),
     AddRequestView(),
     EmptyView(),
     ProfileView(),
