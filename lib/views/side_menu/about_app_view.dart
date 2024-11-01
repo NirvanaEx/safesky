@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:safe_sky/views/pdf_page_view.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class AboutAppView extends StatelessWidget {
   Future<String> _getAppVersion() async {
-    return '2.0.0.32392';
+    final packageInfo = await PackageInfo.fromPlatform();
+    return '${packageInfo.version}.${packageInfo.buildNumber}';
   }
 
   @override
