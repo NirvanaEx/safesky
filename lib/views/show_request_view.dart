@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:safe_sky/models/request_model.dart';
+import 'package:safe_sky/services/request_service.dart';
 import 'map/map_show_location_view.dart';
 import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
@@ -144,8 +145,24 @@ class ShowRequestView extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Логика для отмены заявки
+                  onPressed: () async {
+                    try {
+                      final response = await RequestService().cancelRequest(requestModel?.id);
+                      if (response.statusCode == 200) {
+                        // Успешное завершение
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Request canceled successfully')),
+                        );
+                        // Дополнительно можно обновить статус заявки или выполнить другие действия
+                      } else {
+                        throw Exception('Failed to cancel request');
+                      }
+                    } catch (e) {
+                      // Обработка ошибки
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: ${e.toString()}')),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,

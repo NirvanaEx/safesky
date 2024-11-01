@@ -19,4 +19,7 @@ class ApiRoutes {
   static const String purposes = '${Config.apiUrl}/purposes';
   static const String regions = '${Config.apiUrl}/regions';
   static const String requests = '${Config.apiUrl}/requests';
+
+  // Роут для отмены заявки
+  static const String cancel_request = '${Config.apiUrl}/cancel_request';
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../config/config.dart';
 import '../models/request/flight_sign_model.dart';
@@ -28,6 +29,35 @@ class RequestService {
       return response;
     } else {
       var errorMessage = json.decode(response.body)['message'] ?? 'Failed to submit request';
+      throw Exception(errorMessage);
+    }
+  }
+
+
+  Future<http.Response> cancelRequest(String? requestId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    // Заглушка для успешного ответа при тестировании
+    if (requestId == 'test') {
+      return http.Response(
+        jsonEncode({'status': 'success', 'message': 'Request canceled successfully'}),
+        200,
+      );
+    }
+
+    final response = await http.post(
+      Uri.parse('${ApiRoutes.cancel_request}/$requestId'), // Здесь указываем URL с requestId
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response;
+    } else {
+      var errorMessage = json.decode(response.body)['message'] ?? 'Failed to cancel request';
       throw Exception(errorMessage);
     }
   }
