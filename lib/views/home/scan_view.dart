@@ -4,6 +4,7 @@ import 'package:safe_sky/views/map/map_share_location_view.dart';
 
 import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ScanView extends StatefulWidget {
   @override
@@ -85,17 +86,17 @@ class _ScanViewState extends State<ScanView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Stop Existing Location Sharing?"),
-          content: Text("A location sharing task is already active. Would you like to stop it and start a new one?"),
+          title: Text(AppLocalizations.of(context)!.stopExistingLocationSharing),
+          content: Text(AppLocalizations.of(context)!.locationSharingActive),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.back),
               onPressed: () {
                 Navigator.of(context).pop(false); // Пользователь выбрал отмену
               },
             ),
             TextButton(
-              child: Text("Stop & Start New"),
+              child: Text(AppLocalizations.of(context)!.stop),
               onPressed: () {
                 Navigator.of(context).pop(true); // Пользователь выбрал остановку задачи
               },
