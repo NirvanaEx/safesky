@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
+import 'package:safe_sky/utils/enums.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../config/config.dart';
+import '../models/area_point_location_model.dart';
+import '../models/location_model.dart';
 import '../models/request/flight_sign_model.dart';
 import '../models/request/model_model.dart';
 import '../models/request/purpose_model.dart';
@@ -157,16 +160,26 @@ class RequestService {
   // Временная функция для генерации тестовых данных
   List<RequestModel> generateTestRequests(int batch, int batchSize) {
     final random = Random();
+
+    // Функция для генерации случайных координат (список объектов LocationModel)
+    List<LocationModel> generateRandomCoordinates(int count) {
+      return List.generate(count, (index) {
+        final latitude = 41.1 + 0.1*random.nextDouble();
+        final longitude = 69.1 + 0.1*random.nextDouble();
+        return LocationModel(
+          id: '${random.nextInt(100000)}', // уникальный id для каждой точки
+          latitude: latitude,
+          longitude: longitude,
+        );
+      });
+    }
+
     return List.generate(
       batchSize,
           (index) {
         final id = '${batch * batchSize + index}';
         final number = '${batch * batchSize + index + 1}';
-        final status = index % 3 == 0
-            ? 'confirmed'
-            : index % 3 == 1
-            ? 'pending'
-            : 'rejected';
+        final status = index % 3 == 0 ? 'confirmed' : index % 3 == 1 ? 'pending' : 'rejected';
         final requesterName = 'Requester ${batch * batchSize + index + 1}';
         final operatorName = 'Operator ${index + 1}';
         final operatorPhone = '+99899${random.nextInt(9000000) + 1000000}';
@@ -178,16 +191,38 @@ class RequestService {
         final region = 'Region ${index + 1}';
         final purpose = 'Purpose ${index + 1}';
         final flightSign = 'Sign ${index + 1}';
-        final latitude = 41.0 + random.nextDouble();
-        final longitude = 69.0 + random.nextDouble();
         final flightHeight = 50.0 + random.nextDouble() * 150; // Генерация высоты полета
-        final radius = 1000.0 + random.nextDouble() * 500;
         final startDate = DateTime.now().subtract(Duration(days: random.nextInt(30)));
         final flightStartDateTime = DateTime.now().subtract(Duration(days: random.nextInt(10)));
         final flightEndDateTime = DateTime.now().add(Duration(days: random.nextInt(10)));
         final permitDate = DateTime.now().subtract(Duration(days: random.nextInt(60)));
         final contractDate = DateTime.now().subtract(Duration(days: random.nextInt(60)));
         final lang = 'en';
+
+        // Генерация областей
+        final area = [
+          // Запрещенная зона с координатами для полигона
+          AreaPointLocationModel(
+            id: '${random.nextInt(100000)}',
+            tag: AreaType.authorizedZone, // Запрещенная зона
+            coordinates: generateRandomCoordinates(4), // Полигона с 4 точками
+          ),
+          // Разрешенная область с кругом, где определены только центральные координаты и радиус
+          AreaPointLocationModel(
+            id: '${random.nextInt(100000)}',
+            tag: AreaType.noFlyZone, // Разрешенная зона
+            latitude: 41.0 + random.nextDouble(), // Центральная широта
+            longitude: 69.0 + random.nextDouble(), // Центральная долгота
+            radius: 1000.0 + random.nextDouble() * 500, // Радиус круга
+          ),
+          AreaPointLocationModel(
+            id: '${random.nextInt(100000)}',
+            tag: AreaType.noFlyZone, // Разрешенная зона
+            latitude: 41.0 + random.nextDouble(), // Центральная широта
+            longitude: 69.0 + random.nextDouble(), // Центральная долгота
+            radius: 1000.0 + random.nextDouble() * 500, // Радиус круга
+          ),
+        ];
 
         return RequestModel(
           id: id,
@@ -204,16 +239,14 @@ class RequestService {
           region: region,
           purpose: purpose,
           flightSign: flightSign,
-          latitude: latitude,
-          longitude: longitude,
           flightHeight: flightHeight, // Новый параметр
-          radius: radius,
           startDate: startDate,
           flightStartDateTime: flightStartDateTime,
           flightEndDateTime: flightEndDateTime,
           permitDate: permitDate,
           contractDate: contractDate,
           lang: lang,
+          area: area, // Добавление списка разрешенных и запрещенных участков
         );
       },
     );

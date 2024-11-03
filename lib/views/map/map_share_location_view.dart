@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:safe_sky/models/request_model.dart';
+import 'package:safe_sky/utils/enums.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +14,10 @@ import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
 
 class MapShareLocationView extends StatefulWidget {
+  final RequestModel? requestModel;
+
+  MapShareLocationView({Key? key, this.requestModel}) : super(key: key);
+
   @override
   _MapShareLocationViewState createState() => _MapShareLocationViewState();
 }
@@ -25,10 +32,12 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
 
     final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
-    // Загружаем текущее местоположение при инициализации
-    locationVM.loadCurrentLocation();
+    // Проверяем, что locationVM загружен, затем загружаем текущее местоположение
+    if (locationVM != null) {
+      locationVM.loadCurrentLocation();
+    }
 
-    // Добавляем слушатель изменений для автоматического перехода к местоположению при его загрузке
+    // Слушаем изменения для автоматического перехода к местоположению
     locationVM.addListener(() {
       if (locationVM.currentLocation != null && !locationVM.isLoadingLocation) {
         _animateToUserLocation();
@@ -63,6 +72,82 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       _mapController.moveAndRotate(LatLng(lat, lng), zoom, rotation);
       await Future.delayed(Duration(milliseconds: delayMilliseconds));
     }
+  }
+
+  // Функция для рисования области
+  Widget _drawArea() {
+    final requestModel = widget.requestModel;
+    if (requestModel == null) return Container();
+
+    if (requestModel.area?.isNotEmpty == true) {
+      print('Rendering areas...');
+      return Stack(
+        children: [
+          // Отображаем многоугольники для областей с координатами
+          flutter_map.PolygonLayer(
+            polygons: requestModel.area!
+                .where((area) => area.coordinates != null && area.coordinates!.isNotEmpty)
+                .map((area) {
+              Color borderColor;
+              Color fillColor;
+
+              if (area.tag == AreaType.authorizedZone) {
+                borderColor = Colors.green;
+                fillColor = Colors.green.withOpacity(0.3);
+              } else if (area.tag == AreaType.noFlyZone) {
+                borderColor = Colors.red;
+                fillColor = Colors.red.withOpacity(0.3);
+              } else {
+                borderColor = Colors.blue;
+                fillColor = Colors.blue.withOpacity(0.3);
+              }
+
+              print('Drawing polygon for ${area.tag}');
+              return flutter_map.Polygon(
+                points: area.coordinates!.map((coord) => LatLng(coord.latitude, coord.longitude)).toList(),
+                borderColor: borderColor,
+                borderStrokeWidth: 2.0,
+                color: fillColor,
+                isFilled: true,
+              );
+            }).toList(),
+          ),
+
+          // Отображаем круги для областей с радиусом
+          flutter_map.CircleLayer(
+            circles: requestModel.area!
+                .where((area) => area.latitude != null && area.longitude != null && area.radius != null)
+                .map((area) {
+              Color borderColor;
+              Color fillColor;
+
+              if (area.tag == AreaType.authorizedZone) {
+                borderColor = Colors.green;
+                fillColor = Colors.green.withOpacity(0.3);
+              } else if (area.tag == AreaType.noFlyZone) {
+                borderColor = Colors.red;
+                fillColor = Colors.red.withOpacity(0.3);
+              } else {
+                borderColor = Colors.blue;
+                fillColor = Colors.blue.withOpacity(0.3);
+              }
+
+              print('Drawing circle for ${area.tag} at (${area.latitude}, ${area.longitude}) with radius ${area.radius}');
+              return flutter_map.CircleMarker(
+                point: LatLng(area.latitude!, area.longitude!),
+                color: fillColor,
+                borderColor: borderColor,
+                borderStrokeWidth: 2.0,
+                radius: area.radius!,
+                useRadiusInMeter: true,
+              );
+            }).toList(),
+          ),
+        ],
+      );
+    }
+
+    return Container();
   }
 
   @override
@@ -108,6 +193,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                     ),
                   ],
                 ),
+              _drawArea(),
             ],
           ),
           if (locationVM.isLoadingLocation)
@@ -154,7 +240,6 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       innerColor: Colors.black,
       outerColor: Colors.white,
       onSubmit: () {
-        // Начинаем передачу местоположения без проверки, так как она выполняется в ShowRequestView
         locationVM.startLocationSharing();
       },
       sliderButtonIcon: Icon(Icons.play_arrow, color: Colors.white),

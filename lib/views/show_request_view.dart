@@ -3,6 +3,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:safe_sky/models/request_model.dart';
 import 'package:safe_sky/services/request_service.dart';
+import '../models/area_point_location_model.dart';
+import '../utils/enums.dart';
 import 'map/map_show_location_view.dart';
 import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
@@ -16,10 +18,33 @@ class ShowRequestView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    // Формат для даты
     final dateFormat = DateFormat('dd.MM.yyyy');
-    // Формат для даты и времени
     final dateTimeFormat = DateFormat('dd.MM.yyyy HH:mm');
+
+    // Поиск AUTHORIZED ZONE в area
+    final authorizedZone = requestModel?.area?.firstWhere(
+          (zone) => zone.tag == AreaType.authorizedZone,
+      orElse: () => AreaPointLocationModel(),
+    );
+
+    String zoneInfo;
+    if (authorizedZone != null) {
+      if (authorizedZone.radius != null) {
+        // Если это круг, показываем центральные координаты
+        zoneInfo = '${authorizedZone.latitude?.toStringAsFixed(5) ?? '-'}, ${authorizedZone.longitude?.toStringAsFixed(5) ?? '-'}';
+      } else if (authorizedZone.coordinates != null && authorizedZone.coordinates!.isNotEmpty) {
+        // Если это полигон, отображаем список координат
+        zoneInfo = authorizedZone.coordinates!
+            .map((coord) => '${coord.latitude.toStringAsFixed(5)}, ${coord.longitude.toStringAsFixed(5)}')
+            .join(';\n');
+      } else {
+        // На случай, если координаты отсутствуют
+        zoneInfo = '-';
+      }
+    } else {
+      // Если AUTHORIZED ZONE не найдена
+      zoneInfo = '-';
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -67,7 +92,7 @@ class ShowRequestView extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          await _handleLocationSharing(context); // Проверка перед переходом
+                          await _handleLocationSharing(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
@@ -100,21 +125,27 @@ class ShowRequestView extends StatelessWidget {
                           : '-'}'),
                   _buildRequestInfo(localizations.region,
                       requestModel?.region ?? '-'),
-                  _buildRequestInfo(localizations.coordinates,
-                      '${requestModel?.latitude != null
-                          ? requestModel!.latitude!.toStringAsFixed(5)
-                          : '-'}, ${requestModel?.longitude != null
-                          ? requestModel!.longitude!.toStringAsFixed(5)
-                          : '-'}',
-                      linkText: localizations.map, icon: Icons.visibility, context: context),
+
+                  // Отображение координат AUTHORIZED ZONE
+                  _buildRequestInfo(
+                    localizations.coordinates,
+                    zoneInfo,
+                    linkText: localizations.map,
+                    icon: Icons.visibility,
+                    context: context,
+                  ),
+
+                  // Отображение радиуса AUTHORIZED ZONE (если он есть)
+                  if (authorizedZone?.radius != null)
+                    _buildRequestInfo(
+                      localizations.flightRadius,
+                      '${authorizedZone!.radius!.round()} ${localizations.m}',
+                    ),
+
                   _buildRequestInfo(localizations.flightHeight,
                       '${requestModel?.flightHeight != null
                           ? requestModel!.flightHeight!.round()
                           : '-'} ${localizations?.m}'),
-                  _buildRequestInfo(localizations.flightRadius,
-                      '${requestModel?.radius != null
-                          ? requestModel!.radius!.round()
-                          : '-'} ${localizations?.m} '),
                   _buildRequestInfo(localizations.flightPurpose,
                       requestModel?.purpose ?? '-'),
                   _buildRequestInfo(localizations.operatorName,
@@ -129,7 +160,7 @@ class ShowRequestView extends StatelessWidget {
                           : '-'}'),
                   _buildRequestInfo(localizations.contract,
                       '№ ${requestModel?.contractNumber ?? '-'}   ${requestModel?.contractDate != null
-                          ? dateFormat.format(requestModel!.contractDate!)
+                          ? dateFormat.format(requestModel!.contractDate! )
                           : '-'}'),
                   _buildRequestInfo(localizations.optional,
                       requestModel?.note ?? '-'),
@@ -149,16 +180,13 @@ class ShowRequestView extends StatelessWidget {
                     try {
                       final response = await RequestService().cancelRequest(requestModel?.id);
                       if (response.statusCode == 200) {
-                        // Успешное завершение
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Request canceled successfully')),
                         );
-                        // Дополнительно можно обновить статус заявки или выполнить другие действия
                       } else {
                         throw Exception('Failed to cancel request');
                       }
                     } catch (e) {
-                      // Обработка ошибки
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error: ${e.toString()}')),
                       );
@@ -218,11 +246,16 @@ class ShowRequestView extends StatelessWidget {
     // Выполняем переход на страницу с картой после остановки задачи или если задач не было
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MapShareLocationView()),
+      MaterialPageRoute(
+        builder: (context) => MapShareLocationView(
+          key: ValueKey(requestModel?.id), // Используем уникальный ID из requestModel
+          requestModel: requestModel,
+        ),
+      ),
     );
   }
 
-  Widget _buildRequestInfo( String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context}) {
+  Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -238,29 +271,25 @@ class ShowRequestView extends StatelessWidget {
               Expanded(
                 child: Text(
                   value,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 16),
                 ),
               ),
-              if (linkText != null && context!=null)
+              if (linkText != null && context != null)
                 GestureDetector(
                   onTap: () {
-                    // Проверяем, что это нажатие на карту, и переходим на MapShowLocationView
-                    if (label == AppLocalizations.of(context)!.coordinates) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MapShowLocationView(
-                            latitude: requestModel?.latitude ?? 0.0,
-                            longitude: requestModel?.longitude ?? 0.0,
-                            radius: requestModel?.radius ?? 0.0,
-                          ),
+                    debugPrint('Link tapped'); // проверка, сработал ли onTap
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapShowLocationView(
+                          requestModel: requestModel,
                         ),
-                      );
-                    }
+                      ),
+                    );
                   },
                   child: Row(
                     children: [
-                      Text(linkText, style: TextStyle(color: Colors.blue)),
+                      Text(linkText, style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
                       if (icon != null) Icon(icon, color: Colors.blue, size: 18),
                     ],
                   ),
@@ -271,6 +300,8 @@ class ShowRequestView extends StatelessWidget {
       ),
     );
   }
+
+
 
 
   Color _getStatusColor(String status) {

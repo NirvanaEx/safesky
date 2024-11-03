@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../models/area_point_location_model.dart';
 import '../models/request/flight_sign_model.dart';
 import '../models/request/model_model.dart';
 import '../models/request/purpose_model.dart';
 import '../models/request/region_model.dart';
 import '../models/request_model.dart';
 import '../services/request_service.dart';
+import '../utils/enums.dart';
 import '../utils/localization_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -303,9 +305,6 @@ class AddRequestViewModel extends ChangeNotifier {
       model: selectedModel?.name,
       region: selectedRegion?.name,
       purpose: selectedPurpose?.name,
-      latitude: latitude,
-      longitude: longitude,
-      radius: radius,
       startDate: startDate,
       flightStartDateTime: flightStartDateTime,
       flightEndDateTime: flightEndDateTime,
@@ -313,6 +312,15 @@ class AddRequestViewModel extends ChangeNotifier {
       contractDate: contractDate,
       flightSign: selectedFlightSign?.name, // Добавлен знак полета
       lang: lang, // Используем текущий язык
+      area: [
+        AreaPointLocationModel(
+          id: '1', // Уникальный идентификатор зоны, можно заменить на нужный
+          tag: AreaType.authorizedZone, // Пример метки, можно заменить
+          latitude: latitude,
+          longitude: longitude,
+          radius: radius,
+        ),
+      ],
     );
 
     print("Submitting request: ${requestModel.toJson()}");
