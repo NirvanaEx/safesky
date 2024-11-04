@@ -23,4 +23,7 @@ class ApiRoutes {
   // Роуты для управления заявками
   static const String cancelRequest = '${Config.apiUrl}/cancel-request';
   static const String checkRequestStatus = '${Config.apiUrl}/check-request-status';
+  static const String sendCodeAndGetStatus = '${Config.apiUrl}/send-code-and-get-status';
+
+
 }

@@ -68,6 +68,10 @@
   "locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
   "back": "Назад",
 
+  "scanMessage": "Пожалуйста, отсканируйте QR-код",
+  "errorFetchingData": "Ошибка при получении данных",
+  "authTokenNotFound": "Токен авторизации не найден",
+
 
   "startLocationSharing": "Начать трансляцию",
   "sharingLocation": "Идет трансляция",

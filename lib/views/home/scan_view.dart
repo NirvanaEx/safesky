@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:safe_sky/views/map/map_share_location_view.dart';
-
-import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:safe_sky/services/request_service.dart';
+import 'package:safe_sky/views/map/map_share_location_view.dart';
+import '../../models/request/status_model.dart';
+import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ScanView extends StatefulWidget {
@@ -13,11 +14,14 @@ class ScanView extends StatefulWidget {
 
 class _ScanViewState extends State<ScanView> {
   bool _isFlashOn = false;
-  bool isDialogOpen = false; // Флаг для отслеживания состояния диалога
+  bool isDialogOpen = false;
+  bool isLoading = false;
   final MobileScannerController _controller = MobileScannerController();
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -34,6 +38,8 @@ class _ScanViewState extends State<ScanView> {
             },
           ),
           _buildOverlay(),
+          if (isLoading) _buildLoadingIndicator(),
+          _buildMessage(localizations),
           Positioned(
             bottom: 32,
             left: 0,
@@ -55,56 +61,49 @@ class _ScanViewState extends State<ScanView> {
   }
 
   Future<void> _onQRCodeScanned(String code) async {
-    if (code.isNotEmpty && !isDialogOpen) { // Проверяем флаг перед вызовом диалога
-      isDialogOpen = true; // Устанавливаем флаг перед показом диалога
+    final localizations = AppLocalizations.of(context)!;
+    if (code.isNotEmpty && !isDialogOpen) {
+      isDialogOpen = true;
+      setState(() {
+        isLoading = true;
+      });
 
-      final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
+      try {
+        final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
-      // Проверяем, активна ли задача
-      if (locationVM.isSharingLocation) {
-        final shouldStop = await _showStopDialog(context);
-        if (shouldStop == true) {
-          await locationVM.stopLocationSharing(); // Останавливаем задачу, если пользователь подтвердил
-        } else {
-          isDialogOpen = false; // Сбрасываем флаг, если пользователь отменил
-          return;
+        if (locationVM.isSharingLocation) {
+          final shouldStop = await _showStopDialog(context);
+          if (shouldStop == true) {
+            await locationVM.stopLocationSharing();
+          } else {
+            isDialogOpen = false;
+            setState(() {
+              isLoading = false;
+            });
+            return;
+          }
         }
+
+        StatusModel status = await RequestService().sendCodeAndGetStatus(code);
+
+        if (status.status == 'success') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MapShareLocationView()),
+          );
+        } else {
+          _showErrorDialog(context, status.message);
+        }
+
+      } catch (e) {
+        _showErrorDialog(context, localizations.errorFetchingData);
+      } finally {
+        isDialogOpen = false;
+        setState(() {
+          isLoading = false;
+        });
       }
-
-      // Переходим на страницу с картой
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MapShareLocationView()),
-      );
-
-      isDialogOpen = false; // Сбрасываем флаг после перехода
     }
-  }
-
-  Future<bool?> _showStopDialog(BuildContext context) async {
-    return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.stopExistingLocationSharing),
-          content: Text(AppLocalizations.of(context)!.locationSharingActive),
-          actions: <Widget>[
-            TextButton(
-              child: Text(AppLocalizations.of(context)!.back),
-              onPressed: () {
-                Navigator.of(context).pop(false); // Пользователь выбрал отмену
-              },
-            ),
-            TextButton(
-              child: Text(AppLocalizations.of(context)!.stop),
-              onPressed: () {
-                Navigator.of(context).pop(true); // Пользователь выбрал остановку задачи
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> _toggleFlash() async {
@@ -135,5 +134,74 @@ class _ScanViewState extends State<ScanView> {
       ],
     );
   }
-}
 
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildMessage(AppLocalizations localizations) {
+    return Positioned(
+      bottom: 80,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Text(
+          localizations.scanMessage,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _showStopDialog(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localizations.stopExistingLocationSharing),
+          content: Text(localizations.locationSharingActive),
+          actions: <Widget>[
+            TextButton(
+              child: Text(localizations.back),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text(localizations.stop),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Ошибка'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

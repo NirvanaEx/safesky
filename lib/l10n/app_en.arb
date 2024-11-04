@@ -69,6 +69,10 @@
   "locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
   "back": "Back",
 
+  "scanMessage": "Please scan the QR code",
+  "errorFetchingData": "Error fetching data",
+  "authTokenNotFound": "Authentication token not found",
+
   "startLocationSharing": "Start location sharing",
   "sharingLocation": "Sharing location",
   "stop": "Stop",

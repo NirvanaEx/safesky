@@ -45,7 +45,7 @@ class RequestService {
 
     return StatusModel(
       id: requestId,
-      status: RequestStatus.expired,
+      status: RequestStatus.active,
       message: 'Request status retrieved successfully',
     );
 
@@ -66,6 +66,43 @@ class RequestService {
       throw Exception(errorMessage);
     }
   }
+
+  Future<StatusModel> sendCodeAndGetStatus(String code) async {
+    // Получаем токен из SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null) {
+      throw Exception('Authentication token not found');
+    }
+
+    // Подготовка данных для запроса
+    final requestData = {
+      'code': code,
+      'token': token,
+    };
+
+    // Выполнение HTTP POST запроса
+    final response = await http.post(
+      Uri.parse(ApiRoutes.sendCodeAndGetStatus),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': Config.basicAuth,
+      },
+      body: jsonEncode(requestData),
+    );
+
+    if (response.statusCode == 200) {
+      // Обработка успешного ответа
+      var jsonResponse = json.decode(response.body);
+      return StatusModel.fromJson(jsonResponse);
+    } else {
+      // Обработка ошибки
+      var errorMessage = json.decode(response.body)['message'] ?? 'Failed to retrieve status';
+      throw Exception(errorMessage);
+    }
+  }
+
 
   Future<http.Response> cancelRequest(String? requestId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

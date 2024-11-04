@@ -69,6 +69,10 @@
   "locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
   "back": "Orqaga",
 
+  "scanMessage": "Iltimos, QR-kodni skaner qiling",
+  "errorFetchingData": "Ma'lumotni olishda xato",
+  "authTokenNotFound": "Autentifikatsiya tokeni topilmadi",
+
 
   "startLocationSharing": "Joylashuv ulashishni boshlash",
   "sharingLocation": "Joylashuv ulashilmoqda",
