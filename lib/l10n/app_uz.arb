@@ -72,6 +72,8 @@
   "scanMessage": "Iltimos, QR-kodni skaner qiling",
   "errorFetchingData": "Ma'lumotni olishda xato",
   "authTokenNotFound": "Autentifikatsiya tokeni topilmadi",
+  "profileUpdated": "Profil muvaffaqiyatli yangilandi.",
+
 
 
   "startLocationSharing": "Joylashuv ulashishni boshlash",

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../config/config.dart';
 import '../models/user_model.dart';
@@ -156,8 +157,41 @@ class AuthService {
     }
   }
 
+  Future<void> changeProfileData(String name, String surname, String phoneNumber) async {
+    // Имитация задержки для эмуляции сети
+    await Future.delayed(Duration(seconds: 2));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    // URL для смены данных профиля
+    final url = Uri.parse(ApiRoutes.changeProfileData);
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': Config.basicAuth, // Или 'Bearer {токен}' при использовании токенов доступа
+      },
+      body: jsonEncode({
+        'name': name,
+        'surname': surname,
+        'phoneNumber': phoneNumber,
+        'token': token,
+      }),
+    );
+
+
+    // Проверка статуса ответа
+    if (response.statusCode != 200) {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Ошибка при изменении данных профиля');
+    }
+  }
+
   Future<void> changePassword(String newPassword) async {
     await Future.delayed(Duration(seconds: 2)); // Имитация задержки сети
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
 
     // Имитация проверки длины пароля для успешного или неуспешного ответа
     if (newPassword.length >= 6) {
@@ -178,6 +212,7 @@ class AuthService {
       },
       body: jsonEncode({
         'newPassword': newPassword, // Новый пароль
+        'token': token,
       }),
     );
 
@@ -188,8 +223,11 @@ class AuthService {
   }
 
 
+
+
   // Метод для выхода пользователя
   Future<void> logout(String token) async {
+
     final url = Uri.parse(ApiRoutes.logout);
 
     final response = await http.post(

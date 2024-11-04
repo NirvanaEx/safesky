@@ -40,6 +40,7 @@
   "change": "Change",
   "submitRequest": "Submit Request",
   "passwordChanged": "Your password has been changed successfully.",
+  "profileUpdated": "Profile updated successfully.",
 
 
   "flightStartDate": "Flight Start Date",

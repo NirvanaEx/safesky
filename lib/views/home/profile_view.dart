@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:safe_sky/services/auth_service.dart';
+import 'package:safe_sky/viewmodels/add_request_viewmodel.dart';
 
 import '../../viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +17,10 @@ class _ProfileViewState extends State<ProfileView> {
   final _nameController = TextEditingController(text: "John");
   final _surnameController = TextEditingController(text: "Doe");
   final _phoneController = TextEditingController(text: "");
+
+  String selectedCountryCode = "+998";
+  bool isLoading = false; // Переменная для отслеживания состояния загрузки
+
 
   @override
   void initState() {
@@ -76,8 +82,32 @@ class _ProfileViewState extends State<ProfileView> {
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Логика для сохранения профиля
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  try {
+                    final authService = AuthService();
+                    await authService.changeProfileData(
+                      _nameController.text,
+                      _surnameController.text,
+                      '$selectedCountryCode${_phoneController.text}',
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(localizations.profileUpdated)),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString())),
+                    );
+                  } finally {
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.black,
@@ -87,7 +117,16 @@ class _ProfileViewState extends State<ProfileView> {
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
                   minimumSize: Size(double.infinity, 48),
                 ),
-                child: Text(localizations.save, style: TextStyle(fontSize: 16)),
+                child: isLoading
+                    ? SizedBox(
+                      width: 20, // Устанавливаем ширину индикатора
+                      height: 20, // Устанавливаем высоту индикатора
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2, // Уменьшаем толщину линии индикатора
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                    : Text(localizations.save, style: TextStyle(fontSize: 16)),
               ),
             ),
           ],
@@ -121,9 +160,16 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  // Метод для поля с телефоном
+  // Метод для поля с телефоном с выпадающим списком кода страны
   Widget _buildPhoneField() {
-    final localizations = AppLocalizations.of(context)!;
+    // Доступные страны
+    final List<Map<String, String>> countries = [
+      {"code": "+998", "flag": "🇺🇿"},
+      {"code": "+1", "flag": "🇺🇸"},
+      {"code": "+44", "flag": "🇬🇧"},
+      {"code": "+7", "flag": "🇷🇺"},
+      {"code": "+997", "flag": "🇰🇿"},
+    ];
 
     return Container(
       decoration: BoxDecoration(
@@ -133,17 +179,36 @@ class _ProfileViewState extends State<ProfileView> {
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: [
-          SizedBox(width: 8),
-          Text("🇺🇿", style: TextStyle(fontSize: 18)),
-          SizedBox(width: 8),
-          Text("+998", style: TextStyle(fontSize: 16, color: Colors.black)),
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedCountryCode,
+              items: countries.map((country) {
+                return DropdownMenuItem<String>(
+                  value: country['code'],
+                  child: Row(
+                    children: [
+                      SizedBox(width: 8),
+                      Text(country['flag']!, style: TextStyle(fontSize: 18)),
+                      SizedBox(width: 8),
+                      Text(country['code']!, style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCountryCode = value!; // Обновляем выбранный код страны
+                });
+              },
+            ),
+          ),
           Expanded(
             child: TextField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: localizations.phone,
+                hintText: '991234567',
                 contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 18),
               ),
               style: TextStyle(fontSize: 16),
