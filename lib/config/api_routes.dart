@@ -27,7 +27,7 @@ class ApiRoutes {
   static const String checkRequestStatus = '${Config.apiUrl}/check-request-status';
   static const String sendCodeAndGetStatus = '${Config.apiUrl}/send-code-and-get-status';
 
-
-
+  // Трасляция местоположение
+  static const String updateLocation = '${Config.apiUrl}/location/update';
 
 }

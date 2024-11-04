@@ -4,8 +4,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter_map/flutter_map.dart';
 import '../services/notification_service.dart';
+import '../services/location_share_service.dart';
 
 class MapShareLocationViewModel extends ChangeNotifier {
+  final LocationShareService _locationShareService = LocationShareService();
   bool _isSharingLocation = false;
   bool _isPaused = false;
   bool _isLoadingLocation = true;
@@ -31,48 +33,51 @@ class MapShareLocationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> startLocationSharing() async {
+  /// Запуск процесса обмена местоположением
+  Future<void> startLocationSharing(String requestId) async {
     _isSharingLocation = true;
     _isPaused = false;
 
-    // Инициализируем requestId для отслеживания задачи
-    _currentRequestId = 'unique_location_sharing_task';
-
+    _currentRequestId = requestId;  // Устанавливаем _currentRequestId из переданного requestId
     notifyListeners();
 
-    NotificationService.showLocationSharingNotification();
-    Workmanager().registerPeriodicTask(
-      _currentRequestId!, // Используем _currentRequestId для отслеживания
-      "locationSharingTask",
-      frequency: Duration(minutes: 15),
-    );
+    // Используем `LocationShareService` для запуска обмена местоположением
+    await _locationShareService.startLocationSharing(_currentRequestId!);
+
+    // Убедимся, что статус обмена местоположением обновлен после вызова сервиса
+    if (!_locationShareService.isSharingLocation) {
+      _isSharingLocation = false;
+      _currentRequestId = null;
+    }
+
+    notifyListeners();
     print("Location sharing started with requestId: $_currentRequestId");
   }
 
+  /// Остановка процесса обмена местоположением
   Future<void> stopLocationSharing() async {
     if (_currentRequestId != null) {
-      _isSharingLocation = false; // Устанавливаем в false при остановке
+      _isSharingLocation = false;
       notifyListeners();
 
-      NotificationService.cancelNotification();
-      Workmanager().cancelByUniqueName(_currentRequestId!);
+      await _locationShareService.stopLocationSharing();
       print("Location sharing stopped for requestId: $_currentRequestId");
 
       _currentRequestId = null;
     }
   }
 
+  /// Загрузка текущего местоположения
   Future<void> loadCurrentLocation() async {
     _isLoadingLocation = true;
     notifyListeners();
 
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    _currentLocation = LatLng(position.latitude, position.longitude);
-
+    _currentLocation = await _locationShareService.getCurrentLocation();
     _isLoadingLocation = false;
     notifyListeners();
   }
 
+  /// Анимация перемещения к указанному местоположению на карте
   Future<void> animateToLocation(MapController mapController, LatLng targetLocation) async {
     const int steps = 25;
     LatLng startLocation = mapController.center;
@@ -84,6 +89,7 @@ class MapShareLocationViewModel extends ChangeNotifier {
     }
   }
 
+  /// Переключение режима паузы для обмена местоположением
   void togglePause() {
     _isPaused = !_isPaused;
     notifyListeners();

@@ -1,10 +1,10 @@
 class LocationModel {
-  final String id;
+  final String? id;
   final double latitude;
   final double longitude;
 
   LocationModel({
-    required this.id,
+    this.id,
     required this.latitude,
     required this.longitude,
   });
@@ -12,7 +12,7 @@ class LocationModel {
   // Фабричный метод для создания LocationModel из JSON
   factory LocationModel.fromJson(Map<String, dynamic> json) {
     return LocationModel(
-      id: json['id'] as String,
+      id: json['id'] as String?,
       latitude: json['latitude'] as double,
       longitude: json['longitude'] as double,
     );

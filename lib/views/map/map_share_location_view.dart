@@ -240,7 +240,13 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       innerColor: Colors.black,
       outerColor: Colors.white,
       onSubmit: () {
-        locationVM.startLocationSharing();
+        final requestId = widget.requestModel?.id;
+        if (requestId != null) {
+          locationVM.startLocationSharing(requestId); // Используем requestId, который гарантированно не null
+        } else {
+          // Обработка случая, если id не задан
+          print("Request ID is missing. Cannot start location sharing.");
+        }
       },
       sliderButtonIcon: Icon(Icons.play_arrow, color: Colors.white),
       borderRadius: 30,
