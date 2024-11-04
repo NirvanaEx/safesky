@@ -114,7 +114,6 @@ class _MainViewState extends State<MainView> {
   Widget _buildDrawer(AppLocalizations localizations) {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
-
     return FractionallySizedBox(
       widthFactor: 0.6,
       child: Drawer(
@@ -130,66 +129,66 @@ class _MainViewState extends State<MainView> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${localizations.hi}, ${authViewModel.user?.surname} ${authViewModel.user?.name}',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${localizations.hi}, ${authViewModel.user?.surname} ${authViewModel.user?.name}',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Divider(),
+                        ListTile(
+                          leading: Icon(Icons.support_agent, color: Colors.black),
+                          title: Text(localizations.support),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SupportView()),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.settings, color: Colors.black),
+                          title: Text(localizations.settings),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SettingsView()),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.info_outline, color: Colors.black),
+                          title: Text(localizations.aboutApp),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => AboutAppView()),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.logout, color: Colors.black),
+                          title: Text(localizations.logout),
+                          onTap: () async {
+                            final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+                            await authViewModel.logout();
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginView()),
+                                  (route) => false,
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.support_agent, color: Colors.black),
-                      title: Text(localizations.support),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SupportView()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.settings, color: Colors.black),
-                      title: Text(localizations.settings),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SettingsView()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.info_outline, color: Colors.black),
-                      title: Text(localizations.aboutApp),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AboutAppView()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.logout, color: Colors.black),
-                      title: Text(localizations.logout),
-                      onTap: () async {
-                        // Получаем AuthViewModel и выполняем logout
-                        final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-                        await authViewModel.logout();
-
-                        // Переход на LoginView после logout
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginView()),
-                              (route) => false,
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              Spacer(),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
@@ -200,6 +199,7 @@ class _MainViewState extends State<MainView> {
                   padding: EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
                         children: [
@@ -226,6 +226,7 @@ class _MainViewState extends State<MainView> {
       ),
     );
   }
+
 }
 
 // Пустой виджет для третьей вкладки
