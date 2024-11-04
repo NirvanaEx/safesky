@@ -11,6 +11,7 @@ import '../models/request/flight_sign_model.dart';
 import '../models/request/model_model.dart';
 import '../models/request/purpose_model.dart';
 import '../models/request/region_model.dart';
+import '../models/request/status_model.dart';
 import '../models/request_model.dart';
 
 class RequestService {
@@ -36,6 +37,35 @@ class RequestService {
     }
   }
 
+  Future<StatusModel> getRequestStatus(String requestId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    await Future.delayed(Duration(seconds: 1));
+
+    return StatusModel(
+      id: requestId,
+      status: RequestStatus.expired,
+      message: 'Request status retrieved successfully',
+    );
+
+
+    final response = await http.get(
+      Uri.parse('${ApiRoutes.checkRequestStatus}/$requestId'), // Замените на ваш URL
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body);
+      return StatusModel.fromJson(jsonResponse);
+    } else {
+      var errorMessage = json.decode(response.body)['message'] ?? 'Failed to retrieve request status';
+      throw Exception(errorMessage);
+    }
+  }
 
   Future<http.Response> cancelRequest(String? requestId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -50,7 +80,7 @@ class RequestService {
     }
 
     final response = await http.post(
-      Uri.parse('${ApiRoutes.cancel_request}/$requestId'), // Здесь указываем URL с requestId
+      Uri.parse('${ApiRoutes.cancelRequest}/$requestId'), // Здесь указываем URL с requestId
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -64,6 +94,7 @@ class RequestService {
       throw Exception(errorMessage);
     }
   }
+
 
   // Метод для получения списка моделей с параметром lang
   Future<List<ModelModel>> fetchModels(String lang) async {
@@ -217,10 +248,10 @@ class RequestService {
           ),
           AreaPointLocationModel(
             id: '${random.nextInt(100000)}',
-            tag: AreaType.noFlyZone, // Разрешенная зона
-            latitude: 41.0 + random.nextDouble(), // Центральная широта
-            longitude: 69.0 + random.nextDouble(), // Центральная долгота
-            radius: 1000.0 + random.nextDouble() * 500, // Радиус круга
+            tag: AreaType.authorizedZone, // Разрешенная зона
+            latitude: 41.4221,
+            longitude: 69.5021 , // Центральная долгота
+            radius: 1000.0, // Радиус круга
           ),
         ];
 

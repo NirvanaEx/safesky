@@ -4,22 +4,35 @@ import 'package:intl/intl.dart';
 import 'package:safe_sky/models/request_model.dart';
 import 'package:safe_sky/services/request_service.dart';
 import '../models/area_point_location_model.dart';
+import '../models/request/status_model.dart';
 import '../utils/enums.dart';
 import 'map/map_show_location_view.dart';
 import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
 
-class ShowRequestView extends StatelessWidget {
+class ShowRequestView extends StatefulWidget {
   final RequestModel? requestModel;
 
   ShowRequestView({required this.requestModel});
 
   @override
+  _ShowRequestViewState createState() => _ShowRequestViewState();
+}
+
+
+class _ShowRequestViewState extends State<ShowRequestView> {
+  bool _isSharing = false;
+
+
+  @override
   Widget build(BuildContext context) {
+    final RequestModel? requestModel = widget.requestModel;
+
     final localizations = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('dd.MM.yyyy');
     final dateTimeFormat = DateFormat('dd.MM.yyyy HH:mm');
+
 
     // Поиск AUTHORIZED ZONE в area
     final authorizedZone = requestModel?.area?.firstWhere(
@@ -86,12 +99,11 @@ class ShowRequestView extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 10),
-
                   if (requestModel?.status == 'confirmed')
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () async {
+                        onPressed: _isSharing ? null : () async { // Отключаем кнопку, если идет загрузка
                           await _handleLocationSharing(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -100,9 +112,19 @@ class ShowRequestView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(localizations.startLocationSharing),
+                        child: _isSharing
+                            ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white, // Цвет индикатора
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : Text(localizations.startLocationSharing),
                       ),
                     ),
+
 
                   SizedBox(height: 20),
 
@@ -208,52 +230,101 @@ class ShowRequestView extends StatelessWidget {
   }
 
   Future<void> _handleLocationSharing(BuildContext context) async {
-    final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
+    try {
+      final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
-    // Если уже есть активная задача, показываем диалоговое окно
-    if (locationVM.currentRequestId != null) {
-      final shouldStop = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(AppLocalizations.of(context)!.stopExistingLocationSharing),
-            content: Text(AppLocalizations.of(context)!.locationSharingActive),
-            actions: <Widget>[
-              TextButton(
-                child: Text(AppLocalizations.of(context)!.back),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-              TextButton(
-                child: Text(AppLocalizations.of(context)!.stop),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        },
-      );
+      if (locationVM.currentRequestId != null) {
+        final shouldStop = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(AppLocalizations.of(context)!.stopExistingLocationSharing),
+              content: Text(AppLocalizations.of(context)!.locationSharingActive),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(AppLocalizations.of(context)!.back),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  child: Text(AppLocalizations.of(context)!.stop),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        );
 
-      if (shouldStop != true) {
-        return;
-      } else {
-        await locationVM.stopLocationSharing();
+        if (shouldStop != true) {
+          return;
+        } else {
+          await locationVM.stopLocationSharing();
+        }
       }
-    }
 
-    // Выполняем переход на страницу с картой после остановки задачи или если задач не было
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MapShareLocationView(
-          key: ValueKey(requestModel?.id), // Используем уникальный ID из requestModel
-          requestModel: requestModel,
-        ),
-      ),
-    );
+      navigateToMapShareLocationView(context, widget.requestModel?.id ?? '');
+    } catch (e) {
+      // Обработка возможных ошибок
+      print('Error in _handleLocationSharing: $e');
+    }
   }
+
+  void navigateToMapShareLocationView(BuildContext context, String requestId) async {
+    RequestService requestService = RequestService();
+
+    setState(() {
+      _isSharing = true; // Запуск индикатора загрузки
+    });
+
+    try {
+      // Получаем статус запроса
+      StatusModel status = await requestService.getRequestStatus(requestId);
+
+      // Проверяем статус и выполняем навигацию или показываем сообщения для разных статусов
+      if (status.status == RequestStatus.active) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MapShareLocationView(
+              key: ValueKey(requestId), // Используем уникальный ID запроса
+              requestModel: widget.requestModel, // Передаем requestModel, если это необходимо
+            ),
+          ),
+        );
+      } else if (status.status == RequestStatus.expired) {
+        // Если статус "Просрочено", показываем соответствующее сообщение
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request has expired: ${status.message}')),
+        );
+      } else if (status.status == RequestStatus.notYetActive) {
+        // Если статус "Еще не активна", показываем соответствующее сообщение
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request is not yet active: ${status.message}')),
+        );
+      } else {
+        // Обработка других статусов, если они появятся
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unknown status: ${status.status}. ${status.message}')),
+        );
+      }
+    } catch (e) {
+      // Обработка ошибки, например, показываем сообщение об ошибке
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error retrieving status: $e')),
+      );
+    }
+    finally {
+      setState(() {
+        _isSharing = false; // Остановка индикатора загрузки
+      });
+    }
+  }
+
+
+
 
   Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context}) {
     return Padding(
@@ -282,7 +353,7 @@ class ShowRequestView extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => MapShowLocationView(
-                          requestModel: requestModel,
+                          requestModel: widget.requestModel,
                         ),
                       ),
                     );

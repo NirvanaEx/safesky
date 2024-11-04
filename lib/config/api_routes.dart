@@ -13,13 +13,14 @@ class ApiRoutes {
   static const String validateToken = '${Config.apiUrl}/auth/validate-token';
 
   // Другие роуты для данных
-  static const String userProfile = '${Config.apiUrl}/user/profile';
+  //static const String userProfile = '${Config.apiUrl}/user/profile';
   static const String models = '${Config.apiUrl}/models';
   static const String flightSigns = '${Config.apiUrl}/flightSigns';
   static const String purposes = '${Config.apiUrl}/purposes';
   static const String regions = '${Config.apiUrl}/regions';
   static const String requests = '${Config.apiUrl}/requests';
 
-  // Роут для отмены заявки
-  static const String cancel_request = '${Config.apiUrl}/cancel_request';
+  // Роуты для управления заявками
+  static const String cancelRequest = '${Config.apiUrl}/cancel-request';
+  static const String checkRequestStatus = '${Config.apiUrl}/check-request-status';
 }
