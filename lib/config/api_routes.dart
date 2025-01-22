@@ -13,6 +13,8 @@ class ApiRoutes {
 
   static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
 
+  static const String requestList = '${Config.apiUrl}/bpla/plan/list';
+
 
 
 

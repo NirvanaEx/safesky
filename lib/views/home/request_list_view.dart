@@ -78,11 +78,11 @@ class _RequestListViewState extends State<RequestListView> {
                       itemCount: viewModel.requests.length + (viewModel.isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index >= viewModel.requests.length) {
-                          return _buildLoadingIndicator(); // Показ индикатора, если идет загрузка
+                          return _buildLoadingIndicator();
                         }
                         final request = viewModel.requests[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Card(
@@ -90,23 +90,18 @@ class _RequestListViewState extends State<RequestListView> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              clipBehavior: Clip.antiAlias, // Обрезка содержимого по границам
+                              clipBehavior: Clip.antiAlias,
                               child: ListTile(
-                                title: Text("№ ${request.number}"),
+                                title: Text("№ ${request.planId}"),
+                                subtitle: Text(request.planDate),
                                 trailing: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: viewModel.getStatusColor(request.status),
+                                    color: viewModel.getStatusColor(request.stateId),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    request.status != null
-                                        ? (request.status == 'confirmed'
-                                        ? localizations.confirmed
-                                        : request.status == 'pending'
-                                        ? localizations.pending
-                                        : localizations.rejected)
-                                        : '',
+                                    _getLocalizedStatus(request.stateId, localizations),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -115,7 +110,7 @@ class _RequestListViewState extends State<RequestListView> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ShowRequestView(
-                                        requestModel: request,
+                                        requestModel: null,
                                       ),
                                     ),
                                   );
@@ -124,7 +119,7 @@ class _RequestListViewState extends State<RequestListView> {
                             ),
                           ),
                         );
-                      }
+                      },
                     ),
                   ),
                 ),
@@ -191,5 +186,18 @@ class _RequestListViewState extends State<RequestListView> {
         ),
       ),
     );
+  }
+
+  String _getLocalizedStatus(int stateId, AppLocalizations localizations) {
+    switch (stateId) {
+      case 1:
+        return localizations.confirmed;
+      case 2:
+        return localizations.pending;
+      case 3:
+        return localizations.rejected;
+      default:
+        return "unknown";
+    }
   }
 }

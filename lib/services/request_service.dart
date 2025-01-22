@@ -13,6 +13,7 @@ import '../models/request/purpose_model.dart';
 import '../models/request/region_model.dart';
 import '../models/request/status_model.dart';
 import '../models/request_model.dart';
+import '../models/request_model_main.dart';
 
 class RequestService {
   // Метод для отправки запроса
@@ -319,6 +320,49 @@ class RequestService {
       },
     );
   }
+
+  Future<List<RequestModelMain>> fetchMainRequests({int page = 1, int count = 10}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    final response = await http.get(
+      Uri.parse('${ApiRoutes.requestList}?page=$page&count=$count'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    print("API Response (raw bytes): ${response.bodyBytes}");
+
+    if (response.statusCode == 200) {
+      try {
+        final decodedBody = latin1.decode(response.bodyBytes);
+        final Map<String, dynamic> jsonData = json.decode(decodedBody);
+
+        List<RequestModelMain> requests = (jsonData['rows'] as List)
+            .map((item) => RequestModelMain.fromJson(item))
+            .toList();
+
+        print("Parsed requests count: ${requests.length}");
+        for (var request in requests) {
+          print("Request ID: ${request.planId}, Number: ${request.applicationNum}, State: ${request.state}");
+        }
+
+        return requests;
+      } catch (e) {
+        print("Error decoding response: $e");
+        throw Exception('Failed to decode response');
+      }
+    } else {
+      throw Exception('Failed to load requests: ${response.statusCode}');
+    }
+  }
+
 
 // Метод для получения списка запросов
   Future<List<RequestModel>> fetchRequests(String token, {int batch = 0, int batchSize = 10}) async {
