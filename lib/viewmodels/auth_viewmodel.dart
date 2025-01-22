@@ -19,17 +19,24 @@ class AuthViewModel extends ChangeNotifier {
 
   // Метод для авторизации
   Future<bool> login(String email, String password) async {
-    _setLoading(true);  // Устанавливаем состояние загрузки
+    _setLoading(true);
     notifyListeners();
 
     try {
       bool success = await _authService.login(email, password);
+      if (success) {
+        // Получение профиля сразу в виде UserModel
+        _user = await _authService.getUserInfo();
+
+        print('User info loaded: ${_user?.name} ${_user?.surname}'); // Лог данных
+      }
+
       _setLoading(false);
+      notifyListeners();
       return success;
     } catch (e) {
-      // Сохраняем сообщение об ошибке
       _errorMessage = e is Exception ? e.toString() : 'Ошибка авторизации';
-      print('Login error: $_errorMessage'); // Лог ошибки
+      print('Login error: $_errorMessage');
       _setLoading(false);
       notifyListeners();
       return false;
@@ -41,23 +48,26 @@ class AuthViewModel extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
-    if (token != null && token.isNotEmpty) {
-      // Проверяем токен на сервере
-      final isValid = await _authService.isTokenValid();
-      if (!isValid) {
-        await logout(); // Удаляем недействительный токен и очищаем данные пользователя
-        return false;
-      }
-
-      // Восстанавливаем данные пользователя, если они сохранены
-      String? userData = prefs.getString('user_data');
-      if (userData != null) {
-        _user = UserModel.fromJson(jsonDecode(userData));
-        notifyListeners();
-      }
-      return true;
+    if (token == null || token.isEmpty) {
+      return false; // Токена нет — пользователь не авторизован
     }
-    return false;
+
+    try {
+      // Попытка получить данные пользователя с сохранённым токеном
+      _user = await _authService.getUserInfo();
+
+      // Сохранение данных пользователя в локальное хранилище для дальнейшего использования
+      await prefs.setString('user_data', jsonEncode(_user!.toJson()));
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print('Authentication check failed: $e');
+
+      // Ошибка говорит о том, что токен недействителен или нет связи с сервером
+      await logout();
+      return false;
+    }
   }
 
   // Метод для регистрации

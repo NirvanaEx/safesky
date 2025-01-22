@@ -8,6 +8,9 @@ class ApiRoutes {
   static const String register = '${Config.apiUrl}/auth/reg';
   static const String sendEmail = '${Config.apiUrl}/auth/otp';
 
+  static const String userInfo = '${Config.apiUrl}/profile/info';
+
+
   static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
 
 

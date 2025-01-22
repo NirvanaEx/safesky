@@ -120,7 +120,40 @@ class AuthService {
   }
 
 
+  Future<UserModel> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
 
+    if (token == null) {
+      throw Exception('Authorization token is missing');
+    }
+
+    final response = await http.get(
+      Uri.parse(ApiRoutes.userInfo),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    final String responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = jsonDecode(responseBody);
+
+      return UserModel.fromJson({
+        'id': jsonData['applicantId'],
+        'email': jsonData['email'],
+        'name': jsonData['name'],
+        'surname': jsonData['surname'],
+        'phoneNumber': jsonData['phone'],
+        'token': token,  // Добавляем токен из сохранённого значения
+      });
+    } else {
+      final Map<String, dynamic> errorResponse = jsonDecode(responseBody);
+      throw Exception(errorResponse['message'] ?? 'Ошибка получения профиля');
+    }
+  }
 
   // Получение токена из SharedPreferences
   Future<String?> _getToken() async {
