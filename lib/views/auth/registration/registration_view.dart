@@ -16,7 +16,7 @@ class _RegistrationViewState extends State<RegistrationView> {
   void _nextPage(String email) {
     setState(() {
       _email = email; // Сохраняем email
-      if (_currentPage < 2) {
+      if (_currentPage < 1) {  // Теперь 1 вместо 2, так как убрали VerifyView
         _currentPage++;
         _pageController.animateToPage(
           _currentPage,
@@ -56,8 +56,7 @@ class _RegistrationViewState extends State<RegistrationView> {
           physics: NeverScrollableScrollPhysics(),
           children: [
             EmailView(onNext: _nextPage),
-            VerifyView(onNext: (email) => _nextPage(email), email: _email),
-            InfoView(email: _email), // Передаем email в InfoView
+            InfoView(email: _email), // Передаем email напрямую в InfoView
           ],
         ),
       ),

@@ -4,6 +4,13 @@
   "password": "Parol",
   "login": "Kirish",
   "register": "Ro‘yxatdan o‘tish",
+
+  "createPassword": "Parol yarating",
+  "repeatPassword": "Parolni takrorlang",
+
+  "confirmationCode": "Tasdiqlash kodi",
+
+
   "continueLabel": "Davom etish",
   "alreadyHaveAccount": "Sizda allaqachon hisob bormi? Kirish",
   "termsOfService": "“Davom etish” tugmasini bosish orqali Foydalanish shartlarini qabul qilasiz",

@@ -25,7 +25,7 @@ class _VerifyViewState extends State<VerifyView> {
 
     final code = _codeController.text.trim();
 
-    if (code.length == 6) { // Проверка, что код из 6 символов
+    if (code.length == 5) { // Проверка, что код из 6 символов
       final isVerified = await authViewModel.checkCode(widget.email, code);
 
       if (isVerified) {
@@ -117,7 +117,7 @@ class _VerifyViewState extends State<VerifyView> {
                       maxLength: 6,
                       showCursor: false,
                       decoration: InputDecoration(
-                        hintText: '______',
+                        hintText: '_____',
                         hintStyle: TextStyle(letterSpacing: 10, color: Colors.grey),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.9),

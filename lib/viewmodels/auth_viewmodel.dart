@@ -19,21 +19,20 @@ class AuthViewModel extends ChangeNotifier {
 
   // Метод для авторизации
   Future<bool> login(String email, String password) async {
-    _setLoading(true);
-    try {
-      _user = await _authService.login(email, password);
+    _setLoading(true);  // Устанавливаем состояние загрузки
+    notifyListeners();
 
-      // Сохраняем токен и данные пользователя
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', _user?.token ?? '');
-      await prefs.setString('user_data', jsonEncode(_user?.toJson())); // Сохраняем данные пользователя
+    try {
+      bool success = await _authService.login(email, password);
       _setLoading(false);
-      return true; // Успешный вход
+      return success;
     } catch (e) {
-      _errorMessage = e.toString();
+      // Сохраняем сообщение об ошибке
+      _errorMessage = e is Exception ? e.toString() : 'Ошибка авторизации';
+      print('Login error: $_errorMessage'); // Лог ошибки
       _setLoading(false);
       notifyListeners();
-      return false; // Ошибка входа
+      return false;
     }
   }
 
@@ -44,7 +43,7 @@ class AuthViewModel extends ChangeNotifier {
 
     if (token != null && token.isNotEmpty) {
       // Проверяем токен на сервере
-      final isValid = await _authService.isTokenValid(token);
+      final isValid = await _authService.isTokenValid();
       if (!isValid) {
         await logout(); // Удаляем недействительный токен и очищаем данные пользователя
         return false;
@@ -92,22 +91,42 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   //Последний шаг
-  Future<UserModel?> register(String name, String surname, String email, String password, String phoneNumber) async {
+  Future<bool> register(
+      String name,
+      String surname,
+      String email,
+      String password,
+      String confirmPassword,
+      String phoneNumber,
+      String code
+      ) async {
     _setLoading(true);
-    try {
-      _user = await _authService.register(email, password, name, surname, phoneNumber);
 
-      // Сохраняем токен и данные пользователя после регистрации
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', _user?.token ?? '');
-      await prefs.setString('user_data', jsonEncode(_user?.toJson())); // Сохраняем данные пользователя
+    if (password != confirmPassword) {
+      _errorMessage = 'Passwords do not match';
       _setLoading(false);
-      return _user;
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      await _authService.register(
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+        otp: code,
+        surname: surname,
+        name: name,
+        phoneNumber: phoneNumber,
+      );
+
+      _setLoading(false);
+      return true; // Успешная регистрация
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
       notifyListeners();
-      return null;
+      return false; // Ошибка регистрации
     }
   }
 
@@ -141,7 +160,7 @@ class AuthViewModel extends ChangeNotifier {
 
     if (token != null && token.isNotEmpty) {
       try {
-        await _authService.logout(token); // Отправляем запрос на сервер
+        await _authService.logout(); // Отправляем запрос на сервер
       } catch (e) {
         _errorMessage = e.toString();
         notifyListeners();

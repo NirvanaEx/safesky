@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Config {
-  static const String apiUrl = 'https://webhook.site/c68f5dbe-6d7a-470a-ad18-cfcd36b243f8';
+  static const String apiUrl = 'http://91.213.31.234:8898/bpla_mobile_service/api/v1/';
 
   // Выделяем username и password отдельно
   static const String username = 'my_username';

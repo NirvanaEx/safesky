@@ -4,6 +4,13 @@
   "password": "Пароль",
   "login": "Войти",
   "register": "Зарегистрироваться",
+
+  "createPassword": "Придумайте пароль",
+  "repeatPassword": "Повторите пароль",
+
+  "confirmationCode": "Код подтверждения",
+
+
   "continueLabel": "Продолжить",
   "alreadyHaveAccount": "Уже есть аккаунт? Войти",
   "termsOfService": "Нажимая кнопку \"продолжить\", вы принимаете условия Пользовательского соглашения",

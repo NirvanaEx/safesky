@@ -5,10 +5,16 @@ class ApiRoutes {
 
   // Роуты для авторизации
   static const String login = '${Config.apiUrl}/auth/login';
-  static const String register = '${Config.apiUrl}/auth/register';
-  static const String logout = '${Config.apiUrl}/auth/logout';
-  static const String sendEmail = '${Config.apiUrl}/auth/send-email';
+  static const String register = '${Config.apiUrl}/auth/reg';
+  static const String sendEmail = '${Config.apiUrl}/auth/otp';
+
   static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
+
+
+
+
+  static const String logout = '${Config.apiUrl}/auth/logout';
+
   static const String changePassword = '${Config.apiUrl}/auth/change-password';
   static const String validateToken = '${Config.apiUrl}/auth/validate-token';
   static const String changeProfileData = '${Config.apiUrl}/auth/change-profile-data';

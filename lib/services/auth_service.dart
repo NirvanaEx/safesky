@@ -2,40 +2,136 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
-import '../config/config.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  final String _baseUrl = ApiRoutes.login; // Используем URL из ApiRoutes
 
   // Метод для входа пользователя
-  Future<UserModel> login(String email, String password) async {
-    //Заглушка
-    await Future.delayed(Duration(seconds: 2));
+  Future<bool> login(String username, String password) async {
+    final url = Uri.parse(ApiRoutes.login);
 
-    return UserModel(id: 1, email: 'email@gmail.com', name: 'Drake', surname: 'Brown', phoneNumber: '+998909883696', token: 'token_auth');
-    final url = Uri.parse(_baseUrl);
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({'username': username, 'password': password}),
+      );
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': Config.basicAuth, // Используем basicAuth
-      },
-      body: jsonEncode({'email': email, 'password': password}),
-    );
+      // Декодируем ответ в правильной кодировке UTF-8
+      final String responseBody = utf8.decode(response.bodyBytes);
+      final Map<String, dynamic> responseData = jsonDecode(responseBody);
 
-    if (response.statusCode == 200) {
-      // Парсим JSON в модель, включая новые поля
-      return UserModel.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to login');
+      print('Server response: $responseData');  // Логируем ответ сервера
+
+      if (response.statusCode == 200) {
+        // Сохраняем токен и дату истечения
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', responseData['token']);
+        await prefs.setString('token_expire_at', responseData['expireAt']);
+
+        print('Token saved: ${responseData['token']}');  // Лог токена
+
+        return true;  // Успешный вход
+      } else {
+        // Логируем сообщение об ошибке и выбрасываем исключение
+        print('Login error: ${responseData['message']}');
+        throw Exception(responseData['message'] ?? 'Ошибка при входе');
+      }
+    } catch (e) {
+      print('Network error occurred: $e');
+      throw Exception('Не удалось подключиться к серверу: $e');
     }
   }
 
+
+  // Метод для отправки email
+  Future<Map<String, dynamic>> sendEmail(String username) async {
+    final token = await _getToken();
+    final url = Uri.parse(ApiRoutes.sendEmail);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'username': username}),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        // Обработка ошибок
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to send email');
+      }
+    } catch (e) {
+      throw Exception('Не удалось подключиться к серверу: $e');
+    }
+  }
+
+
+  // Метод для регистрации
+  Future<void> register({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String otp,
+    required String surname,
+    required String name,
+    required String phoneNumber,
+  }) async {
+    final url = Uri.parse(ApiRoutes.register);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'username': email,
+          'password': password,
+          'passwordConfirm': confirmPassword,
+          'otp': otp,
+          'surname': surname,
+          'name': name,
+          'phone': phoneNumber,
+        }),
+      );
+
+      // Декодируем ответ в правильной кодировке UTF-8
+      final String responseBody = utf8.decode(response.bodyBytes);
+
+      if (response.statusCode == 200) {
+        print('Registration successful');
+      } else {
+        final Map<String, dynamic> errorResponse = jsonDecode(responseBody);
+        print('Server error: ${errorResponse['message']}');
+        throw Exception('Failed to register: ${errorResponse['message']}');
+      }
+    } catch (e) {
+      print('Network error occurred: $e');  // Логируем ошибку сети
+      throw Exception('Network error: ${e.toString()}');
+    }
+  }
+
+
+
+
+  // Получение токена из SharedPreferences
+  Future<String?> _getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
   // Метод для проверки подлинности токена
-  Future<bool> isTokenValid(String token) async {
-    return true;
+  Future<bool> isTokenValid() async {
+    final token = await _getToken();
+    if (token == null) return false;
 
     final url = Uri.parse(ApiRoutes.validateToken);
 
@@ -47,199 +143,95 @@ class AuthService {
       },
     );
 
-    if (response.statusCode == 200) {
-      return true; // Токен действителен
-    } else {
-      return false; // Токен недействителен или истек
-    }
+    return response.statusCode == 200;
   }
 
-  // Метод для регистрации пользователя
-  //Шаг 1
-  Future<Map<String, dynamic>> sendEmail(String email) async {
-    // Заменяем реальный HTTP-запрос на заглушку
-    await Future.delayed(Duration(seconds: 2)); // Имитируем задержку сети
 
-    // Возвращаем фиктивный ответ
-    return {
-      'status': 'success',
-      'message': 'Verification email sent to $email'
-    };
-
-
-    final url = Uri.parse(ApiRoutes.sendEmail); // Для отправки email
-
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': Config.basicAuth,
-      },
-      body: jsonEncode({'email': email}),
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body); // Ожидаем ответ с 'status' и 'message'
-    } else {
-      throw Exception('Failed to send email');
-    }
-  }
-
-  //Шаг 2
+  // Метод для проверки кода
   Future<void> checkCode(String email, String code) async {
-    // Имитация задержки, чтобы сделать поведение более реалистичным
-    await Future.delayed(Duration(seconds: 2));
-
-    // Имитация логики проверки кода
-    if (code == "123456") { // Предполагаем, что "123456" — корректный код для теста
-      // Успешная проверка, ничего не возвращаем
-      return;
-    } else {
-      // Имитируем ошибку проверки
-      throw Exception('Неверный код. Пожалуйста, попробуйте еще раз.');
-    }
-
-    final url = Uri.parse(ApiRoutes.verifyCode); // Для проверки кода
+    final token = await _getToken();
+    final url = Uri.parse(ApiRoutes.verifyCode);
 
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': Config.basicAuth,
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({'email': email, 'code': code}),
     );
 
     if (response.statusCode != 200) {
       final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Ошибка при проверке кода');
+      throw Exception(errorData['message'] ?? 'Failed to verify code');
     }
   }
 
 
-  //Последний шаг
-  Future<UserModel> register(String email, String password, String name, String surname, String phoneNumber) async {
-    // Имитация задержки для более реалистичного тестирования
-    await Future.delayed(Duration(seconds: 2));
 
-    // Возвращаем фиктивный экземпляр UserModel
-    return UserModel(
-      id: 1, // Предположительно ID, который бы вернул сервер
-      email: email,
-      name: name,
-      surname: surname,
-      phoneNumber: phoneNumber,
-      token: 'fake_token_123', // Фиктивный токен для тестирования
-    );
-
-    final url = Uri.parse(ApiRoutes.register);
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': Config.basicAuth,
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-        'name': name,
-        'surname': surname,
-        'phoneNumber': phoneNumber,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to register');
-    }
-  }
-
+  // Метод для изменения данных профиля
   Future<void> changeProfileData(String name, String surname, String phoneNumber) async {
-    // Имитация задержки для эмуляции сети
-    await Future.delayed(Duration(seconds: 2));
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth_token');
-
-    // URL для смены данных профиля
+    final token = await _getToken();
     final url = Uri.parse(ApiRoutes.changeProfileData);
 
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': Config.basicAuth, // Или 'Bearer {токен}' при использовании токенов доступа
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'name': name,
         'surname': surname,
         'phoneNumber': phoneNumber,
-        'token': token,
       }),
     );
 
-
-    // Проверка статуса ответа
     if (response.statusCode != 200) {
       final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Ошибка при изменении данных профиля');
+      throw Exception(errorData['message'] ?? 'Failed to update profile data');
     }
   }
 
+  // Метод для изменения пароля
   Future<void> changePassword(String newPassword) async {
-    await Future.delayed(Duration(seconds: 2)); // Имитация задержки сети
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth_token');
-
-    // Имитация проверки длины пароля для успешного или неуспешного ответа
-    if (newPassword.length >= 6) {
-      // Успешная смена пароля — метод завершает работу без исключения
-      return;
-    } else {
-      // Исключение, если пароль не соответствует требуемой длине
-      throw Exception('Password must be at least 6 characters long');
-    }
-
-    final url = Uri.parse(ApiRoutes.changePassword); // URL для смены пароля
+    final token = await _getToken();
+    final url = Uri.parse(ApiRoutes.changePassword);
 
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': Config.basicAuth, // Или 'Bearer {токен}' при использовании токенов доступа
+        'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        'newPassword': newPassword, // Новый пароль
-        'token': token,
-      }),
+      body: jsonEncode({'newPassword': newPassword}),
     );
 
     if (response.statusCode != 200) {
       final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Ошибка при смене пароля');
+      throw Exception(errorData['message'] ?? 'Failed to change password');
     }
   }
 
-
-
-
-  // Метод для выхода пользователя
-  Future<void> logout(String token) async {
-
+  // Метод для выхода
+  Future<void> logout() async {
+    final token = await _getToken();
     final url = Uri.parse(ApiRoutes.logout);
 
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Передаем токен в заголовке
+        'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to logout');
+    } else {
+      // Удаляем токен из SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('auth_token');
     }
   }
 }

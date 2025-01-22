@@ -126,7 +126,11 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     SizedBox(height: 24),
                     TextButton(
-                      onPressed: () async {
+                      onPressed: authViewModel.isLoading
+                          ? null  // Блокируем кнопку, если идёт загрузка
+                          : () async {
+                        FocusScope.of(context).unfocus(); // Закрываем клавиатуру
+
                         bool success = await authViewModel.login(
                           _emailController.text,
                           _passwordController.text,
@@ -138,11 +142,18 @@ class _LoginViewState extends State<LoginView> {
                             MaterialPageRoute(builder: (context) => MainView()),
                           );
                         } else {
-                          // Обработка неудачного входа, например, вывод сообщения об ошибке
+                          // Отображаем сообщение об ошибке
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(authViewModel.errorMessage ?? 'Ошибка авторизации'),
+                              backgroundColor: Colors.red, // Красный цвет для ошибок
+                              duration: Duration(seconds: 3), // Время отображения
+                            ),
+                          );
                         }
                       },
                       style: TextButton.styleFrom(
-                        backgroundColor: Colors.black, // Устанавливаем черный фон
+                        backgroundColor: Colors.black, // Чёрный фон кнопки
                         padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -150,7 +161,7 @@ class _LoginViewState extends State<LoginView> {
                         minimumSize: Size(double.infinity, 48),
                       ),
                       child: authViewModel.isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
+                          ? CircularProgressIndicator(color: Colors.white)  // Индикатор загрузки
                           : Text(
                         localizations.login,
                         style: TextStyle(fontSize: 16, color: Colors.white), // Белый цвет текста

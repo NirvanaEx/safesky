@@ -4,6 +4,13 @@
   "password": "Password",
   "login": "Login",
   "register": "Register",
+
+  "createPassword": "Create a password",
+  "repeatPassword": "Repeat the password",
+
+  "confirmationCode": "Confirmation code",
+
+
   "continueLabel": "Continue",
   "alreadyHaveAccount": "Already have an account? Log in",
   "termsOfService": "By clicking 'Continue', you accept the Terms of Service",
