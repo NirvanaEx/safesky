@@ -48,6 +48,8 @@
   "passwordChanged": "Parolingiz muvaffaqiyatli o'zgartirildi.",
 
 
+  "requestNum": "Ariza raqami",
+
   "submitRequest": "So'rov yuborish",
   "flightStartDate": "Parvoz boshlanish sanasi",
   "requesterName": "So'rovchi ismi",

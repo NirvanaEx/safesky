@@ -141,14 +141,24 @@ class AuthService {
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonData = jsonDecode(responseBody);
 
-      return UserModel.fromJson({
-        'id': jsonData['applicantId'],
+      UserModel user = UserModel.fromJson({
+        'id': jsonData['id'],
         'email': jsonData['email'],
         'name': jsonData['name'],
         'surname': jsonData['surname'],
         'phoneNumber': jsonData['phone'],
-        'token': token,  // Добавляем токен из сохранённого значения
+        'applicantId': jsonData['applicantId'],
+        'applicant': jsonData['applicant'],
+        'token': token,
       });
+
+      // Сохраняем applicant в SharedPreferences
+      await prefs.setString('applicant', user.applicant);
+      await prefs.setInt('userId', user.id);
+
+      print('USER ID: ${user.id}');
+
+      return user;
     } else {
       final Map<String, dynamic> errorResponse = jsonDecode(responseBody);
       throw Exception(errorResponse['message'] ?? 'Ошибка получения профиля');

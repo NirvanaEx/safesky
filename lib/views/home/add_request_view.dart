@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:safe_sky/models/prepare_model.dart';
+import '../../models/request.dart';
 import '../../models/request/flight_sign_model.dart';
 import '../../models/request/model_model.dart';
 import '../../models/request/purpose_model.dart';
@@ -18,19 +21,19 @@ class AddRequestView extends StatefulWidget {
 
 class _AddRequestViewState extends State<AddRequestView> {
 
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<AddRequestViewModel>(context, listen: false).initializeData(context);
-  }
 
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<AddRequestViewModel>(context, listen: true);
     final localizations = AppLocalizations.of(context)!;
 
+
     return Scaffold(
-      body: SingleChildScrollView(
+      body: viewModel.isLoading
+          ? Center(
+        child: CircularProgressIndicator(),
+      )
+          : SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,196 +45,199 @@ class _AddRequestViewState extends State<AddRequestView> {
               ),
             ),
             SizedBox(height: 16),
+
             _buildLabel(localizations.flightStartDate),
             _buildDateOnlyPickerField(
               date: viewModel.startDate,
               hintText: "01.01.2023",
-              onDateSelected: (date) => viewModel.updateStartDate(date!),
+              onDateSelected: (date) => viewModel.updateStartDate(context, date!),
             ),
             SizedBox(height: 16),
-            _buildLabel(localizations.requesterName),
-            _buildTextField(viewModel.requesterNameController, hintText: localizations.requesterName, isText: true),
-            SizedBox(height: 16),
-            _buildLabel(localizations.model),
-            _buildDropdown<ModelModel>(
-              items: viewModel.models,
-              selectedValue: viewModel.selectedModel,
-              onChanged: (value) => viewModel.setModel(value!),
-              hint: localizations.model,
-              getItemName: (model) => model.name, // Вытягиваем свойство `name`
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.flightSign),
-            _buildDropdown<FlightSignModel>(
-              items: viewModel.flightSigns,
-              selectedValue: viewModel.selectedFlightSign,
-              onChanged: (value) => viewModel.setFlightSign(value!),
-              hint: localizations.flightSign,
-              getItemName: (sign) => sign.name,
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.flightTimes),
-            Column(
-              children: [
-                _buildDatePickerField(
-                  date: viewModel.flightStartDateTime,
-                  hintText: "01.01.2023 15:00",
-                  onDateSelected: (date) => viewModel.updateFlightStartDateTime(date!),
-                ),
-                SizedBox(height: 16),
-                _buildDatePickerField(
-                  date: viewModel.flightEndDateTime,
-                  hintText: "01.01.2023 17:00",
-                  onDateSelected: (date) => viewModel.updateFlightEndDateTime(date!),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.region),
-            _buildDropdown<RegionModel>(
-              items: viewModel.regions,
-              selectedValue: viewModel.selectedRegion,
-              onChanged: (value) => viewModel.setRegion(value!),
-              hint: localizations.region,
-              getItemName: (region) => region.name,
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.coordinates),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(viewModel.latLngController, hintText: localizations.coordinates, readOnly: true),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapSelectLocationView(),
-                      ),
-                    );
-                    if (result != null && result is Map<String, dynamic>) {
-                      LatLng coordinates = result['coordinates'];
-                      double? radius = result['radius'];
-                      viewModel.updateCoordinatesAndRadius(coordinates, radius);
-                    }
-                  },
-                  child: Text(localizations.map),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLabel(localizations.flightHeight),
-                      _buildTextField(viewModel.flightHeightController, hintText: '0', isDecimal: true)
-                    ],
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLabel(localizations.flightRadius),
-                      _buildTextField(viewModel.radiusController, hintText: '0', isDecimal: true)
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.flightPurpose),
-            _buildDropdown<PurposeModel>(
-              items: viewModel.purposes,
-              selectedValue: viewModel.selectedPurpose,
-              onChanged: (value) => viewModel.setPurpose(value!),
-              hint: localizations.flightPurpose,
-              getItemName: (purpose) => purpose.name,
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.operatorName),
-            _buildTextField(viewModel.operatorNameController, hintText: localizations.operatorName, isText: true),
-            SizedBox(height: 16),
-            _buildLabel(localizations.operatorPhone),
-            _buildPhoneField(viewModel, context),
-            SizedBox(height: 16),
-            _buildLabel(localizations.email),
-            _buildTextField(viewModel.emailController, hintText: 'my@mail.com', isText: true),
-            SizedBox(height: 16),
-            _buildLabel(localizations.specialPermit),
-            Row(
-              children: [
-                Expanded(child: _buildTextField(viewModel.permitNumberController, hintText: localizations.permitNumber, isDecimal: true)),
-                SizedBox(width: 16),
-                Expanded(
-                  child: _buildDateOnlyPickerField(
-                    date: viewModel.permitDate,
-                    hintText: "01.01.2023",
-                    onDateSelected: (date) => viewModel.updatePermitDate(date!),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.contract),
-            Row(
-              children: [
-                Expanded(child: _buildTextField(viewModel.contractNumberController, hintText: localizations.contractNumber, isDecimal: true)),
-                SizedBox(width: 16),
-                Expanded(
-                  child: _buildDateOnlyPickerField(
-                    date: viewModel.contractDate,
-                    hintText: "01.01.2023",
-                    onDateSelected: (date) => viewModel.updateContractDate(date!),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            _buildLabel(localizations.note),
-            _buildTextField(viewModel.noteController, hintText: localizations.optional, isText: true),
-            SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  // Ожидание результата submitRequest с помощью await
-                  Map<String, String>? result = await viewModel.submitRequest(context);
 
-                  if (result != null) {
-                    // Получаем статус и сообщение из результата
-                    String status = result['status']!;
-                    String message = result['message']!;
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(message),
-                        backgroundColor: status == 'success' ? Colors.green : Colors.red,
-                      ),
-                    );
-
-                    if (status == 'success') {
-                      print("Запрос успешно отправлен!");
-                      // Здесь можно добавить действия для успешного запроса
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
-                  minimumSize: Size(double.infinity, 48),
+            if (viewModel.errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  viewModel.errorMessage!,
+                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
-                child: Text(localizations.submit, style: TextStyle(fontSize: 16)),
+              ),
+
+            if (viewModel.startDate != null)
+              formAfterGetStartDate(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget formAfterGetStartDate(){
+    final localizations = AppLocalizations.of(context)!;
+    final viewModel = Provider.of<AddRequestViewModel>(context, listen: true);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+        _buildLabel(localizations.requesterName),
+        _buildTextField(viewModel.requesterNameController, hintText: localizations.requesterName, readOnly: true),
+        SizedBox(height: 16),
+        _buildLabel(localizations.requestNum),
+        _buildTextField(viewModel.requestNumController, hintText: localizations.requestNum, isDecimal: true),
+        SizedBox(height: 16),
+        _buildLabel(localizations.model),
+        _buildDropdown<Bpla>(
+          items: viewModel.bplaList,
+          selectedValue: viewModel.selectedBpla,
+          onChanged: (value) {
+            if (value != null) {
+              viewModel.setBpla(value);
+            }
+          },
+          hint: localizations.model,
+          getItemName: (bpla) => bpla.name ?? 'Unknown', // Вытягиваем свойство `name`
+        ),
+
+        SizedBox(height: 16),
+        _buildLabel(localizations.flightTimes),
+        Column(
+          children: [
+            _buildDatePickerField(
+              date: viewModel.flightStartDateTime,
+              hintText: "01.01.2023 15:00",
+              onDateSelected: (date) => viewModel.updateFlightStartDateTime(date!),
+            ),
+            SizedBox(height: 16),
+            _buildDatePickerField(
+              date: viewModel.flightEndDateTime,
+              hintText: "01.01.2023 17:00",
+              onDateSelected: (date) => viewModel.updateFlightEndDateTime(date!),
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        _buildLabel(localizations.region),
+        _buildTextField(viewModel.regionController, hintText: localizations.region, isText: true),
+
+        SizedBox(height: 16),
+        _buildLabel(localizations.coordinates),
+        Row(
+          children: [
+            Expanded(
+              child: _buildTextField(viewModel.latLngController, hintText: localizations.coordinates, readOnly: true),
+            ),
+            TextButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapSelectLocationView(),
+                  ),
+                );
+                if (result != null && result is Map<String, dynamic>) {
+                  LatLng coordinates = result['coordinates'];
+                  double? radius = result['radius'];
+                  viewModel.updateCoordinatesAndRadius(coordinates, radius);
+                }
+              },
+              child: Text(localizations.map),
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLabel(localizations.flightHeight),
+                  _buildTextField(viewModel.flightHeightController, hintText: '0', isDecimal: true)
+                ],
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLabel(localizations.flightRadius),
+                  _buildTextField(viewModel.radiusController, hintText: '0', isDecimal: true)
+                ],
               ),
             ),
           ],
         ),
-      ),
+        SizedBox(height: 16),
+        _buildLabel(localizations.flightPurpose),
+        _buildDropdown<String>(
+          items: viewModel.purposeList,
+          selectedValue: viewModel.selectedPurpose,
+          onChanged: (value) => viewModel.setPurpose(value!),
+          hint: localizations.flightPurpose,
+          getItemName: (purpose) => purpose,
+        ),
+        SizedBox(height: 16),
+        _buildLabel(localizations.operatorName),
+        _buildDropdown<Operator>(
+          items: viewModel.operatorList,
+          selectedValue: viewModel.selectedOperator,
+          onChanged: (value) => viewModel.setOperator(value!),
+          hint: 'NOT SELECTED',
+          getItemName: (operator) => "${operator.surname ?? ''} ${operator.name ?? ''} ${operator.patronymic ?? ''}",
+        ),
+        SizedBox(height: 16),
+        _buildLabel(localizations.operatorPhone),
+        _buildPhoneField(viewModel, context),
+        SizedBox(height: 16),
+        _buildLabel(localizations.email),
+        _buildTextField(viewModel.emailController, hintText: 'my@mail.com', isText: true),
+        SizedBox(height: 16),
+        _buildLabel(localizations.specialPermit),
+        _buildTextField(viewModel.permitNumberController, hintText: '-', isText: true, readOnly: true),
+
+        SizedBox(height: 16),
+        _buildLabel(localizations.contract),
+        _buildTextField(viewModel.contractNumberController, hintText: '-', isText: true, readOnly: true),
+
+        SizedBox(height: 16),
+        _buildLabel(localizations.note),
+        _buildTextField(viewModel.noteController, hintText: localizations.optional, isText: true),
+        SizedBox(height: 30),
+        Center(
+          child: ElevatedButton(
+            onPressed: () async {
+              // Ожидание результата submitRequest с помощью await
+              Map<String, String>? result = await viewModel.submitRequest(context);
+
+              if (result != null) {
+                // Получаем статус и сообщение из результата
+                String status = result['status']!;
+                String message = result['message']!;
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                    backgroundColor: status == 'success' ? Colors.green : Colors.red,
+                  ),
+                );
+
+                if (status == 'success') {
+                  print("Запрос успешно отправлен!");
+                  // Здесь можно добавить действия для успешного запроса
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+              minimumSize: Size(double.infinity, 48),
+            ),
+            child: Text(localizations.submit, style: TextStyle(fontSize: 16)),
+          ),
+        ),
+      ],
     );
   }
 

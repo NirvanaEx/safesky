@@ -47,6 +47,8 @@
   "passwordChanged": "Ваш пароль был успешно изменен.",
 
 
+  "requestNum": "Номер заявки",
+
   "submitRequest": "Подать заявку",
   "flightStartDate": "Дата начала выполнения полета",
   "requesterName": "Наименование заявителя",

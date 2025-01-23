@@ -11,11 +11,14 @@ class ApiRoutes {
   static const String userInfo = '${Config.apiUrl}/profile/info';
 
 
-  static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
 
   static const String requestList = '${Config.apiUrl}/bpla/plan/list';
+  static const String requestPrepare = '${Config.apiUrl}/bpla/plan/prepare';
+
+  static const String requestCreate = '${Config.apiUrl}/bpla/plan/create';
 
 
+  static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
 
 
   static const String logout = '${Config.apiUrl}/auth/logout';

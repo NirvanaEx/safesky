@@ -7,6 +7,8 @@ import '../config/api_routes.dart';
 import '../config/config.dart';
 import '../models/area_point_location_model.dart';
 import '../models/location_model.dart';
+import '../models/prepare_model.dart';
+import '../models/request.dart';
 import '../models/request/flight_sign_model.dart';
 import '../models/request/model_model.dart';
 import '../models/request/purpose_model.dart';
@@ -135,26 +137,14 @@ class RequestService {
 
 
   // Метод для получения списка моделей с параметром lang
-  Future<List<ModelModel>> fetchModels(String lang) async {
+  Future<List<Bpla>> fetchModels(String lang) async {
     // Заглушка для тестирования
     return [
-      ModelModel(id: 1, lang: lang, name: 'Model 1'),
-      ModelModel(id: 2, lang: lang, name: 'Model 2')
+      Bpla(id: 1,  name: 'Model 1', type: 'БПЛА', regnum: '12'),
+      Bpla(id: 2,  name: 'Model 2', type: 'БПЛА', regnum: '231'),
     ];
 
-    final response = await http.get(
-      Uri.parse('${ApiRoutes.models}?lang=$lang'),
-      headers: {
-        'Authorization': Config.basicAuth,
-      },
-    );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((item) => ModelModel.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load models');
-    }
   }
 
   // Метод для получения списка знаков полета с параметром lang
@@ -181,26 +171,14 @@ class RequestService {
   }
 
   // Метод для получения списка целей с параметром lang
-  Future<List<PurposeModel>> fetchPurposes(String lang) async {
+  Future<List<String>> fetchPurposes(String lang) async {
     // Заглушка для тестирования
     return [
-      PurposeModel(id: 1, lang: lang, name: 'Tourism'),
-      PurposeModel(id: 2, lang: lang, name: 'Research')
+      'Tourism',
+      'Research',
     ];
 
-    final response = await http.get(
-      Uri.parse('${ApiRoutes.purposes}?lang=$lang'),
-      headers: {
-        'Authorization': Config.basicAuth,
-      },
-    );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((item) => PurposeModel.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load purposes');
-    }
   }
 
   // Метод для получения списка регионов с параметром lang
@@ -363,26 +341,101 @@ class RequestService {
     }
   }
 
+  Future<PrepareData> fetchPrepareData(String planDate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
 
-// Метод для получения списка запросов
-  Future<List<RequestModel>> fetchRequests(String token, {int batch = 0, int batchSize = 10}) async {
-    return generateTestRequests(batch, batchSize);
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
 
-    // Реальный API запрос:
-    // final response = await http.get(
-    //   Uri.parse('${ApiRoutes.requests}'),
-    //   headers: {
-    //     'Authorization': 'Bearer $token',
-    //   },
-    // );
+    final uri = Uri.parse('${ApiRoutes.requestPrepare}?plan_date=$planDate');
+    print('Fetching data from: $uri');
 
-    // if (response.statusCode == 200) {
-    //   final List<dynamic> data = jsonDecode(response.body);
-    //   return data.map((item) => RequestModel.fromJson(item)).toList();
-    // } else {
-    //   throw Exception('Failed to load requests');
-    // }
+    final response = await http.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
 
+    print('Response status code: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      try {
+        final decodedBody = utf8.decode(response.bodyBytes);
+        print('Raw response body: $decodedBody');  // Выводим необработанный ответ
+
+        final jsonData = json.decode(decodedBody);
+        print('Decoded JSON: $jsonData');  // Выводим распарсенный JSON
+
+        PrepareData prepareData = PrepareData.fromJson(jsonData);
+        print('Parsed PrepareData: ${prepareData.toString()}');  // Выводим объект PrepareData
+
+        return prepareData;
+      } catch (e) {
+        print('Error while parsing response: $e');
+        throw Exception('Failed to parse response: $e');
+      }
+    } else {
+      print('Error response: ${response.body}');
+      throw Exception('Failed to load data: ${response.statusCode}');
+    }
   }
+
+  Future<Map<String, dynamic>> submitBplaPlan(Map<String, dynamic> requestBody) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    final uri = Uri.parse('${ApiRoutes.requestCreate}');
+    print('Submitting BPLA Plan to: $uri');
+    print('Request Body: ${jsonEncode(requestBody)}');
+
+    try {
+      final response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      print('Response status code: ${response.statusCode}');
+
+      final decodedBody = utf8.decode(response.bodyBytes);
+      print('Raw response body: $decodedBody');
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(decodedBody);
+        print('Decoded JSON: $jsonData');
+
+        return {
+          'status': response.statusCode,
+          'message': 'Success',
+          'data': jsonData,
+        };
+      } else {
+        final errorData = json.decode(decodedBody);
+        print('Error response: ${errorData['message']}');
+
+        return {
+          'status': response.statusCode,
+          'message': errorData['message'] ?? 'Unknown error',
+        };
+      }
+    } catch (e) {
+      print('Error while submitting BPLA Plan: $e');
+      throw Exception('Failed to submit BPLA plan: $e');
+    }
+  }
+
+
 
 }

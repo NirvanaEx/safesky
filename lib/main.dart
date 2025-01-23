@@ -78,6 +78,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<LocalizationManager>(
         builder: (context, localizationManager, child) {
           return MaterialApp(
+
             navigatorKey: NotificationService.navigatorKey, // Используем navigatorKey из NotificationService
             locale: localizationManager.currentLocale,
             localizationsDelegates: [
