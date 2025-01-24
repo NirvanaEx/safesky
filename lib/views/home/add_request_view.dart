@@ -14,6 +14,8 @@ import '../../viewmodels/add_request_viewmodel.dart';
 import '../map/map_select_location_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../my_custom_views/multi_select_dropdown.dart';
+
 class AddRequestView extends StatefulWidget {
   @override
   _AddRequestViewState createState() => _AddRequestViewState();
@@ -24,15 +26,12 @@ class _AddRequestViewState extends State<AddRequestView> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<AddRequestViewModel>(context, listen: true);
+    final viewModel = Provider.of<AddRequestViewModel>(context);
     final localizations = AppLocalizations.of(context)!;
-
 
     return Scaffold(
       body: viewModel.isLoading
-          ? Center(
-        child: CircularProgressIndicator(),
-      )
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
@@ -45,33 +44,25 @@ class _AddRequestViewState extends State<AddRequestView> {
               ),
             ),
             SizedBox(height: 16),
-
             _buildLabel(localizations.flightStartDate),
             _buildDateOnlyPickerField(
               date: viewModel.startDate,
               hintText: "01.01.2023",
-              onDateSelected: (date) => viewModel.updateStartDate(context, date!),
+              onDateSelected: (date) {
+                if (date != null) {
+                  viewModel.updateStartDate(context, date);
+                }
+              },
             ),
-            SizedBox(height: 16),
-
-            if (viewModel.errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  viewModel.errorMessage!,
-                  style: TextStyle(color: Colors.red, fontSize: 16),
-                ),
-              ),
-
-            if (viewModel.startDate != null)
-              formAfterGetStartDate(),
+            if (viewModel.startDate != null && !viewModel.isLoading)
+              _formAfterGetStartDate(),
           ],
         ),
       ),
     );
   }
 
-  Widget formAfterGetStartDate(){
+  Widget _formAfterGetStartDate(){
     final localizations = AppLocalizations.of(context)!;
     final viewModel = Provider.of<AddRequestViewModel>(context, listen: true);
 
@@ -86,16 +77,16 @@ class _AddRequestViewState extends State<AddRequestView> {
         _buildTextField(viewModel.requestNumController, hintText: localizations.requestNum, isDecimal: true),
         SizedBox(height: 16),
         _buildLabel(localizations.model),
-        _buildDropdown<Bpla>(
+
+        MultiSelectDropdown<Bpla>(
           items: viewModel.bplaList,
-          selectedValue: viewModel.selectedBpla,
-          onChanged: (value) {
-            if (value != null) {
-              viewModel.setBpla(value);
-            }
+          selectedValues: viewModel.selectedBplas,
+          onChanged: (selected) {
+            viewModel.setBpla(selected);
           },
-          hint: localizations.model,
-          getItemName: (bpla) => bpla.name ?? 'Unknown', // Вытягиваем свойство `name`
+          itemLabel: (bpla) => "${bpla.name}",
+          title: localizations.selectBpla,
+          buttonText: localizations.chooseBpla,
         ),
 
         SizedBox(height: 16),
@@ -179,12 +170,16 @@ class _AddRequestViewState extends State<AddRequestView> {
         ),
         SizedBox(height: 16),
         _buildLabel(localizations.operatorName),
-        _buildDropdown<Operator>(
+        MultiSelectDropdown<Operator>(
           items: viewModel.operatorList,
-          selectedValue: viewModel.selectedOperator,
-          onChanged: (value) => viewModel.setOperator(value!),
-          hint: 'NOT SELECTED',
-          getItemName: (operator) => "${operator.surname ?? ''} ${operator.name ?? ''} ${operator.patronymic ?? ''}",
+          selectedValues: viewModel.selectedOperators,
+          onChanged: (values) {
+            viewModel.setOperators(values);
+          },
+          title: localizations.chooseOperator,
+          hint: localizations.chooseOneOrMultiple,
+          buttonText: localizations.selectOperator,
+          itemLabel: (operator) => "${operator.surname} ${operator.name} ${operator.patronymic ?? ''}",
         ),
         SizedBox(height: 16),
         _buildLabel(localizations.operatorPhone),
@@ -249,6 +244,7 @@ class _AddRequestViewState extends State<AddRequestView> {
   }
 
   Widget _buildTextField(
+
       TextEditingController controller, {
         required String hintText,
         bool readOnly = false,

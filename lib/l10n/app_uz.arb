@@ -50,6 +50,13 @@
 
   "requestNum": "Ariza raqami",
 
+  "chooseOperator": "Operatorlarni tanlash",
+  "chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
+  "selectOperator": "Operatorni tanlang",
+
+  "selectBpla": "BPLA ni tanlang",
+  "chooseBpla": "BPLA ni tanlash",
+
   "submitRequest": "So'rov yuborish",
   "flightStartDate": "Parvoz boshlanish sanasi",
   "requesterName": "So'rovchi ismi",
@@ -127,12 +134,16 @@
   "invalidContractDate": "Shartnoma sanasi noto'g'ri",
   "invalidRequesterName": "Ariza beruvchi nomi bo'sh bo'lishi mumkin emas",
   "invalidModel": "Model tanlanishi kerak",
-  "invalidRegion": "Hudud tanlanishi kerak",
+  "invalidRegion": "Parvoz hududi bo‘sh bo‘lishi mumkin emas",
   "invalidPurpose": "Maqsad tanlanishi kerak",
   "invalidPhoneNumber": "Noto'g'ri telefon raqami",
   "invalidEmail": "Email formati noto'g'ri",
   "invalidFlightSign": "Parvoz belgisi tanlanishi kerak",
   "invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas",
+
+  "invalidBpla": "Iltimos, kamida bitta BPLA ni tanlang",
+  "invalidOperators": "Iltimos, kamida bitta operatorni tanlang",
+  "invalidRequestNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
 
 
   "m": "m",

@@ -49,6 +49,13 @@
 
   "requestNum": "Номер заявки",
 
+  "chooseOperator": "Выбор операторов",
+  "chooseOneOrMultiple": "Выберите одного или нескольких",
+  "selectOperator": "Выбрать оператора",
+
+  "selectBpla": "Выберите БПЛА",
+  "chooseBpla": "Выбрать БПЛА",
+
   "submitRequest": "Подать заявку",
   "flightStartDate": "Дата начала выполнения полета",
   "requesterName": "Наименование заявителя",
@@ -126,12 +133,18 @@
   "invalidContractDate": "Некорректное значение даты договора",
   "invalidRequesterName": "Наименование заявителя не может быть пустым",
   "invalidModel": "Модель должна быть выбрана",
-  "invalidRegion": "Регион должен быть выбран",
+  "invalidRegion": "Регион полета не должен быть пустым",
   "invalidPurpose": "Цель полета должна быть выбрана",
   "invalidPhoneNumber": "Некорректный номер телефона",
   "invalidEmail": "Некорректный формат email",
   "invalidFlightSign": "Знак полета должен быть выбран",
   "invalidOperatorName": "Имя оператора не может быть пустым",
+
+  "invalidBpla": "Пожалуйста, выберите хотя бы один БПЛА",
+  "invalidOperators": "Пожалуйста, выберите хотя бы одного оператора",
+  "invalidRequestNumber": "Номер заявки не может быть пустым",
+
+
 
   "m": "м",
   "latitude": "Широта",

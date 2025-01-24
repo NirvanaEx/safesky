@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../models/user_model.dart';
@@ -173,22 +174,19 @@ class AuthService {
 
   // Метод для проверки подлинности токена
   Future<bool> isTokenValid() async {
-    final token = await _getToken();
-    if (token == null) return false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? expireAt = prefs.getString('token_expire_at');
 
-    final url = Uri.parse(ApiRoutes.validateToken);
+    if (expireAt == null) {
+      return false;
+    }
 
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
+    // Конвертируем строку даты в DateTime
+    DateTime expireDate = DateFormat("yyyy-MM-ddTHH:mm:ss").parse(expireAt, true).toLocal();
+    DateTime now = DateTime.now();
 
-    return response.statusCode == 200;
+    return now.isBefore(expireDate);
   }
-
 
   // Метод для проверки кода
   Future<void> checkCode(String email, String code) async {
@@ -209,6 +207,7 @@ class AuthService {
       throw Exception(errorData['message'] ?? 'Failed to verify code');
     }
   }
+
 
 
 

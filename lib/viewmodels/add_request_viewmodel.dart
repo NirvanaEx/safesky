@@ -59,9 +59,9 @@ class AddRequestViewModel extends ChangeNotifier {
   DateTime? contractDate;
 
   // Поля для выпадающих списков
-  Bpla? selectedBpla;
+  List<Bpla> selectedBplas = [];
   String? selectedPurpose;
-  Operator? selectedOperator;
+  List<Operator> selectedOperators = [];
 
   String selectedCountryCode = "+998";
 
@@ -102,7 +102,6 @@ class AddRequestViewModel extends ChangeNotifier {
 
   // Методы обновления даты
   Future<void> updateStartDate(BuildContext context, DateTime date) async {
-
     startDate = date;
     isLoading = true;
     errorMessage = null;  // Очистка предыдущих ошибок
@@ -175,8 +174,8 @@ class AddRequestViewModel extends ChangeNotifier {
 
 
 
-  void setBpla(Bpla bpla) {
-    selectedBpla = bpla;
+  void setBpla(List<Bpla> bplas) {
+    selectedBplas = bplas;
     notifyListeners();
   }
 
@@ -187,12 +186,32 @@ class AddRequestViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setOperator(Operator operator) {
-    selectedOperator = operator;
+  void setOperators(List<Operator> operators) {
+    selectedOperators = operators;
     notifyListeners();
   }
 
+  // Метод для добавления/удаления оператора по одиночному выбору
+  void toggleOperatorSelection(Operator operator) {
+    if (selectedOperators.contains(operator)) {
+      selectedOperators.remove(operator);
+    } else {
+      selectedOperators.add(operator);
+    }
+    notifyListeners();
+  }
 
+  // Получение списка ID операторов
+  List<int> get selectedOperatorIds =>
+      selectedOperators
+          .map((operator) => operator.id)
+          .whereType<int>() // Исключаем null значения
+          .toList();
+
+
+// Метод для получения списка ID из списка Bpla
+  List<int> get selectedBplaIds =>
+      selectedBplas.map((bpla) => bpla.id).whereType<int>().toList();
 
 
   Future<Map<String, String>?> submitRequest(BuildContext context) async {
@@ -203,16 +222,16 @@ class AddRequestViewModel extends ChangeNotifier {
       return {'status': 'error', 'message': localizations?.invalidStartDate ?? "Invalid start date"};
     }
 
-    // Проверка наименования заявителя
-    // if (requesterNameController.text.isEmpty) {
-    //   return {'status': 'error', 'message': localizations?.invalidRequesterName ?? "Invalid requester name"};
-    // }
 
-    // Проверка модели
-    if (selectedBpla == null ) {
-      return {'status': 'error', 'message': localizations?.invalidModel ?? "Invalid model"};
+    // Проверка номера заявки
+    if (requestNumController.text.trim().isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidRequestNumber ?? "Request number cannot be empty"};
     }
 
+    // Проверка выбора БПЛА
+    if (selectedBplas.isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidBpla ?? "Please select at least one BPLA"};
+    }
 
 
     // Проверка времени начала полета
@@ -224,6 +243,12 @@ class AddRequestViewModel extends ChangeNotifier {
     if (flightEndDateTime == null) {
       return {'status': 'error', 'message': localizations?.invalidFlightEndDateTime ?? "Invalid flight end date"};
     }
+
+    // Проверка времени начала полета
+    if (regionController.text.isEmpty ) {
+      return {'status': 'error', 'message': localizations?.invalidRegion ?? "Invalid flight area"};
+    }
+
 
 
 
@@ -251,12 +276,15 @@ class AddRequestViewModel extends ChangeNotifier {
       return {'status': 'error', 'message': localizations?.invalidRadius ?? "Invalid radius"};
     }
 
-    // Проверка цели полета
-    // if (selectedPurpose == null || selectedPurpose!.isEmpty) {
-    //   return {'status': 'error', 'message': localizations?.invalidPurpose ?? "Invalid purpose"};
-    // }
+    // Проверка выбора цели полета
+    if (selectedPurpose == null || selectedPurpose!.trim().isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidPurpose ?? "Please select purpose"};
+    }
 
-
+    // Проверка выбора операторов
+    if (selectedOperators.isEmpty) {
+      return {'status': 'error', 'message': localizations?.invalidOperators ?? "Please select at least one operator"};
+    }
 
     // Проверка номера телефона
     String phoneNumber = "$selectedCountryCode ${phoneController.text}";
@@ -270,36 +298,12 @@ class AddRequestViewModel extends ChangeNotifier {
       return {'status': 'error', 'message': localizations?.invalidEmail ?? "Invalid email"};
     }
 
-    // Проверка номера контракта
-    // int? contractNumber = int.tryParse(contractNumberController.text);
-    // if (contractNumber == null) {
-    //   return {'status': 'error', 'message': localizations?.invalidContractNumber ?? "Invalid contract number"};
-    // }
-
-
-
-    // Проверка номера разрешения
-    // int? permitNumber = int.tryParse(permitNumberController.text);
-    // if (permitNumber == null) {
-    //   return {'status': 'error', 'message': localizations?.invalidPermitNumber ?? "Invalid permit number"};
-    // }
-
-    // Проверка даты разрешения
-    // if (permitDate == null) {
-    //   return {'status': 'error', 'message': localizations?.invalidPermitDate ?? "Invalid permit date"};
-    // }
-
-    // Проверка даты контракта
-    // if (contractDate == null) {
-    //   return {'status': 'error', 'message': localizations?.invalidContractDate ?? "Invalid contract date"};
-    // }
-
 
 
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('userId');
-
+    Map<String, String> formattedCoordinates = formatLatLng(latLngController.text);
 
     // Формируем JSON объект вручную
     Map<String, dynamic> requestBody = {
@@ -310,12 +314,16 @@ class AddRequestViewModel extends ChangeNotifier {
       "flightArea": regionController.text,
       "zoneTypeId": 1 ?? 0,
       "purpose": selectedPurpose ?? '',
-      "bplaList": selectedBpla != null ? [selectedBpla!.id?? 0] : [],
-      "operatorList": selectedOperator != null ? [selectedOperator!.id, userId ?? 0] : [],
+      "bplaList": selectedBplas.isNotEmpty
+          ? selectedBplaIds
+          : [],
+      "operatorList": selectedOperators.isNotEmpty
+          ? (selectedOperatorIds.contains(userId) ? selectedOperatorIds : selectedOperatorIds + [userId ?? 0])
+          : [],
       "coordList": [
         {
-          "latitude": formatLatitude(latLngController.text),
-          "longitude": formatLongitude(latLngController.text),
+          "latitude": formattedCoordinates['latitude'],
+          "longitude": formattedCoordinates['longitude'],
           "radius": int.tryParse(radiusController.text) ?? 0
         }
       ],
@@ -348,9 +356,23 @@ class AddRequestViewModel extends ChangeNotifier {
     return DateFormat('HH:mm').format(dateTime);
   }
 
-  String formatLatitude(String latitudeStr) {
-    double latitude = double.tryParse(latitudeStr) ?? 0.0;
+  Map<String, String> formatLatLng(String latLngStr) {
+    List<String> coordinates = latLngStr.trim().split(' ');
 
+    if (coordinates.length != 2) {
+      throw FormatException("Invalid coordinate format. Expected 'lat lon'");
+    }
+
+    double latitude = double.tryParse(coordinates[0]) ?? 0.0;
+    double longitude = double.tryParse(coordinates[1]) ?? 0.0;
+
+    return {
+      "latitude": _formatLatitude(latitude),
+      "longitude": _formatLongitude(longitude),
+    };
+  }
+
+  String _formatLatitude(double latitude) {
     int degrees = latitude.abs().toInt();
     double minutesDecimal = (latitude.abs() - degrees) * 60;
     int minutes = minutesDecimal.toInt();
@@ -361,9 +383,7 @@ class AddRequestViewModel extends ChangeNotifier {
     return '${degrees.toString().padLeft(2, '0')}${minutes.toString().padLeft(2, '0')}${seconds.toString().padLeft(2, '0')}$direction';
   }
 
-  String formatLongitude(String longitudeStr) {
-    double longitude = double.tryParse(longitudeStr) ?? 0.0;
-
+  String _formatLongitude(double longitude) {
     int degrees = longitude.abs().toInt();
     double minutesDecimal = (longitude.abs() - degrees) * 60;
     int minutes = minutesDecimal.toInt();
@@ -374,13 +394,11 @@ class AddRequestViewModel extends ChangeNotifier {
     return '${degrees.toString().padLeft(3, '0')}${minutes.toString().padLeft(2, '0')}${seconds.toString().padLeft(2, '0')}$direction';
   }
 
-
   void clearFields() {
-    requesterNameController.clear();
+
+    requestNumController.clear();
     operatorPhoneController.clear();
     emailController.clear();
-    permitNumberController.clear();
-    contractNumberController.clear();
     noteController.clear();
     phoneController.clear();
     latLngController.clear();
@@ -389,6 +407,7 @@ class AddRequestViewModel extends ChangeNotifier {
     startDateController.clear();
     flightStartDateControllerTime.clear();
     flightEndDateTimeController.clear();
+    regionController.clear();
 
 
     endDate = null;
@@ -396,8 +415,10 @@ class AddRequestViewModel extends ChangeNotifier {
     flightEndDateTime = null;
     permitDate = null;
     contractDate = null;
-    selectedBpla = null;
+    selectedBplas = [];
+    selectedOperators = [];
     selectedPurpose = null;
+
     notifyListeners();
   }
 

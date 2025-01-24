@@ -53,6 +53,13 @@
 
   "requestNum": "Request Number",
 
+  "chooseOperator": "Choose Operator",
+  "chooseOneOrMultiple": "Choose one or multiple",
+  "selectOperator": "Select Operator",
+
+  "selectBpla": "Select BPLA",
+  "chooseBpla": "Choose BPLA",
+
   "flightStartDate": "Flight Start Date",
   "requesterName": "Requester Name",
   "model": "Model",
@@ -125,12 +132,17 @@
   "invalidContractDate": "Invalid contract date",
   "invalidRequesterName": "Requester name cannot be empty",
   "invalidModel": "Model must be selected",
-  "invalidRegion": "Region must be selected",
+  "invalidRegion": "The flight region cannot be empty",
   "invalidPurpose": "Purpose must be selected",
   "invalidPhoneNumber": "Invalid phone number",
   "invalidEmail": "Invalid email format",
   "invalidFlightSign": "Flight sign must be selected",
   "invalidOperatorName": "Operator name cannot be empty",
+
+  "invalidBpla": "Please select at least one BPLA",
+  "invalidOperators": "Please select at least one operator",
+  "invalidRequestNumber": "Request number cannot be empty",
+
 
 
   "m": "m",
