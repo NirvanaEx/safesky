@@ -4,16 +4,15 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../models/area_point_location_model.dart';
-import '../../models/request_model.dart';
-import '../../utils/enums.dart';
+import 'package:safe_sky/models/plan_detail_model.dart';
+
 
 class MapShowLocationView extends StatefulWidget {
-  final RequestModel? requestModel;
+  final PlanDetailModel? detailModel;
 
   const MapShowLocationView({
     Key? key,
-    required this.requestModel,
+    required this.detailModel,
   }) : super(key: key);
 
   @override
@@ -28,19 +27,58 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
     super.initState();
     _mapController = MapController();
 
-    // Перемещение к первой зеленой зоне при инициализации
+    // После рендеринга переходим к центру плана
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final firstAuthorizedZone = widget.requestModel?.area
-          ?.firstWhere((zone) => zone.tag == AreaType.authorizedZone, orElse: () => AreaPointLocationModel());
-      if (firstAuthorizedZone != null) {
-        final zoneCenter = _getZoneCenter(firstAuthorizedZone);
-        if (zoneCenter != null) {
-          _animateToMarkerLocation(zoneCenter);
-        }
+      final planCenter = _getPlanCenter(widget.detailModel);
+      if (planCenter != null) {
+        _animateToMarkerLocation(planCenter);
       }
     });
   }
 
+  /// Перевод координат вида 411751N или 0691534E в double
+  /// Пример: "411751N" -> 41°17'51" N -> 41.2975 (double)
+  double _parseCoordinate(String? coord) {
+    if (coord == null) return 0.0;
+    final match = RegExp(r'^(\d{2,3})(\d{2})(\d{2})([NSEW])$').firstMatch(coord);
+    if (match == null) {
+      return 0.0;
+    }
+    final deg = int.parse(match.group(1)!);
+    final min = int.parse(match.group(2)!);
+    final sec = int.parse(match.group(3)!);
+    final dir = match.group(4)!;
+
+    double result = deg + (min / 60) + (sec / 3600);
+    if (dir == 'S' || dir == 'W') {
+      result = -result;
+    }
+
+    return result;
+  }
+
+  /// Определяем центр полёта.
+  /// Если zoneTypeId = 1 (круг), берём первую точку.
+  /// При появлении полигона можно расширить логику.
+  LatLng? _getPlanCenter(PlanDetailModel? detail) {
+    if (detail == null) return null;
+
+    if (detail.zoneTypeId == 1) {
+      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+        final c = detail.coordList!.first;
+        final lat = _parseCoordinate(c.latitude);
+        final lng = _parseCoordinate(c.longitude);
+        return LatLng(lat, lng);
+      }
+    }
+
+    // Если в будущем понадобится логика для полигонов:
+    // if (detail.zoneTypeId == 2) { ... }
+
+    return null;
+  }
+
+  /// Анимация плавного перемещения
   Future<void> _animateToMarkerLocation(LatLng targetLocation) async {
     LatLng startLocation = _mapController.center;
     double startZoom = _mapController.zoom;
@@ -65,62 +103,40 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
     }
   }
 
-  Color _getZoneColor(String? tag) {
-    if (tag == AreaType.authorizedZone) {
-      return Colors.green;
-    } else if (tag == AreaType.noFlyZone) {
-      return Colors.red;
-    }
-    return Colors.blue; // цвет по умолчанию для нераспознанных зон
-  }
+  /// В зависимости от zoneTypeId строим нужные слои (круг, полигон и т.д.)
+  List<Widget> buildZones(PlanDetailModel? detail) {
+    if (detail == null) return [];
 
-  LatLng? _getZoneCenter(AreaPointLocationModel zone) {
-    if (zone.radius != null && zone.latitude != null && zone.longitude != null) {
-      // Если это круг, возвращаем его центр
-      return LatLng(zone.latitude!, zone.longitude!);
-    } else if (zone.coordinates != null && zone.coordinates!.isNotEmpty) {
-      // Если это многоугольник, вычисляем средние координаты
-      double avgLatitude = zone.coordinates!.map((coord) => coord.latitude).reduce((a, b) => a + b) / zone.coordinates!.length;
-      double avgLongitude = zone.coordinates!.map((coord) => coord.longitude).reduce((a, b) => a + b) / zone.coordinates!.length;
-      return LatLng(avgLatitude, avgLongitude);
-    }
-    return null;
-  }
+    // Если зона круг (zoneTypeId == 1)
+    if (detail.zoneTypeId == 1) {
+      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+        final c = detail.coordList!.first;
+        final lat = _parseCoordinate(c.latitude);
+        final lng = _parseCoordinate(c.longitude);
 
-  List<Widget> buildZones(List<AreaPointLocationModel> areas) {
-    return [
-      PolygonLayer(
-        polygons: areas
-            .where((zone) => zone.coordinates != null && zone.coordinates!.isNotEmpty)
-            .map((zone) {
-          List<LatLng> polygonPoints = zone.coordinates!
-              .map((coord) => LatLng(coord.latitude, coord.longitude))
-              .toList();
-          if (polygonPoints.isNotEmpty && polygonPoints.first != polygonPoints.last) {
-            polygonPoints.add(polygonPoints.first);
-          }
-          return Polygon(
-            points: polygonPoints,
-            color: _getZoneColor(zone.tag).withOpacity(0.4),
-            borderColor: _getZoneColor(zone.tag),
-            borderStrokeWidth: 2.0,
-            isFilled: true,
-          );
-        }).toList(),
-      ),
-      CircleLayer(
-        circles: areas
-            .where((zone) => zone.latitude != null && zone.longitude != null && zone.radius != null)
-            .map((zone) => CircleMarker(
-          point: LatLng(zone.latitude!, zone.longitude!),
-          color: _getZoneColor(zone.tag).withOpacity(0.3),
-          borderColor: _getZoneColor(zone.tag),
-          borderStrokeWidth: 2,
-          useRadiusInMeter: true,
-          radius: zone.radius!,
-        )).toList(),
-      ),
-    ];
+        return [
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: LatLng(lat, lng),
+                color: Colors.green.withOpacity(0.3),
+                borderColor: Colors.green,
+                borderStrokeWidth: 2,
+                useRadiusInMeter: true,
+                radius: (c.radius ?? 0).toDouble(),
+              ),
+            ],
+          ),
+        ];
+      }
+    }
+
+    // Если понадобится логика для полигонов, добавляем её здесь
+    // if (detail.zoneTypeId == 2) {
+    //   ...
+    // }
+
+    return [];
   }
 
   @override
@@ -140,7 +156,7 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: LatLng(41.0, 69.0),
+              center: LatLng(41.0, 69.0), // Можно ставить любую точку по умолчанию
               zoom: 13.0,
               rotation: 0.0,
             ),
@@ -150,26 +166,23 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
                 subdomains: ['a', 'b', 'c'],
                 tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
-              ...buildZones(widget.requestModel?.area ?? []),
+              ...buildZones(widget.detailModel),
             ],
           ),
 
+          // Кнопка, чтобы вернуться к центру зоны
           Positioned(
             right: 20,
             bottom: 40,
             child: FloatingActionButton(
               onPressed: () {
-                final firstAuthorizedZone = widget.requestModel?.area
-                    ?.firstWhere((zone) => zone.tag == AreaType.authorizedZone, orElse: () => AreaPointLocationModel());
-                if (firstAuthorizedZone != null) {
-                  final zoneCenter = _getZoneCenter(firstAuthorizedZone);
-                  if (zoneCenter != null) {
-                    _animateToMarkerLocation(zoneCenter);
-                  }
+                final planCenter = _getPlanCenter(widget.detailModel);
+                if (planCenter != null) {
+                  _animateToMarkerLocation(planCenter);
                 }
               },
               backgroundColor: Colors.black,
-              child: Icon(Icons.my_location, color: Colors.white),
+              child: const Icon(Icons.my_location, color: Colors.white),
             ),
           ),
         ],

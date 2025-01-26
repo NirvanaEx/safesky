@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:safe_sky/models/plan_detail_model.dart';
 import 'package:safe_sky/models/request_model.dart';
 import 'package:safe_sky/services/request_service.dart';
 import '../models/area_point_location_model.dart';
@@ -171,6 +172,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     linkText: localizations.map,
                     icon: Icons.visibility,
                     context: context,
+                    planDetailModel: viewModel.planDetailModel
                   ),
 
                   // Отображение радиуса AUTHORIZED ZONE (если он есть)
@@ -364,7 +366,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
   }
 
 
-  Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context}) {
+  Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context, PlanDetailModel? planDetailModel}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -391,7 +393,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => MapShowLocationView(
-                          requestModel: null,
+                          detailModel: planDetailModel,
                         ),
                       ),
                     );
