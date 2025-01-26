@@ -16,6 +16,8 @@ class ApiRoutes {
   static const String requestPrepare = '${Config.apiUrl}/bpla/plan/prepare';
 
   static const String requestCreate = '${Config.apiUrl}/bpla/plan/create';
+  static const String requestDetailInfo = '${Config.apiUrl}/bpla/plan/';
+
 
 
   static const String verifyCode = '${Config.apiUrl}/auth/verify-code';

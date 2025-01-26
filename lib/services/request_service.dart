@@ -7,6 +7,7 @@ import '../config/api_routes.dart';
 import '../config/config.dart';
 import '../models/area_point_location_model.dart';
 import '../models/location_model.dart';
+import '../models/plan_detail_model.dart';
 import '../models/prepare_model.dart';
 import '../models/request.dart';
 import '../models/request/flight_sign_model.dart';
@@ -338,6 +339,51 @@ class RequestService {
       }
     } else {
       throw Exception('Failed to load requests: ${response.statusCode}');
+    }
+  }
+
+
+  Future<PlanDetailModel> fetchPlanDetail(int planId) async {
+    // 1. Получаем токен
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    // 2. Формируем запрос
+    final url = Uri.parse('${ApiRoutes.requestDetailInfo}$planId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    // 3. Обрабатываем ответ
+    if (response.statusCode == 200) {
+
+      final decodedBody = utf8.decode(response.bodyBytes);
+      print('decodedBody: $decodedBody');
+
+      try {
+        final Map<String, dynamic> jsonData = json.decode(decodedBody);
+        print('Parsed JSON map: $jsonData');
+
+        final detailModel = PlanDetailModel.fromJson(jsonData);
+        print('Parsed successfully: ${detailModel.permission}');
+
+        return detailModel;
+      } catch (e) {
+        print("Error decoding response: $e");
+        throw Exception('Failed to decode PlanDetail');
+      }
+    } else {
+      // Если пришла ошибка (400, 403, 500 и т.д.)
+      print("Error: ${response.statusCode} => ${response.body}");
+      throw Exception('Failed to load plan detail: ${response.statusCode}');
     }
   }
 

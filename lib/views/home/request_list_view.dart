@@ -82,7 +82,7 @@ class _RequestListViewState extends State<RequestListView> {
                         }
                         final request = viewModel.requests[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Card(
@@ -92,7 +92,7 @@ class _RequestListViewState extends State<RequestListView> {
                               ),
                               clipBehavior: Clip.antiAlias,
                               child: ListTile(
-                                title: Text("№ ${request.planId}"),
+                                title: Text("№ ${request.applicationNum}"),
                                 subtitle: Text(request.planDate),
                                 trailing: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -110,7 +110,7 @@ class _RequestListViewState extends State<RequestListView> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ShowRequestView(
-                                        requestModel: null,
+                                        requestId: request.planId,
                                       ),
                                     ),
                                   );

@@ -6,15 +6,16 @@ import 'package:safe_sky/services/request_service.dart';
 import '../models/area_point_location_model.dart';
 import '../models/request/status_model.dart';
 import '../utils/enums.dart';
+import '../viewmodels/show_request_viewmodel.dart';
 import 'map/map_show_location_view.dart';
 import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
 
 class ShowRequestView extends StatefulWidget {
-  final RequestModel? requestModel;
+  final int? requestId;
 
-  ShowRequestView({required this.requestModel});
+  ShowRequestView({required this.requestId});
 
   @override
   _ShowRequestViewState createState() => _ShowRequestViewState();
@@ -23,40 +24,38 @@ class ShowRequestView extends StatefulWidget {
 
 class _ShowRequestViewState extends State<ShowRequestView> {
   bool _isSharing = false;
-
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<ShowRequestViewModel>(context, listen: false);
+      if (widget.requestId != null) {
+        viewModel.loadRequest(widget.requestId!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final RequestModel? requestModel = widget.requestModel;
 
     final localizations = AppLocalizations.of(context)!;
+    final viewModel = Provider.of<ShowRequestViewModel>(context);
+
     final dateFormat = DateFormat('dd.MM.yyyy');
     final dateTimeFormat = DateFormat('dd.MM.yyyy HH:mm');
 
 
-    // Поиск AUTHORIZED ZONE в area
-    final authorizedZone = requestModel?.area?.firstWhere(
-          (zone) => zone.tag == AreaType.authorizedZone,
-      orElse: () => AreaPointLocationModel(),
-    );
+    String zoneInfo = '';
 
-    String zoneInfo;
-    if (authorizedZone != null) {
-      if (authorizedZone.radius != null) {
-        // Если это круг, показываем центральные координаты
-        zoneInfo = '${authorizedZone.latitude?.toStringAsFixed(5) ?? '-'}, ${authorizedZone.longitude?.toStringAsFixed(5) ?? '-'}';
-      } else if (authorizedZone.coordinates != null && authorizedZone.coordinates!.isNotEmpty) {
-        // Если это полигон, отображаем список координат
-        zoneInfo = authorizedZone.coordinates!
-            .map((coord) => '${coord.latitude.toStringAsFixed(5)}, ${coord.longitude.toStringAsFixed(5)}')
-            .join(';\n');
-      } else {
-        // На случай, если координаты отсутствуют
-        zoneInfo = '-';
-      }
-    } else {
-      // Если AUTHORIZED ZONE не найдена
-      zoneInfo = '-';
+    if(viewModel.planDetailModel?.zoneTypeId == 1){
+      zoneInfo = '${viewModel.planDetailModel?.coordList.first.latitude ?? '-'}, ${viewModel.planDetailModel?.coordList.first.longitude ?? '-'}';
+    }
+
+    // Если данные загружаются, показываем индикатор загрузки
+    if (viewModel.isLoading) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     return Scaffold(
@@ -82,24 +81,24 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "№ ${requestModel?.number}",
+                        "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(requestModel?.status ?? ''),
+                          color: viewModel.getStatusColor(viewModel.planDetailModel?.stateId ?? 0),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          _getStatusText(requestModel?.status ?? '', localizations),
+                          viewModel.getStatusText(viewModel.planDetailModel?.stateId ?? 0, localizations),
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 10),
-                  if (requestModel?.status == 'confirmed')
+                  if (viewModel.planDetailModel?.stateId == 1)
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -130,23 +129,40 @@ class _ShowRequestViewState extends State<ShowRequestView> {
 
                   // Данные заявки
                   _buildRequestInfo(localizations.flightStartDate,
-                      requestModel?.flightStartDateTime != null
-                          ? dateFormat.format(requestModel!.flightStartDateTime!)
+                      viewModel.planDetailModel?.planDate != null
+                          ? dateFormat.format(viewModel.planDetailModel!.planDate!)
                           : '-'),
                   _buildRequestInfo(localizations.requesterName,
-                      requestModel?.requesterName ?? '-', isBold: true),
-                  _buildRequestInfo(localizations.model,
-                      requestModel?.model ?? '-'),
-                  _buildRequestInfo(localizations.flightSign,
-                      requestModel?.flightSign ?? '-'),
-                  _buildRequestInfo(localizations.flightTimes,
-                      '${requestModel?.flightStartDateTime != null
-                          ? dateTimeFormat.format(requestModel!.flightStartDateTime!)
-                          : '-'}\n${requestModel?.flightEndDateTime != null
-                          ? dateTimeFormat.format(requestModel!.flightEndDateTime!)
-                          : '-'}'),
+                      viewModel.planDetailModel?.applicant ?? '-', isBold: true),
+                  _buildRequestInfo(
+                    localizations.model,
+                    viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
+                        ? viewModel.planDetailModel!.bplaList
+                        .asMap()
+                        .entries
+                        .map((entry) => "${entry.key + 1}. ${entry.value.name ?? '-'}")
+                        .join('\n')
+                        : '-',
+                  ),
+
+                  _buildRequestInfo(
+                    localizations.flightSign,
+                    viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
+                        ? viewModel.planDetailModel!.bplaList
+                        .asMap()
+                        .entries
+                        .map((entry) => "${entry.key + 1}. ${entry.value.regnum ?? '-'}")
+                        .join('\n')
+                        : '-',
+                  ),
+
+                  _buildRequestInfo(
+                  localizations.flightTimes,
+                  '${viewModel.planDetailModel?.timeFrom ?? '-'}\n${viewModel.planDetailModel?.timeTo ?? '-'}',
+                  ),
+
                   _buildRequestInfo(localizations.region,
-                      requestModel?.region ?? '-'),
+                      viewModel.planDetailModel?.flightArea ?? '-'),
 
                   // Отображение координат AUTHORIZED ZONE
                   _buildRequestInfo(
@@ -158,41 +174,66 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
 
                   // Отображение радиуса AUTHORIZED ZONE (если он есть)
-                  if (authorizedZone?.radius != null)
+                  if (viewModel.planDetailModel?.coordList.first.radius != null)
                     _buildRequestInfo(
                       localizations.flightRadius,
-                      '${authorizedZone!.radius!.round()} ${localizations.m}',
+                      '${viewModel.planDetailModel?.coordList.first.radius} ${localizations.m}',
                     ),
 
                   _buildRequestInfo(localizations.flightHeight,
-                      '${requestModel?.flightHeight != null
-                          ? requestModel!.flightHeight!.round()
+                      '${viewModel.planDetailModel?.mAltitude != null
+                          ? viewModel.planDetailModel?.mAltitude
                           : '-'} ${localizations?.m}'),
                   _buildRequestInfo(localizations.flightPurpose,
-                      requestModel?.purpose ?? '-'),
-                  _buildRequestInfo(localizations.operatorName,
-                      requestModel?.operatorName ?? '-'),
-                  _buildRequestInfo(localizations.operatorPhone,
-                      requestModel?.operatorPhone ?? '-'),
+                      viewModel.planDetailModel?.purpose ?? '-'),
+                  _buildRequestInfo(
+                    localizations.operatorName,
+                    viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
+                        ? viewModel.planDetailModel!.operatorList
+                        .asMap()
+                        .entries
+                        .map((entry) => "${entry.key + 1}. ${entry.value.surname ?? '-'} ${entry.value.name ?? '-'} ${entry.value.patronymic ?? ''}")
+                        .join('\n')
+                        : '-',
+                  ),
+
+                  _buildRequestInfo(
+                    localizations.operatorPhone,
+                    viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
+                        ? viewModel.planDetailModel!.operatorList
+                        .asMap()
+                        .entries
+                        .map((entry) => "${entry.key + 1}. ${entry.value.phone ?? '-'}")
+                        .join('\n')
+                        : '-',
+                  ),
+
                   _buildRequestInfo(localizations.email,
-                      requestModel?.email ?? '-'),
-                  _buildRequestInfo(localizations.specialPermit,
-                      '№ ${requestModel?.permitNumber ?? '-'}   ${requestModel?.permitDate != null
-                          ? dateFormat.format(requestModel!.permitDate!)
-                          : '-'}'),
-                  _buildRequestInfo(localizations.contract,
-                      '№ ${requestModel?.contractNumber ?? '-'}   ${requestModel?.contractDate != null
-                          ? dateFormat.format(requestModel!.contractDate! )
-                          : '-'}'),
+                      viewModel.planDetailModel?.email ?? '-'),
+                  _buildRequestInfo(
+                      localizations.specialPermit,
+                      '${viewModel.planDetailModel?.permission?.orgName ?? '-'} '
+                      '${viewModel.planDetailModel?.permission?.docNum ?? '-'} '
+                      '${viewModel.planDetailModel?.permission?.docDate != null
+                      ? dateFormat.format(viewModel.planDetailModel!.permission!.docDate!)
+                          : '-'}'
+                  ),
+                  _buildRequestInfo(
+                      localizations.contract,
+                      '${viewModel.planDetailModel?.agreement?.docNum ?? '-'} '
+                      '${viewModel.planDetailModel?.agreement?.docDate != null
+                      ? dateFormat.format(viewModel.planDetailModel!.agreement!.docDate!)
+                          : '-'}'
+                  ),
                   _buildRequestInfo(localizations.optional,
-                      requestModel?.note ?? '-'),
+                      viewModel.planDetailModel?.notes ?? '-'),
                   SizedBox(height: 20),
                 ],
               ),
             ),
           ),
 
-          if (requestModel?.status == 'pending')
+          if (viewModel.planDetailModel?.stateId == 2)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
@@ -200,7 +241,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 child: ElevatedButton(
                   onPressed: () async {
                     try {
-                      final response = await RequestService().cancelRequest(requestModel?.id);
+                      final response = await RequestService().cancelRequest(viewModel.planDetailModel?.planId.toString());
                       if (response.statusCode == 200) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Request canceled successfully')),
@@ -265,7 +306,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
         }
       }
 
-      navigateToMapShareLocationView(context, widget.requestModel?.id ?? '');
+      navigateToMapShareLocationView(context, widget.requestId.toString() ?? '');
     } catch (e) {
       // Обработка возможных ошибок
       print('Error in _handleLocationSharing: $e');
@@ -290,7 +331,6 @@ class _ShowRequestViewState extends State<ShowRequestView> {
           MaterialPageRoute(
             builder: (context) => MapShareLocationView(
               key: ValueKey(requestId), // Используем уникальный ID запроса
-              requestModel: widget.requestModel, // Передаем requestModel, если это необходимо
             ),
           ),
         );
@@ -324,8 +364,6 @@ class _ShowRequestViewState extends State<ShowRequestView> {
   }
 
 
-
-
   Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -353,7 +391,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => MapShowLocationView(
-                          requestModel: widget.requestModel,
+                          requestModel: null,
                         ),
                       ),
                     );
@@ -372,32 +410,4 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     );
   }
 
-
-
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case "confirmed":
-        return Colors.greenAccent;
-      case "pending":
-        return Colors.orangeAccent;
-      case "rejected":
-        return Colors.redAccent;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getStatusText(String status, AppLocalizations localizations) {
-    switch (status) {
-      case "confirmed":
-        return localizations.confirmed;
-      case "pending":
-        return localizations.pending;
-      case "rejected":
-        return localizations.rejected;
-      default:
-        return status;
-    }
-  }
 }

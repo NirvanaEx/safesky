@@ -1,103 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:safe_sky/models/request_model.dart';
-import 'package:safe_sky/models/request/status_model.dart';
-import 'package:safe_sky/services/request_service.dart';
-import 'package:safe_sky/utils/enums.dart';
+import '../models/plan_detail_model.dart';
+import '../models/request_model.dart';
+import '../models/area_point_location_model.dart';
+import '../services/request_service.dart';
+import '../utils/enums.dart';
+import '../views/map/map_share_location_view.dart';
+
+import 'package:provider/provider.dart';
+import '../viewmodels/map_share_location_viewmodel.dart';
+import '../models/request/status_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ShowRequestViewModel extends ChangeNotifier {
-  final RequestModel? requestModel;
+  RequestModel? requestModel;
+  PlanDetailModel? planDetailModel;
   bool isSharing = false;
+  final requestService = RequestService();
+  bool isLoading = false;  // Флаг загрузки
 
-  ShowRequestViewModel({required this.requestModel});
+  // Загрузить данные о заявке (пример, если нужно)
+  Future<void> loadRequest(int requestId) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      planDetailModel = await requestService.fetchPlanDetail(requestId);
+    } catch (e) {
+      print('Error loading request: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners(); // Обновление UI после загрузки
+    }
+  }
 
-  // Форматы даты/времени
-  final dateFormat = DateFormat('dd.MM.yyyy');
-  final dateTimeFormat = DateFormat('dd.MM.yyyy HH:mm');
-
-  /// Логика определения цвета статуса
-  Color getStatusColor(String status) {
-    switch (status) {
-      case "confirmed":
+  // Пример метода для определения цвета статуса
+  Color getStatusColor(int stateId) {
+    switch (stateId) {
+      case 1:
         return Colors.greenAccent;
-      case "pending":
+      case 2:
         return Colors.orangeAccent;
-      case "rejected":
+      case 3:
         return Colors.redAccent;
       default:
         return Colors.grey;
     }
   }
 
-  /// Логика получения текста статуса (можно оставить без локализации,
-  /// если локализация идёт напрямую из слоя UI)
-  String getStatusText(String status) {
-    switch (status) {
-      case "confirmed":
-        return "Подтверждено";
-      case "pending":
-        return "На рассмотрении";
-      case "rejected":
-        return "Отклонено";
+  String getStatusText(int stateId, AppLocalizations localizations) {
+    switch (stateId) {
+      case 1:
+        return localizations.confirmed;
+      case 2:
+        return localizations.pending;
+      case 3:
+        return localizations.rejected;
       default:
-        return status;
+        return '';
     }
   }
 
-  /// Запуск/остановка шаринга локации
-  Future<void> handleLocationSharing({
-    required BuildContext context,
-    required Future<bool?> Function(BuildContext) showStopDialog,
-    required Function(BuildContext, String) navigateToMapShareLocationView,
-  }) async {
+  // Метод, отвечающий за начало/завершение шаринга
+  Future<void> handleLocationSharing(BuildContext context) async {
     try {
-      // При начале шаринга ставим флаг true
-      isSharing = true;
-      notifyListeners();
+      final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
-      // Проверим, неактивен ли уже другой процесс шаринга?
-      // Тут предполагается, что у вас есть какой-то MapShareLocationViewModel,
-      // который хранит currentRequestId. В прежнем коде это:
-      // final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
-      //
-      // Если вам нужно, можете пробросить текущий requestId
-      // из вне или из requestModel
-      //
-      // Пример диалога:
-      final shouldStop = await showStopDialog(context);
-      if (shouldStop != true) {
-        // Если пользователь передумал — выходим
-        isSharing = false;
-        notifyListeners();
-        return;
+      if (locationVM.currentRequestId != null) {
+        final shouldStop = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Тут ваш текст'), // тексты можно прокинуть через локализации
+              content: Text('...'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Назад'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: Text('Остановить'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (shouldStop != true) {
+          return;
+        } else {
+          await locationVM.stopLocationSharing();
+        }
       }
 
-      // Если надо остановить предыдущий шаринг — делаем это (ранее вы делали: await locationVM.stopLocationSharing();)
-
-      // И переходим на экран шаринга
-      navigateToMapShareLocationView(context, requestModel?.id ?? '');
+      // Переход к MapShareLocationView
+      await navigateToMapShareLocationView(context, requestModel?.id ?? '');
     } catch (e) {
-      debugPrint('Error in handleLocationSharing: $e');
-    } finally {
-      isSharing = false;
-      notifyListeners();
+      print('Error in handleLocationSharing: $e');
     }
   }
 
-  /// Получить статус из RequestService и перейти на экран
-  Future<void> fetchRequestStatusAndNavigate({
-    required BuildContext context,
-    required String requestId,
-    required Widget Function() mapShareLocationViewBuilder,
-  }) async {
+  Future<void> navigateToMapShareLocationView(BuildContext context, String requestId) async {
+    RequestService requestService = RequestService();
+
+    isSharing = true;
+    notifyListeners();
+
     try {
-      RequestService requestService = RequestService();
+      // Получаем статус
       StatusModel status = await requestService.getRequestStatus(requestId);
 
+      // Логика проверки статуса
       if (status.status == RequestStatus.active) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => mapShareLocationViewBuilder()),
+          MaterialPageRoute(
+            builder: (context) => MapShareLocationView(
+              key: ValueKey(requestId),
+              requestModel: requestModel,
+            ),
+          ),
         );
       } else if (status.status == RequestStatus.expired) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -116,10 +139,12 @@ class ShowRequestViewModel extends ChangeNotifier {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error retrieving status: $e')),
       );
+    } finally {
+      isSharing = false;
+      notifyListeners();
     }
   }
 
-  /// Отмена заявки (пример как это вызывалось на кнопке)
   Future<void> cancelRequest(BuildContext context) async {
     try {
       final response = await RequestService().cancelRequest(requestModel?.id);
