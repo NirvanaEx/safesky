@@ -38,6 +38,9 @@
   "confirmed": "Tasdiqlangan",
   "pending": "Kutilmoqda",
   "rejected": "Rad etilgan",
+
+  "canceled": "Bekor qilingan",
+
   "noDataFound": "Ma’lumot topilmadi",
 
   "changePassword": "Parolni o'zgartirish",
@@ -85,12 +88,24 @@
   "locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
   "back": "Orqaga",
 
+  "delete": "O'chirish",
+  "cancelRequest": "So‘rovni bekor qilish",
+  "enterReason": "Bekor qilish sababini kiriting",
+  "exit": "Chiqish",
+  "planIdMissing": "Reja ID si mavjud emas",
+  "requestDeletedSuccessfully": "So‘rov muvaffaqiyatli o‘chirildi",
+  "requestCanceledSuccessfully": "So‘rov muvaffaqiyatli bekor qilindi",
+  "errorMessage": "Xatolik: {errorMessage}",
+
   "scanMessage": "Iltimos, QR-kodni skaner qiling",
   "errorFetchingData": "Ma'lumotni olishda xato",
   "authTokenNotFound": "Autentifikatsiya tokeni topilmadi",
   "profileUpdated": "Profil muvaffaqiyatli yangilandi.",
 
 
+  "location_sharing_title": "Joylashuv almashinuvi",
+  "location_sharing_message": "Ma'lumot uzatilmoqda. Uni to'xtatish uchun 'To'xtatish' tugmasini bosing.",
+  "location_sharing_started": "Joylashuv almashinuvi boshlandi",
 
   "startLocationSharing": "Joylashuv ulashishni boshlash",
   "sharingLocation": "Joylashuv ulashilmoqda",
@@ -157,6 +172,11 @@
   },
   "@longitude": {
     "description": "Uzunlik koordinatasi uchun yorliq"
-  }
+  },
 
+  "request_pending": "Ariza ko'rib chiqilmoqda",
+  "request_canceled": "Ariza bekor qilindi",
+  "request_rejected": "Ariza rad etildi",
+  "unknown_status": "Noma'lum holat",
+  "error_retrieving_status": "Holatni olishda xatolik"
 }

@@ -99,7 +99,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  if (viewModel.planDetailModel?.stateId == 1)
+                  if (viewModel.planDetailModel?.stateId == 2)
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -235,26 +235,57 @@ class _ShowRequestViewState extends State<ShowRequestView> {
             ),
           ),
 
-          if (viewModel.planDetailModel?.stateId == 2)
+          if (viewModel.planDetailModel?.stateId == 1)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    try {
-                      final response = await RequestService().cancelRequest(viewModel.planDetailModel?.planId);
-                      if (response.statusCode == 200) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Request canceled successfully')),
+                    await viewModel.deleteRequest(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(localizations.delete),
+                ),
+              ),
+            )
+          else if (viewModel.planDetailModel?.stateId == 2)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    String? cancelReason = await showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        TextEditingController reasonController = TextEditingController();
+                        return AlertDialog(
+                          title: Text(localizations.cancelRequest),
+                          content: TextField(
+                            controller: reasonController,
+                            decoration: InputDecoration(hintText: localizations.enterReason),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text(localizations.exit),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(reasonController.text),
+                              child: Text(localizations.submit),
+                            ),
+                          ],
                         );
-                      } else {
-                        throw Exception('Failed to cancel request');
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: ${e.toString()}')),
-                      );
+                      },
+                    );
+                    if (cancelReason != null && cancelReason.isNotEmpty) {
+                      await viewModel.cancelRequest(context, cancelReason: cancelReason);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -266,7 +297,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   child: Text(localizations.cancel),
                 ),
               ),
-            ),
+            )
         ],
       ),
     );

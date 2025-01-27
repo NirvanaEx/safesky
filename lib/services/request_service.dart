@@ -108,34 +108,117 @@ class RequestService {
   }
 
 
-  Future<http.Response> cancelRequest(int? requestId) async {
+  Future<http.Response> cancelRequest(int planId, String cancelReason) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
-    // Заглушка для успешного ответа при тестировании
-    if (requestId == 'test') {
+    // Проверка на тестовые данные
+    if (planId == 0) {
+      print('Cancel request (TEST DATA): planId=$planId, cancelReason=$cancelReason');
+
       return http.Response(
         jsonEncode({'status': 'success', 'message': 'Request canceled successfully'}),
         200,
       );
     }
 
-    final response = await http.post(
-      Uri.parse('${ApiRoutes.cancelRequest}/$requestId'), // Здесь указываем URL с requestId
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+    final Uri url = Uri.parse('${ApiRoutes.requestCancel}/$planId/cancel');
 
-    if (response.statusCode == 200) {
-      return response;
-    } else {
-      var errorMessage = json.decode(response.body)['message'] ?? 'Failed to cancel request';
-      throw Exception(errorMessage);
+    final Map<String, dynamic> requestBody = {
+      'cancelReason': cancelReason,
+    };
+
+    print('Sending cancel request:');
+    print('URL: $url');
+    print('Headers: ${{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    }}');
+    print('Body: ${jsonEncode(requestBody)}');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      // Декодирование ответа в UTF-8
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final decodedJson = jsonDecode(decodedBody);
+
+      print('Response status code: ${response.statusCode}');
+      print('Response body (decoded): $decodedJson');
+
+      if (response.statusCode == 200) {
+        return http.Response(decodedBody, response.statusCode);
+      } else {
+        var errorMessage = decodedJson['message'] ?? 'Failed to cancel request';
+        print('Error in response: $errorMessage');
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      print('Exception in cancelRequest: $e');
+      throw Exception('Error in cancelRequest: $e');
     }
   }
 
+
+
+  Future<http.Response> deleteRequest(int planId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    // Проверка на тестовые данные
+    if (planId == 0) {
+      print('Delete request (TEST DATA): planId=$planId');
+
+      return http.Response(
+        jsonEncode({'status': 'success', 'message': 'Request deleted successfully'}),
+        200,
+      );
+    }
+
+    final Uri url = Uri.parse('${ApiRoutes.requestDelete}/$planId/delete');
+
+    print('Sending delete request:');
+    print('URL: $url');
+    print('Headers: ${{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    }}');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Декодирование ответа в UTF-8
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final decodedJson = jsonDecode(decodedBody);
+
+      print('Response status code: ${response.statusCode}');
+      print('Response body (decoded): $decodedJson');
+
+      if (response.statusCode == 200) {
+        return http.Response(decodedBody, response.statusCode);
+      } else {
+        var errorMessage = decodedJson['message'] ?? 'Failed to delete request';
+        print('Error in response: $errorMessage');
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      print('Exception in deleteRequest: $e');
+      throw Exception('Error in deleteRequest: $e');
+    }
+  }
 
   // Метод для получения списка моделей с параметром lang
   Future<List<Bpla>> fetchModels(String lang) async {

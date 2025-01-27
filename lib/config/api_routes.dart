@@ -17,11 +17,15 @@ class ApiRoutes {
 
   static const String requestCreate = '${Config.apiUrl}/bpla/plan/create';
   static const String requestDetailInfo = '${Config.apiUrl}/bpla/plan/';
+  static const String requestCancel = '${Config.apiUrl}/bpla/plan';
+  static const String requestDelete = '${Config.apiUrl}/bpla/plan';
+
 
   // Трасляция местоположение
   static const String updateLocation = '${Config.apiUrl}/bpla/operator/track';
   static const String pauseLocation = '${Config.apiUrl}/bpla/operator/pause';
   static const String stopLocation = '${Config.apiUrl}/bpla/operator/stop';
+
 
 
   static const String verifyCode = '${Config.apiUrl}/auth/verify-code';

@@ -191,10 +191,12 @@ class _RequestListViewState extends State<RequestListView> {
   String _getLocalizedStatus(int stateId, AppLocalizations localizations) {
     switch (stateId) {
       case 1:
-        return localizations.confirmed;
-      case 2:
         return localizations.pending;
+      case 2:
+        return localizations.confirmed;
       case 3:
+        return localizations.canceled;
+      case 4:
         return localizations.rejected;
       default:
         return "unknown";

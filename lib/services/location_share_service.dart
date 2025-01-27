@@ -37,18 +37,18 @@ class LocationShareService {
       initialPosition.accuracy,
     );
 
-    // Если сервер вернул что-то, кроме 200, выходим с ошибкой:
-    if (startResponse['statusCode'] != 200) {
-      // Останавливаем локальный процесс, так как сервер не подтвердил.
-      _isSharingLocation = false;
-      _currentUUID = null;
-      _positionStreamSubscription?.cancel();
-      _timer?.cancel();
-
-      throw Exception(
-        'Не удалось начать передачу локации: ${startResponse['body']}',
-      );
-    }
+    // // Если сервер вернул что-то, кроме 200, выходим с ошибкой:
+    // if (startResponse['statusCode'] != 200) {
+    //   // Останавливаем локальный процесс, так как сервер не подтвердил.
+    //   _isSharingLocation = false;
+    //   _currentUUID = null;
+    //   _positionStreamSubscription?.cancel();
+    //   _timer?.cancel();
+    //
+    //   throw Exception(
+    //     'Не удалось начать передачу локации: ${startResponse['body']}',
+    //   );
+    // }
 
     // Если всё ок, продолжаем подписку на стрим:
     _positionStreamSubscription = Geolocator.getPositionStream(
@@ -169,6 +169,16 @@ class LocationShareService {
   ///
   /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: возвращаем также код и тело ответа.
   Future<Map<String, dynamic>> stopLocationSharingRequest(String uuid) async {
+    await Future.delayed(Duration(seconds: 1)); // Имитация сетевого запроса
+
+    return {
+      'statusCode': 200,
+      'body': jsonEncode({
+        'message': 'Location sharing stopped successfully',
+        'uuid': uuid,
+      }),
+    };
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 

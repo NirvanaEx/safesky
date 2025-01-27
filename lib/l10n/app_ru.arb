@@ -38,6 +38,10 @@
   "pending": "На рассмотрении",
   "rejected": "Отклонён",
 
+  "canceled": "Отменён",
+
+
+
   "noDataFound": "Данных не найдено",
   "changePassword": "Изменить пароль",
   "newPassword": "Новый пароль",
@@ -84,10 +88,24 @@
   "locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
   "back": "Назад",
 
+  "delete": "Удалить",
+  "cancelRequest": "Отмена заявки",
+  "enterReason": "Введите причину отмены",
+  "exit": "Выход",
+  "planIdMissing": "ID плана отсутствует",
+  "requestDeletedSuccessfully": "Заявка успешно удалена",
+  "requestCanceledSuccessfully": "Заявка успешно отменена",
+  "errorMessage": "Ошибка: {errorMessage}",
+
+
   "scanMessage": "Пожалуйста, отсканируйте QR-код",
   "errorFetchingData": "Ошибка при получении данных",
   "authTokenNotFound": "Токен авторизации не найден",
 
+
+  "location_sharing_title": "Передача местоположения",
+  "location_sharing_message": "Передача данных уже запущена. Чтобы остановить, нажмите 'Остановить'.",
+  "location_sharing_started": "Передача местоположения началась",
 
   "startLocationSharing": "Начать трансляцию",
   "sharingLocation": "Идет трансляция",
@@ -157,8 +175,11 @@
   },
   "@longitude": {
     "description": "Метка для координаты долготы"
-  }
+  },
 
-
-
+  "request_pending": "Заявка на рассмотрении",
+  "request_canceled": "Заявка отменена",
+  "request_rejected": "Заявка отклонена",
+  "unknown_status": "Неизвестный статус",
+  "error_retrieving_status": "Ошибка при получении статуса"
 }

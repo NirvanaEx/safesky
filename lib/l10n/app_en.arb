@@ -37,6 +37,9 @@
   "confirmed": "Confirmed",
   "pending": "Pending",
   "rejected": "Rejected",
+  "canceled": "Canceled",
+
+
   "noDataFound": "No data found",
 
 
@@ -87,9 +90,25 @@
   "locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
   "back": "Back",
 
+  "delete": "Delete",
+  "cancelRequest": "Cancel Request",
+  "enterReason": "Enter reason for cancellation",
+  "exit": "Exit",
+  "planIdMissing": "Plan ID is missing",
+  "requestDeletedSuccessfully": "Request deleted successfully",
+  "requestCanceledSuccessfully": "Request canceled successfully",
+  "errorMessage": "Error: {errorMessage}",
+
+
   "scanMessage": "Please scan the QR code",
   "errorFetchingData": "Error fetching data",
   "authTokenNotFound": "Authentication token not found",
+
+
+
+  "location_sharing_title": "Location Sharing",
+  "location_sharing_message": "Data transmission is already running. To stop it, press 'Stop'.",
+  "location_sharing_started": "Location sharing has started",
 
   "startLocationSharing": "Start location sharing",
   "sharingLocation": "Sharing location",
@@ -156,8 +175,11 @@
   },
   "@longitude": {
     "description": "Label for longitude coordinate"
-  }
+  },
 
-
-
+  "request_pending": "Request is pending",
+  "request_canceled": "Request has been canceled",
+  "request_rejected": "Request has been rejected",
+  "unknown_status": "Unknown status",
+  "error_retrieving_status": "Error retrieving status"
 }

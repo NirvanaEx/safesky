@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/plan_detail_model.dart';
 import '../services/location_share_service.dart';
 import 'package:flutter_map/flutter_map.dart';
+
+import '../services/notification_service.dart';
 
 class MapShareLocationViewModel extends ChangeNotifier {
   final LocationShareService _locationShareService = LocationShareService();
@@ -45,6 +48,12 @@ class MapShareLocationViewModel extends ChangeNotifier {
   /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: используем try-catch, так как сервис может бросить
   /// исключение (если сервер вернёт не 200 при первой отправке).
   Future<void> startLocationSharing(String uuid, BuildContext context) async {
+    // Если уже есть активная трансляция, предлагаем её отключить
+    if (_isSharingLocation && _currentUUID != null) {
+      _showSnackbar(context, "У вас уже запущена трансляция. Остановите её, чтобы начать новую.");
+      return;
+    }
+
     _isSharingLocation = true;
     _isPaused = false;
     _currentUUID = uuid;
@@ -52,7 +61,15 @@ class MapShareLocationViewModel extends ChangeNotifier {
 
     try {
       await _locationShareService.startLocationSharing(_currentUUID!);
-      // Если метод не упал — значит статус 200, всё ок
+
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_sharing_location', true);
+      await prefs.setString('current_uuid', uuid);
+      // Если метод не упал — значит статус 200, всё ок:
+      // Вызываем уведомление:
+      NotificationService.showLocationSharingNotification();
+
       _showSnackbar(context, "Location sharing started successfully");
     } catch (e) {
       // Если тут ловим ошибку, значит сервер вернул не 200.
@@ -76,10 +93,21 @@ class MapShareLocationViewModel extends ChangeNotifier {
         await _locationShareService.stopLocationSharing();
         _isSharingLocation = false;
         _currentUUID = null;
+
+        // Сброс в SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('is_sharing_location', false);
+        await prefs.remove('current_uuid');
+
+        // Отменяем уведомление
+        NotificationService.cancelNotification();
+
         _showSnackbar(context, "Location sharing stopped");
       } else {
         // Иначе показываем ошибку, локально не выключаем
-        _showSnackbar(context, "Failed to stop location sharing: ${res['body']}");
+        // _showSnackbar(context, "Failed to stop location sharing: ${res['body']}");
+        _showSnackbar(context, "Failed to stop location sharing");
+
       }
       notifyListeners();
     }
@@ -95,7 +123,9 @@ class MapShareLocationViewModel extends ChangeNotifier {
         _isPaused = true;
         _showSnackbar(context, "Location sharing paused");
       } else {
-        _showSnackbar(context, "Failed to pause location sharing: ${res['body']}");
+        // _showSnackbar(context, "Failed to pause location sharing: ${res['body']}");
+        _showSnackbar(context, "Failed to pause location sharing");
+
       }
       notifyListeners();
     }

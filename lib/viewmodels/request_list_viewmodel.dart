@@ -85,12 +85,14 @@ class RequestListViewModel extends ChangeNotifier {
 
   Color getStatusColor(int stateId) {
     switch (stateId) {
-      case 1:  // Зарегистрирован
-        return Colors.greenAccent;
-      case 2:  // На рассмотрении
-        return Colors.orangeAccent;
-      case 3:  // Отклонён
-        return Colors.redAccent;
+      case 1:
+        return Colors.orangeAccent; // На рассмотрении
+      case 2:
+        return Colors.greenAccent;  // Зарегистрирован
+      case 3:
+        return Colors.blueAccent;    // Отменён (подходит синий оттенок, ассоциирующийся со спокойствием)
+      case 4:
+        return Colors.redAccent; // Отклонён
       default:
         return Colors.grey;
     }
