@@ -18,6 +18,10 @@ class ApiRoutes {
   static const String requestCreate = '${Config.apiUrl}/bpla/plan/create';
   static const String requestDetailInfo = '${Config.apiUrl}/bpla/plan/';
 
+  // Трасляция местоположение
+  static const String updateLocation = '${Config.apiUrl}/bpla/operator/track';
+  static const String pauseLocation = '${Config.apiUrl}/bpla/operator/pause';
+  static const String stopLocation = '${Config.apiUrl}/bpla/operator/stop';
 
 
   static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
@@ -43,7 +47,6 @@ class ApiRoutes {
   static const String checkRequestStatus = '${Config.apiUrl}/check-request-status';
   static const String sendCodeAndGetStatus = '${Config.apiUrl}/send-code-and-get-status';
 
-  // Трасляция местоположение
-  static const String updateLocation = '${Config.apiUrl}/location/update';
+
 
 }

@@ -108,7 +108,7 @@ class RequestService {
   }
 
 
-  Future<http.Response> cancelRequest(String? requestId) async {
+  Future<http.Response> cancelRequest(int? requestId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 

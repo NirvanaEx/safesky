@@ -104,7 +104,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _isSharing ? null : () async { // Отключаем кнопку, если идет загрузка
-                          await _handleLocationSharing(context);
+                          await viewModel.handleLocationSharing(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
@@ -243,7 +243,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 child: ElevatedButton(
                   onPressed: () async {
                     try {
-                      final response = await RequestService().cancelRequest(viewModel.planDetailModel?.planId.toString());
+                      final response = await RequestService().cancelRequest(viewModel.planDetailModel?.planId);
                       if (response.statusCode == 200) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Request canceled successfully')),
@@ -304,7 +304,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
         if (shouldStop != true) {
           return;
         } else {
-          await locationVM.stopLocationSharing();
+          await locationVM.stopLocationSharing(context);
         }
       }
 

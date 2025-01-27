@@ -74,7 +74,7 @@ class _ScanViewState extends State<ScanView> {
         if (locationVM.isSharingLocation) {
           final shouldStop = await _showStopDialog(context);
           if (shouldStop == true) {
-            await locationVM.stopLocationSharing();
+            await locationVM.stopLocationSharing(context);
           } else {
             isDialogOpen = false;
             setState(() {

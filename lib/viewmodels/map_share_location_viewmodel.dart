@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:workmanager/workmanager.dart';
-import 'package:flutter_map/flutter_map.dart';
-import '../services/notification_service.dart';
+import '../models/plan_detail_model.dart';
 import '../services/location_share_service.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 class MapShareLocationViewModel extends ChangeNotifier {
   final LocationShareService _locationShareService = LocationShareService();
+  PlanDetailModel? _planDetailModel;
+
   bool _isSharingLocation = false;
   bool _isPaused = false;
   bool _isLoadingLocation = true;
   LatLng? _currentLocation;
-  String? _currentRequestId;
+  String? _currentUUID;
   final double defaultZoom = 13.0;
 
   bool get isSharingLocation => _isSharingLocation;
@@ -20,55 +20,90 @@ class MapShareLocationViewModel extends ChangeNotifier {
   bool get isLoadingLocation => _isLoadingLocation;
   LatLng? get currentLocation => _currentLocation;
 
+  PlanDetailModel? get planDetailModel => _planDetailModel;
+
+  void setPlanDetail(PlanDetailModel plan) {
+    _planDetailModel = plan;
+    notifyListeners();
+  }
+
   void setSharingLocation(bool isSharing) {
     _isSharingLocation = isSharing;
     notifyListeners();
   }
 
-  String? get currentRequestId => _currentRequestId;
+  String? get currentRequestId => _currentUUID;
 
   void resetLocationSharing() {
     _isSharingLocation = false;
-    _currentRequestId = null;
+    _currentUUID = null;
     notifyListeners();
   }
 
-  /// Запуск процесса обмена местоположением
-  Future<void> startLocationSharing(String requestId) async {
+  /// Запуск обмена локацией
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: используем try-catch, так как сервис может бросить
+  /// исключение (если сервер вернёт не 200 при первой отправке).
+  Future<void> startLocationSharing(String uuid, BuildContext context) async {
     _isSharingLocation = true;
     _isPaused = false;
-
-    _currentRequestId = requestId;  // Устанавливаем _currentRequestId из переданного requestId
+    _currentUUID = uuid;
     notifyListeners();
 
-    // Используем `LocationShareService` для запуска обмена местоположением
-    await _locationShareService.startLocationSharing(_currentRequestId!);
-
-    // Убедимся, что статус обмена местоположением обновлен после вызова сервиса
-    if (!_locationShareService.isSharingLocation) {
+    try {
+      await _locationShareService.startLocationSharing(_currentUUID!);
+      // Если метод не упал — значит статус 200, всё ок
+      _showSnackbar(context, "Location sharing started successfully");
+    } catch (e) {
+      // Если тут ловим ошибку, значит сервер вернул не 200.
       _isSharingLocation = false;
-      _currentRequestId = null;
+      _currentUUID = null;
+      _showSnackbar(context, "Ошибка при старте: $e");
     }
 
     notifyListeners();
-    print("Location sharing started with requestId: $_currentRequestId");
   }
 
-  /// Остановка процесса обмена местоположением
-  Future<void> stopLocationSharing() async {
-    if (_currentRequestId != null) {
-      _isSharingLocation = false;
+  /// Остановка обмена локацией (серверный вызов + локально)
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: сначала отправляем на сервер запрос,
+  /// если всё ок (statusCode == 200), тогда локально останавливаем сервис.
+  Future<void> stopLocationSharing(BuildContext context) async {
+    if (_currentUUID != null) {
+      final res = await _locationShareService.stopLocationSharingRequest(_currentUUID!);
+      if (res['statusCode'] == 200) {
+        // Если сервер вернул 200, останавливаем локальный сервис
+        await _locationShareService.stopLocationSharing();
+        _isSharingLocation = false;
+        _currentUUID = null;
+        _showSnackbar(context, "Location sharing stopped");
+      } else {
+        // Иначе показываем ошибку, локально не выключаем
+        _showSnackbar(context, "Failed to stop location sharing: ${res['body']}");
+      }
       notifyListeners();
-
-      await _locationShareService.stopLocationSharing();
-      print("Location sharing stopped for requestId: $_currentRequestId");
-
-      _currentRequestId = null;
     }
   }
 
-  /// Загрузка текущего местоположения
-  Future<void> loadCurrentLocation() async {
+  /// Пауза обмена локацией
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: если статус != 200, показываем ошибку.
+  Future<void> pauseLocationSharing(BuildContext context) async {
+    if (_currentUUID != null) {
+      final res = await _locationShareService.pauseLocationSharing(_currentUUID!);
+      if (res['statusCode'] == 200) {
+        _isPaused = true;
+        _showSnackbar(context, "Location sharing paused");
+      } else {
+        _showSnackbar(context, "Failed to pause location sharing: ${res['body']}");
+      }
+      notifyListeners();
+    }
+  }
+
+  /// Загрузить текущее местоположение (без отправки на сервер),
+  /// чтобы отобразить на карте.
+  Future<void> loadCurrentLocation(BuildContext context) async {
     _isLoadingLocation = true;
     notifyListeners();
 
@@ -77,21 +112,32 @@ class MapShareLocationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Анимация перемещения к указанному местоположению на карте
   Future<void> animateToLocation(MapController mapController, LatLng targetLocation) async {
     const int steps = 25;
     LatLng startLocation = mapController.center;
     for (int i = 0; i <= steps; i++) {
-      final double lat = startLocation.latitude + (targetLocation.latitude - startLocation.latitude) * (i / steps);
-      final double lng = startLocation.longitude + (targetLocation.longitude - startLocation.longitude) * (i / steps);
+      final double lat = startLocation.latitude +
+          (targetLocation.latitude - startLocation.latitude) * (i / steps);
+      final double lng = startLocation.longitude +
+          (targetLocation.longitude - startLocation.longitude) * (i / steps);
       mapController.move(LatLng(lat, lng), mapController.zoom);
       await Future.delayed(Duration(milliseconds: 5));
     }
   }
 
-  /// Переключение режима паузы для обмена местоположением
-  void togglePause() {
+  /// Простой переключатель для демонстрации (пауза / возобновление)
+  void togglePause(BuildContext context) {
     _isPaused = !_isPaused;
     notifyListeners();
+    _showSnackbar(context, _isPaused ? "Location sharing paused" : "Location sharing resumed");
+  }
+
+  void _showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 }

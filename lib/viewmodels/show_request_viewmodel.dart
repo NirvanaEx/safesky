@@ -14,7 +14,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class ShowRequestViewModel extends ChangeNotifier {
-  RequestModel? requestModel;
   PlanDetailModel? planDetailModel;
   bool isSharing = false;
   final requestService = RequestService();
@@ -90,18 +89,18 @@ class ShowRequestViewModel extends ChangeNotifier {
         if (shouldStop != true) {
           return;
         } else {
-          await locationVM.stopLocationSharing();
+          await locationVM.stopLocationSharing(context);
         }
       }
 
       // Переход к MapShareLocationView
-      await navigateToMapShareLocationView(context, requestModel?.id ?? '');
+      await navigateToMapShareLocationView(context);
     } catch (e) {
       print('Error in handleLocationSharing: $e');
     }
   }
 
-  Future<void> navigateToMapShareLocationView(BuildContext context, String requestId) async {
+  Future<void> navigateToMapShareLocationView(BuildContext context) async {
     RequestService requestService = RequestService();
 
     isSharing = true;
@@ -109,30 +108,29 @@ class ShowRequestViewModel extends ChangeNotifier {
 
     try {
       // Получаем статус
-      StatusModel status = await requestService.getRequestStatus(requestId);
+      int? status = planDetailModel?.stateId;
 
       // Логика проверки статуса
-      if (status.status == RequestStatus.active) {
+      if (status == 1) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MapShareLocationView(
-              key: ValueKey(requestId),
-              requestModel: requestModel,
+              planDetailModel: planDetailModel,
             ),
           ),
         );
-      } else if (status.status == RequestStatus.expired) {
+      } else if (status == 3) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request has expired: ${status.message}')),
+          SnackBar(content: Text('Request has expired: ${planDetailModel?.state}')),
         );
-      } else if (status.status == RequestStatus.notYetActive) {
+      } else if (status == 2) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request is not yet active: ${status.message}')),
+          SnackBar(content: Text('Request is not yet active: ${{planDetailModel?.state}}')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unknown status: ${status.status}. ${status.message}')),
+          SnackBar(content: Text('Unknown status: ${{planDetailModel?.state}}')),
         );
       }
     } catch (e) {
@@ -147,7 +145,7 @@ class ShowRequestViewModel extends ChangeNotifier {
 
   Future<void> cancelRequest(BuildContext context) async {
     try {
-      final response = await RequestService().cancelRequest(requestModel?.id);
+      final response = await RequestService().cancelRequest(planDetailModel?.planId);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request canceled successfully')),

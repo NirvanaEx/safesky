@@ -4,14 +4,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../config/api_routes.dart';
 import '../config/config.dart';
-import '../models/location_model.dart';
-import '../models/location_share_model.dart';
 
 class LocationShareService {
   bool _isSharingLocation = false;
-  String? _currentRequestId;
+  String? _currentUUID;
   LatLng? _lastLocation;
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _timer;
@@ -19,82 +18,187 @@ class LocationShareService {
   bool get isSharingLocation => _isSharingLocation;
 
   /// Запуск процесса обмена местоположением
-  Future<void> startLocationSharing(String requestId) async {
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: после установки флага `_isSharingLocation = true`
+  /// делаем первый запрос на сервер через `_updateLocation`, чтобы проверить статус.
+  /// Если получаем не 200, прерываем процесс (отключаем таймер, стрим и выбрасываем ошибку).
+  Future<void> startLocationSharing(String uuid) async {
     _isSharingLocation = true;
-    _currentRequestId = requestId;
+    _currentUUID = uuid;
 
-    // Инициализация подписки на поток изменений местоположения
+    // Получаем текущую локацию (однократно) и отправляем на сервер,
+    // чтобы сразу проверить, возвращает ли сервер код 200.
+    Position initialPosition = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    final startResponse = await _updateLocation(
+      _currentUUID!,
+      initialPosition.accuracy,
+    );
+
+    // Если сервер вернул что-то, кроме 200, выходим с ошибкой:
+    if (startResponse['statusCode'] != 200) {
+      // Останавливаем локальный процесс, так как сервер не подтвердил.
+      _isSharingLocation = false;
+      _currentUUID = null;
+      _positionStreamSubscription?.cancel();
+      _timer?.cancel();
+
+      throw Exception(
+        'Не удалось начать передачу локации: ${startResponse['body']}',
+      );
+    }
+
+    // Если всё ок, продолжаем подписку на стрим:
     _positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 5),
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      ),
     ).listen((Position position) async {
       LatLng currentLatLng = LatLng(position.latitude, position.longitude);
       if (_lastLocation == null || _lastLocation != currentLatLng) {
         _lastLocation = currentLatLng;
-        await _updateLocation(requestId);
+        await _updateLocation(_currentUUID ?? '', position.accuracy);
       }
     });
 
-    // Установка таймера для отправки данных хотя бы раз в минуту
+    // И запускаем таймер, чтобы раз в минуту отправлять локацию
+    // (даже если стрим ничего не вернул).
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) async {
       if (_lastLocation != null) {
-        await _updateLocation(requestId);
+        Position position = await Geolocator.getCurrentPosition();
+        await _updateLocation(_currentUUID ?? '', position.accuracy);
       }
     });
 
-    print("Location sharing started with requestId: $_currentRequestId");
+    print("Location sharing started with requestId: $_currentUUID");
   }
 
-  /// Остановка процесса обмена местоположением
+  /// Остановка процесса обмена местоположением (локально)
+  ///
+  /// Не делает запрос на сервер, а только отключает таймер и стрим.
+  /// Используется внутри, когда надо прервать локальную отправку геоданных.
   Future<void> stopLocationSharing() async {
     _isSharingLocation = false;
-    _currentRequestId = null;
+    _currentUUID = null;
 
-    // Отписываемся от потока и останавливаем таймер
     await _positionStreamSubscription?.cancel();
     _timer?.cancel();
 
-    print("Location sharing stopped.");
+    print("Location sharing stopped (local).");
   }
 
   /// Метод для обновления местоположения на сервере
-  Future<void> _updateLocation(String clientId) async {
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: теперь возвращаем Map со статусом и телом ответа,
+  /// чтобы наверху легко понимать — успешен запрос или нет.
+  Future<Map<String, dynamic>> _updateLocation(String uuid, double accuracy) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
-    // Создаем модель для текущего местоположения
-    LocationShareModel locationShareModel = LocationShareModel(
-      client: token ?? '',
-      location: LocationModel(
-        id: _currentRequestId,
-        latitude: _lastLocation!.latitude,
-        longitude: _lastLocation!.longitude,
-      ),
-    );
+    Map<String, dynamic> locationData = {
+      "uuid": uuid,
+      "latitude": _lastLocation?.latitude,
+      "longitude": _lastLocation?.longitude,
+      "accuracy": accuracy,
+    };
 
-    // Отправка данных на сервер
     try {
       final response = await http.post(
         Uri.parse(ApiRoutes.updateLocation),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': Config.basicAuth,
+          'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(locationShareModel.toJson()),
+        body: jsonEncode(locationData),
       );
 
+      final decodedResponse = utf8.decode(response.bodyBytes);
+
       if (response.statusCode == 200) {
-        print("Location successfully sent: ${locationShareModel.toJson()}");
+        print("Location successfully sent: ${jsonEncode(locationData)}");
       } else {
         print("Failed to send location. Status: ${response.statusCode}");
       }
+
+      return {
+        'statusCode': response.statusCode,
+        'body': decodedResponse,
+      };
     } catch (e) {
       print("Error sending location: $e");
+      return {
+        'statusCode': 500,
+        'body': "Error: $e",
+      };
     }
   }
 
-  /// Получает текущее местоположение устройства
+  /// Приостановка обмена локацией (запрос к серверу).
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: возвращаем также код и тело ответа.
+  Future<Map<String, dynamic>> pauseLocationSharing(String uuid) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    try {
+      final response = await http.post(
+        Uri.parse(ApiRoutes.pauseLocation),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {"uuid": uuid},
+      );
+
+      return {
+        'statusCode': response.statusCode,
+        'body': utf8.decode(response.bodyBytes),
+      };
+    } catch (e) {
+      print("Error pausing location sharing: $e");
+      return {
+        'statusCode': 500,
+        'body': "Error: $e",
+      };
+    }
+  }
+
+  /// Остановка обмена локацией (запрос к серверу).
+  ///
+  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: возвращаем также код и тело ответа.
+  Future<Map<String, dynamic>> stopLocationSharingRequest(String uuid) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    try {
+      final response = await http.post(
+        Uri.parse(ApiRoutes.stopLocation),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {"uuid": uuid},
+      );
+
+      return {
+        'statusCode': response.statusCode,
+        'body': utf8.decode(response.bodyBytes),
+      };
+    } catch (e) {
+      print("Error stopping location sharing: $e");
+      return {
+        'statusCode': 500,
+        'body': "Error: $e",
+      };
+    }
+  }
+
+  /// Получает текущее местоположение устройства (без отправки на сервер).
   Future<LatLng> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
     return LatLng(position.latitude, position.longitude);
   }
 }
