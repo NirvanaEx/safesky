@@ -51,67 +51,67 @@ class AboutAppView extends StatelessWidget {
             Divider(),
             Row(
               children: [
-                Expanded(
-                  child: Material(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(15),
-                    child: InkWell(
-                      onTap: () {
-                        // Получаем код языка
-                        String pdfPath;
-                        final locale = Localizations.localeOf(context);
-                        if (locale.languageCode == 'ru') {
-                          pdfPath = 'assets/docs/user_agreement_ru.pdf';
-                        } else if (locale.languageCode == 'uz') {
-                          pdfPath = 'assets/docs/user_agreement_uz.pdf';
-                        } else {
-                          pdfPath = 'assets/docs/user_agreement_en.pdf';
-                        }
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PdfPageView(
-                              pdfPath: pdfPath,
-                            ),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(15),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Text(
-                          localizations.userAgreement,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Material(
+                //     color: Colors.grey[200],
+                //     borderRadius: BorderRadius.circular(15),
+                //     child: InkWell(
+                //       onTap: () {
+                //         // Получаем код языка
+                //         String pdfPath;
+                //         final locale = Localizations.localeOf(context);
+                //         if (locale.languageCode == 'ru') {
+                //           pdfPath = 'assets/docs/user_agreement_ru.pdf';
+                //         } else if (locale.languageCode == 'uz') {
+                //           pdfPath = 'assets/docs/user_agreement_uz.pdf';
+                //         } else {
+                //           pdfPath = 'assets/docs/user_agreement_en.pdf';
+                //         }
+                //
+                //         Navigator.push(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => PdfPageView(
+                //               pdfPath: pdfPath,
+                //             ),
+                //           ),
+                //         );
+                //       },
+                //       borderRadius: BorderRadius.circular(15),
+                //       child: Padding(
+                //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                //         child: Text(
+                //           localizations.userAgreement,
+                //           style: TextStyle(fontSize: 16),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             SizedBox(height: 10),
             Row(
               children: [
-                Expanded(
-                  child: Material(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(15),
-                    child: InkWell(
-                      onTap: () {
-                        // Логика открытия страницы политики конфиденциальности
-                      },
-                      borderRadius: BorderRadius.circular(15),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Text(
-                          localizations.privacyPolicy,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Material(
+                //     color: Colors.grey[200],
+                //     borderRadius: BorderRadius.circular(15),
+                //     child: InkWell(
+                //       onTap: () {
+                //         // Логика открытия страницы политики конфиденциальности
+                //       },
+                //       borderRadius: BorderRadius.circular(15),
+                //       child: Padding(
+                //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                //         child: Text(
+                //           localizations.privacyPolicy,
+                //           style: TextStyle(fontSize: 16),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             Spacer(),

@@ -67,15 +67,21 @@ class _MainViewState extends State<MainView> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationView()),
-              );
-            },
+          // Если уведомления временно скрыты, добавляем заглушку:
+          Container(
+            width: 48, // ширину можно подогнать под размер иконки уведомлений
           ),
+
+          // Если понадобится вернуть уведомления, можно использовать следующий код:
+          // IconButton(
+          //   icon: Icon(Icons.notifications, color: Colors.black),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => NotificationView()),
+          //     );
+          //   },
+          // ),
         ],
       ),
       drawer: _buildDrawer(localizations),
@@ -141,16 +147,16 @@ class _MainViewState extends State<MainView> {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Divider(),
-                        ListTile(
-                          leading: Icon(Icons.support_agent, color: Colors.black),
-                          title: Text(localizations.support),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => SupportView()),
-                            );
-                          },
-                        ),
+                        // ListTile(
+                        //   leading: Icon(Icons.support_agent, color: Colors.black),
+                        //   title: Text(localizations.support),
+                        //   onTap: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(builder: (context) => SupportView()),
+                        //     );
+                        //   },
+                        // ),
                         ListTile(
                           leading: Icon(Icons.settings, color: Colors.black),
                           title: Text(localizations.settings),
