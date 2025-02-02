@@ -208,6 +208,34 @@ class AuthService {
     }
   }
 
+  Future<bool> checkToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    // Если токена нет совсем, сразу возвращаем false
+    if (token == null) return false;
+
+    final url = Uri.parse('https://example.com/api/v1/profile/check_token');
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // 200 - всё ОК, токен валидный
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        // Любой другой статус код означает, что токен недействителен
+        return false;
+      }
+    } catch (e) {
+      // Сюда попадём, если нет сети или любая другая ошибка при запросе
+      return false;
+    }
+  }
 
 
 

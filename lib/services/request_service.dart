@@ -470,6 +470,48 @@ class RequestService {
     }
   }
 
+  Future<PlanDetailModel> fetchPlanDetailByUuid(String uuid) async {
+    // 1. Получаем токен
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    // 2. Формируем запрос с использованием uuid
+    final url = Uri.parse('${ApiRoutes.requestDetailInfoByUuid}$uuid');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    // 3. Обрабатываем ответ
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes);
+      print('decodedBody: $decodedBody');
+
+      try {
+        final Map<String, dynamic> jsonData = json.decode(decodedBody);
+        print('Parsed JSON map: $jsonData');
+
+        final detailModel = PlanDetailModel.fromJson(jsonData);
+        print('Parsed successfully: ${detailModel.permission}');
+
+        return detailModel;
+      } catch (e) {
+        print("Error decoding response: $e");
+        throw Exception('Failed to decode PlanDetail');
+      }
+    } else {
+      print("Error: ${response.statusCode} => ${response.body}");
+      throw Exception('Failed to load plan detail: ${response.statusCode}');
+    }
+  }
+
   Future<PrepareData> fetchPrepareData(String planDate) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');

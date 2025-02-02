@@ -17,6 +17,8 @@ class ApiRoutes {
 
   static const String requestCreate = '${Config.apiUrl}/bpla/plan/create';
   static const String requestDetailInfo = '${Config.apiUrl}/bpla/plan/';
+  static const String requestDetailInfoByUuid = '${Config.apiUrl}/bpla/plan/uuid/';
+
   static const String requestCancel = '${Config.apiUrl}/bpla/plan';
   static const String requestDelete = '${Config.apiUrl}/bpla/plan';
 
