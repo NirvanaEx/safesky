@@ -1,23 +1,12 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
-import 'package:safe_sky/utils/enums.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../config/config.dart';
-import '../models/area_point_location_model.dart';
-import '../models/location_model.dart';
 import '../models/plan_detail_model.dart';
 import '../models/prepare_model.dart';
-import '../models/request.dart';
-import '../models/request/flight_sign_model.dart';
-import '../models/request/model_model.dart';
-import '../models/request/purpose_model.dart';
-import '../models/request/region_model.dart';
-import '../models/request/status_model.dart';
 import '../models/request_model.dart';
 import '../models/request_model_main.dart';
-import '../test/test_generator.dart';
 
 class RequestService {
   // Метод для отправки запроса
@@ -161,7 +150,6 @@ class RequestService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
-    return TestDataGenerator.generateMainRequests(count: 10);
     if (token == null || token.isEmpty) {
       throw Exception('No authentication token found');
     }
@@ -206,7 +194,6 @@ class RequestService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
-    return TestDataGenerator.generatePlanDetail();
     if (token == null || token.isEmpty) {
       throw Exception('No authentication token found');
     }

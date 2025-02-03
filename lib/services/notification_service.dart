@@ -4,23 +4,48 @@ import '../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(); // добавляем navigatorKey
+  static final FlutterLocalNotificationsPlugin _notifications =
+  FlutterLocalNotificationsPlugin();
+  static final GlobalKey<NavigatorState> navigatorKey =
+  GlobalKey<NavigatorState>(); // добавляем navigatorKey
+
+  // Callback для локальных уведомлений на iOS
+  static Future<void> _onDidReceiveLocalNotification(
+      int id,
+      String? title,
+      String? body,
+      String? payload,
+      ) async {
+    // Обработка локального уведомления для iOS (например, переход на нужный экран)
+    if (payload != null) {
+      _handleNotificationTap(payload);
+    }
+  }
 
   static Future<void> init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    // Настройки для iOS
+    const DarwinInitializationSettings initializationSettingsIOS =
+    DarwinInitializationSettings(
+      onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
+    );
+
+    final InitializationSettings initializationSettings =
+    InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await _notifications.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) {
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
         // Обработка действий в уведомлении
         final String? payload = notificationResponse.payload;
         if (notificationResponse.actionId == 'stop_action') {
-          // Вызовем метод для остановки задачи, если нажата кнопка «Завершить»
           _stopLocationSharing();
         } else if (payload != null) {
           _handleNotificationTap(payload);
@@ -35,10 +60,11 @@ class NotificationService {
     }
   }
 
-  static Future<void> showLocationSharingNotification(BuildContext context) async {
+  static Future<void> showLocationSharingNotification(
+      BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;
 
-     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'location_channel',
       localizations.notification_channelName,
       channelDescription: localizations.notification_channelDescription,
@@ -56,7 +82,13 @@ class NotificationService {
       ],
     );
 
-     NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+    // Добавляем настройки для iOS
+    const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails();
+
+    NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iOSDetails,
+    );
 
     await _notifications.show(
       0,
@@ -85,7 +117,13 @@ class NotificationService {
       ],
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+    // Добавляем настройки для iOS
+    const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails();
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iOSDetails,
+    );
 
     await _notifications.show(
       0,
@@ -100,12 +138,12 @@ class NotificationService {
   }
 
   static Future<void> _stopLocationSharing() async {
-    final locationVM = navigatorKey.currentContext?.read<MapShareLocationViewModel>();
+    final locationVM =
+    navigatorKey.currentContext?.read<MapShareLocationViewModel>();
     if (locationVM != null) {
       locationVM.resetLocationSharing(); // Сбрасываем состояние трансляции
     }
     // Явно отменяем уведомление, если оно осталось активным
     await cancelNotification();
   }
-
 }
