@@ -17,6 +17,7 @@ import '../models/request/region_model.dart';
 import '../models/request/status_model.dart';
 import '../models/request_model.dart';
 import '../models/request_model_main.dart';
+import '../test/test_generator.dart';
 
 class RequestService {
   // Метод для отправки запроса
@@ -387,6 +388,7 @@ class RequestService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
+    return TestDataGenerator.generateMainRequests(count: 10);
     if (token == null || token.isEmpty) {
       throw Exception('No authentication token found');
     }
@@ -426,11 +428,77 @@ class RequestService {
   }
 
 
+
+  PlanDetailModel generateTestPlanDetailModel() {
+    return PlanDetailModel(
+      planId: 1,
+      planDate: DateTime.now(),
+      applicantId: 100,
+      applicant: "Test Applicant",
+      applicationNum: "12345",
+      timeFrom: "2025-02-02T15:27:57.823Z",
+      timeTo: "2025-02-02T15:27:57.823Z",
+      flightArea: "Test Flight Area, Some Region",
+      zoneTypeId: 1,
+      zoneType: "радиус от точки",
+      purpose: "Тестирование",
+      operatorList: [
+        OperatorModel(
+          id: 1,
+          surname: "Иванов",
+          name: "Иван",
+          patronymic: "Иванович",
+          phone: "+1234567890",
+        ),
+      ],
+      bplaList: [
+        BplaModel(
+          id: 1,
+          type: "БПЛА",
+          name: "Test Drone",
+          regnum: "ABC123",
+        ),
+      ],
+      coordList: [
+        CoordModel(
+          latitude: "400530N",
+          longitude: "0645754E",
+          radius: 1000,
+        ),
+      ],
+      operatorPhones: "+1234567890",
+      email: "test@example.com",
+      notes: "Тестовые примечания",
+      permission: PermissionModel(
+        orgName: "Test Organization",
+        docNum: "DOC-123",
+        docDate: DateTime.now(),
+      ),
+      agreement: AgreementModel(
+        docNum: "AG-123",
+        docDate: DateTime.now(),
+      ),
+      source: "Test Source",
+      stateId: 1,
+      state: "Test State",
+      checkUrl: "https://example.com/check",
+      cancelReason: "Test cancel reason",
+      uuid: "f9de2cfb-a0e5-41b8-bc79-3c3500d8f482",
+      execStateId: 1,
+      execState: "Test Execution State",
+      activity: 1,
+      mAltitude: 500,
+      fAltitude: 1640.42,
+    );
+  }
+
+
   Future<PlanDetailModel> fetchPlanDetail(int planId) async {
     // 1. Получаем токен
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
+    return generateTestPlanDetailModel();
     if (token == null || token.isEmpty) {
       throw Exception('No authentication token found');
     }

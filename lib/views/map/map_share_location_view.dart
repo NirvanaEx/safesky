@@ -201,7 +201,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   const CircularProgressIndicator(),
                   const SizedBox(height: 10),
                   Text(
-                    localizations.searchingYourLocation,
+                    localizations.mapShareLocationView_searchingYourLocation,
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
@@ -238,7 +238,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   Widget _buildSlideToStart(
       AppLocalizations localizations, MapShareLocationViewModel locationVM) {
     return SlideAction(
-      text: localizations.startLocationSharing,
+      text: localizations.mapShareLocationView_startLocationSharing,
       textStyle: const TextStyle(fontSize: 18, color: Colors.black),
       innerColor: Colors.black,
       outerColor: Colors.white,
@@ -286,8 +286,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 const Icon(Icons.pause, color: Colors.red, size: 24),
               Text(
                 locationVM.isPaused
-                    ? localizations.paused
-                    : localizations.sharingLocation,
+                    ? localizations.mapShareLocationView_paused
+                    : localizations.mapShareLocationView_sharingLocation,
                 style: const TextStyle(color: Colors.red, fontSize: 18),
               ),
             ],
@@ -309,7 +309,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 ),
                 icon: const Icon(Icons.stop, color: Colors.white, size: 28),
                 label: Text(
-                  localizations.stop,
+                  localizations.mapShareLocationView_stop,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
@@ -333,8 +333,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 ),
                 label: Text(
                   locationVM.isPaused
-                      ? localizations.resume
-                      : localizations.pause,
+                      ? localizations.mapShareLocationView_resume
+                      : localizations.mapShareLocationView_pause,
                   style: const TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),

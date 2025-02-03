@@ -47,7 +47,7 @@ class _EmailViewState extends State<EmailView> {
     } else if (_lastSnackBarTime == null || now.difference(_lastSnackBarTime!) > Duration(seconds: 5)) {
       _lastSnackBarTime = now;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.invalidEmailFormat)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.emailView_invalidEmailFormat)),
       );
     }
   }
@@ -100,13 +100,13 @@ class _EmailViewState extends State<EmailView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(localizations.register, style: TextStyle(fontSize: 22, color: Colors.white)),
+                    Text(localizations.emailView_register, style: TextStyle(fontSize: 22, color: Colors.white)),
                     SizedBox(height: 20),
                     TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.email, color: Colors.grey),
-                        hintText: localizations.email,
+                        hintText: localizations.emailView_email,
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.9),
                         border: OutlineInputBorder(
@@ -129,7 +129,7 @@ class _EmailViewState extends State<EmailView> {
                       ),
                       child: authViewModel.isLoading
                           ? CircularProgressIndicator(color: Colors.white)
-                          : Text(localizations.continueLabel, style: TextStyle(fontSize: 16)),
+                          : Text(localizations.emailView_continueLabel, style: TextStyle(fontSize: 16)),
                     ),
                     SizedBox(height: 16),
                     TextButton(
@@ -147,11 +147,11 @@ class _EmailViewState extends State<EmailView> {
                         ),
                         minimumSize: Size(double.infinity, 48),
                       ),
-                      child: Text(localizations.alreadyHaveAccount, style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: Text(localizations.emailView_alreadyHaveAccount, style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      localizations.termsOfService,
+                      localizations.emailView_termsOfService,
                       style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
                       textAlign: TextAlign.center,
                     ),

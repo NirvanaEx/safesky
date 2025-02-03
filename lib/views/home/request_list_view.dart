@@ -49,7 +49,7 @@ class _RequestListViewState extends State<RequestListView> {
                 child: TextField(
                   onChanged: viewModel.onSearchChanged,
                   decoration: InputDecoration(
-                    hintText: localizations.search,
+                    hintText: localizations.requestListView_search,
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -178,7 +178,7 @@ class _RequestListViewState extends State<RequestListView> {
             Icon(Icons.search_off, size: 50, color: Colors.grey),
             SizedBox(height: 10),
             Text(
-              localizations.noDataFound,
+              localizations.requestListView_noDataFound,
               style: TextStyle(fontSize: 18, color: Colors.black54),
               textAlign: TextAlign.center,
             ),

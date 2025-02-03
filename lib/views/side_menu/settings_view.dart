@@ -74,7 +74,7 @@ class _SettingsViewState extends State<SettingsView> {
           children: [
             Center(
               child: Text(
-                localizations.settings,
+                localizations.mainView_settings,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
@@ -132,7 +132,7 @@ class _SettingsViewState extends State<SettingsView> {
                   padding: EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: Text(
-                  localizations.save,
+                  localizations.settingsView_save,
                   style: TextStyle(color: Colors.white),
                 ),
               ),

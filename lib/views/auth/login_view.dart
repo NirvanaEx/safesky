@@ -83,7 +83,7 @@ class _LoginViewState extends State<LoginView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      localizations.loginToAccount,
+                      localizations.loginView_loginToAccount,
                       style: TextStyle(fontSize: 22, color: Colors.white),
                     ),
                     SizedBox(height: 20),
@@ -91,7 +91,7 @@ class _LoginViewState extends State<LoginView> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.email, color: Colors.grey),
-                        hintText: localizations.email,
+                        hintText: localizations.loginView_email,
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.9),
                         border: OutlineInputBorder(
@@ -114,7 +114,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                         ),
-                        hintText: localizations.password,
+                        hintText: localizations.loginView_password,
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.9),
                         border: OutlineInputBorder(
@@ -163,7 +163,7 @@ class _LoginViewState extends State<LoginView> {
                       child: authViewModel.isLoading
                           ? CircularProgressIndicator(color: Colors.white)  // Индикатор загрузки
                           : Text(
-                        localizations.login,
+                        localizations.loginView_login,
                         style: TextStyle(fontSize: 16, color: Colors.white), // Белый цвет текста
                       ),
                     ),
@@ -183,7 +183,7 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         minimumSize: Size(double.infinity, 48),
                       ),
-                      child: Text(localizations.register, style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: Text(localizations.loginView_register, style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ],
                 ),

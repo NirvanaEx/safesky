@@ -121,7 +121,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                             strokeWidth: 2,
                           ),
                         )
-                            : Text(localizations.startLocationSharing),
+                            : Text(localizations.showRequestView_startLocationSharing),
                       ),
                     ),
 
@@ -129,14 +129,14 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   SizedBox(height: 20),
 
                   // Данные заявки
-                  _buildRequestInfo(localizations.flightStartDate,
+                  _buildRequestInfo(localizations.showRequestView_flightStartDate,
                       viewModel.planDetailModel?.planDate != null
                           ? dateFormat.format(viewModel.planDetailModel!.planDate!)
                           : '-'),
-                  _buildRequestInfo(localizations.requesterName,
+                  _buildRequestInfo(localizations.showRequestView_requesterName,
                       viewModel.planDetailModel?.applicant ?? '-', isBold: true),
                   _buildRequestInfo(
-                    localizations.model,
+                    localizations.showRequestView_model,
                     viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
                         ? viewModel.planDetailModel!.bplaList
                         .asMap()
@@ -147,7 +147,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
 
                   _buildRequestInfo(
-                    localizations.flightSign,
+                    localizations.showRequestView_flightSign,
                     viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
                         ? viewModel.planDetailModel!.bplaList
                         .asMap()
@@ -158,18 +158,18 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
 
                   _buildRequestInfo(
-                  localizations.flightTimes,
+                  localizations.showRequestView_flightTimes,
                   '${viewModel.planDetailModel?.timeFrom ?? '-'}\n${viewModel.planDetailModel?.timeTo ?? '-'}',
                   ),
 
-                  _buildRequestInfo(localizations.region,
+                  _buildRequestInfo(localizations.showRequestView_region,
                       viewModel.planDetailModel?.flightArea ?? '-'),
 
                   // Отображение координат AUTHORIZED ZONE
                   _buildRequestInfo(
-                    localizations.coordinates,
+                    localizations.showRequestView_coordinates,
                     zoneInfo,
-                    linkText: localizations.map,
+                    linkText: localizations.showRequestView_map,
                     icon: Icons.visibility,
                     context: context,
                     planDetailModel: viewModel.planDetailModel
@@ -178,18 +178,18 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   // Отображение радиуса AUTHORIZED ZONE (если он есть)
                   if (viewModel.planDetailModel?.coordList.first.radius != null)
                     _buildRequestInfo(
-                      localizations.flightRadius,
+                      localizations.showRequestView_flightRadius,
                       '${viewModel.planDetailModel?.coordList.first.radius} ${localizations.m}',
                     ),
 
-                  _buildRequestInfo(localizations.flightHeight,
+                  _buildRequestInfo(localizations.showRequestView_flightHeight,
                       '${viewModel.planDetailModel?.mAltitude != null
                           ? viewModel.planDetailModel?.mAltitude
                           : '-'} ${localizations?.m}'),
-                  _buildRequestInfo(localizations.flightPurpose,
+                  _buildRequestInfo(localizations.showRequestView_flightPurpose,
                       viewModel.planDetailModel?.purpose ?? '-'),
                   _buildRequestInfo(
-                    localizations.operatorName,
+                    localizations.showRequestView_operatorName,
                     viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
                         ? viewModel.planDetailModel!.operatorList
                         .asMap()
@@ -200,7 +200,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
 
                   _buildRequestInfo(
-                    localizations.operatorPhone,
+                    localizations.showRequestView_operatorPhone,
                     viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
                         ? viewModel.planDetailModel!.operatorList
                         .asMap()
@@ -210,10 +210,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                         : '-',
                   ),
 
-                  _buildRequestInfo(localizations.email,
+                  _buildRequestInfo(localizations.showRequestView_email,
                       viewModel.planDetailModel?.email ?? '-'),
                   _buildRequestInfo(
-                      localizations.specialPermit,
+                      localizations.showRequestView_specialPermit,
                       '${viewModel.planDetailModel?.permission?.orgName ?? '-'} '
                       '${viewModel.planDetailModel?.permission?.docNum ?? '-'} '
                       '${viewModel.planDetailModel?.permission?.docDate != null
@@ -221,13 +221,13 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                           : '-'}'
                   ),
                   _buildRequestInfo(
-                      localizations.contract,
+                      localizations.showRequestView_contract,
                       '${viewModel.planDetailModel?.agreement?.docNum ?? '-'} '
                       '${viewModel.planDetailModel?.agreement?.docDate != null
                       ? dateFormat.format(viewModel.planDetailModel!.agreement!.docDate!)
                           : '-'}'
                   ),
-                  _buildRequestInfo(localizations.optional,
+                  _buildRequestInfo(localizations.showRequestView_optional,
                       viewModel.planDetailModel?.notes ?? '-'),
                   SizedBox(height: 20),
                 ],
@@ -250,7 +250,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(localizations.delete),
+                  child: Text(localizations.showRequestView_delete),
                 ),
               ),
             )
@@ -266,19 +266,19 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       builder: (BuildContext context) {
                         TextEditingController reasonController = TextEditingController();
                         return AlertDialog(
-                          title: Text(localizations.cancelRequest),
+                          title: Text(localizations.showRequestView_cancelRequest),
                           content: TextField(
                             controller: reasonController,
-                            decoration: InputDecoration(hintText: localizations.enterReason),
+                            decoration: InputDecoration(hintText: localizations.showRequestView_enterReason),
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              child: Text(localizations.exit),
+                              child: Text(localizations.showRequestView_exit),
                             ),
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(reasonController.text),
-                              child: Text(localizations.submit),
+                              child: Text(localizations.showRequestView_submit),
                             ),
                           ],
                         );
@@ -294,7 +294,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(localizations.cancel),
+                  child: Text(localizations.showRequestView_cancel),
                 ),
               ),
             )
@@ -303,98 +303,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     );
   }
 
-  Future<void> _handleLocationSharing(BuildContext context) async {
-    try {
-      final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
-      if (locationVM.currentRequestId != null) {
-        final shouldStop = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(AppLocalizations.of(context)!.stopExistingLocationSharing),
-              content: Text(AppLocalizations.of(context)!.locationSharingActive),
-              actions: <Widget>[
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.back),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                ),
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.stop),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-              ],
-            );
-          },
-        );
-
-        if (shouldStop != true) {
-          return;
-        } else {
-          await locationVM.stopLocationSharing(context);
-        }
-      }
-
-      navigateToMapShareLocationView(context, widget.requestId.toString() ?? '');
-    } catch (e) {
-      // Обработка возможных ошибок
-      print('Error in _handleLocationSharing: $e');
-    }
-  }
-
-  void navigateToMapShareLocationView(BuildContext context, String requestId) async {
-    RequestService requestService = RequestService();
-
-    setState(() {
-      _isSharing = true; // Запуск индикатора загрузки
-    });
-
-    try {
-      // Получаем статус запроса
-      StatusModel status = await requestService.getRequestStatus(requestId);
-
-      // Проверяем статус и выполняем навигацию или показываем сообщения для разных статусов
-      if (status.status == RequestStatus.active) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MapShareLocationView(
-              key: ValueKey(requestId), // Используем уникальный ID запроса
-            ),
-          ),
-        );
-      } else if (status.status == RequestStatus.expired) {
-        // Если статус "Просрочено", показываем соответствующее сообщение
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request has expired: ${status.message}')),
-        );
-      } else if (status.status == RequestStatus.notYetActive) {
-        // Если статус "Еще не активна", показываем соответствующее сообщение
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request is not yet active: ${status.message}')),
-        );
-      } else {
-        // Обработка других статусов, если они появятся
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unknown status: ${status.status}. ${status.message}')),
-        );
-      }
-    } catch (e) {
-      // Обработка ошибки, например, показываем сообщение об ошибке
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error retrieving status: $e')),
-      );
-    }
-    finally {
-      setState(() {
-        _isSharing = false; // Остановка индикатора загрузки
-      });
-    }
-  }
 
 
   Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context, PlanDetailModel? planDetailModel}) {

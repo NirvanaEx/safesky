@@ -1,123 +1,4 @@
 {
-  "loginToAccount": "Log in to your account",
-  "email": "Email",
-  "password": "Password",
-  "login": "Login",
-  "register": "Register",
-
-  "createPassword": "Create a password",
-  "repeatPassword": "Repeat the password",
-
-  "confirmationCode": "Confirmation code",
-
-
-  "continueLabel": "Continue",
-  "alreadyHaveAccount": "Already have an account? Log in",
-  "termsOfService": "By clicking 'Continue', you accept the Terms of Service",
-  "verificationSent": "We have sent a verification code to",
-  "acceptTerms": "By clicking 'Continue', you accept the Terms of Service",
-  "phone": "Phone",
-  "name": "Name",
-  "surname": "Surname",
-  "invalidEmailFormat": "Invalid email format",
-  "invalidCodeFormat": "Invalid code format. Please enter a 6-digit code.",
-
-
-  "requests": "Requests",
-  "add": "Add",
-  "scan": "Scan",
-  "profile": "Profile",
-  "hi": "Hi",
-  "support": "Support",
-  "settings": "Settings",
-  "aboutApp": "About app",
-  "logout": "Logout",
-  "available24": "Operators available 24/7",
-  "search": "Search",
-  "confirmed": "Confirmed",
-  "pending": "Pending",
-  "rejected": "Rejected",
-  "canceled": "Canceled",
-
-
-  "noDataFound": "No data found",
-
-
-  "changePassword": "Change password",
-  "newPassword": "New password",
-  "confirmPassword": "Confirm password",
-  "save": "Save",
-  "change": "Change",
-  "submitRequest": "Submit Request",
-  "passwordChanged": "Your password has been changed successfully.",
-  "profileUpdated": "Profile updated successfully.",
-
-
-
-  "requestNum": "Request Number",
-
-  "chooseOperator": "Choose Operator",
-  "chooseOneOrMultiple": "Choose one or multiple",
-  "selectOperator": "Select Operator",
-
-  "selectBpla": "Select BPLA",
-  "chooseBpla": "Choose BPLA",
-
-  "flightStartDate": "Flight Start Date",
-  "requesterName": "Requester Name",
-  "model": "Model",
-  "flightSign": "Flight Sign",
-  "flightTimes": "Flight Times (UTC)",
-  "region": "Region",
-  "coordinates": "Coordinates (Location)",
-  "map": "Map",
-  "height": "Flight Height (m)",
-  "radius": "Flight Radius (m)",
-  "flightPurpose": "Purpose of Flight",
-  "operatorName": "Operator Name",
-  "operatorPhone": "Operator Phone",
-  "flightHeight": "Flight height (m)",
-  "flightRadius": "Flight radius (m)",
-  "specialPermit": "Special Permit from MoD",
-  "permitNumber": "Permit Number",
-  "contract": "Contract Number and Date",
-  "contractNumber": "Contract Number",
-  "optional": "Optional Note",
-  "note": "Note (optional)",
-  "submit": "Submit",
-  "cancel": "Cancel request",
-  "stopExistingLocationSharing": "Stop Existing Location Sharing?",
-  "locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
-  "back": "Back",
-
-  "delete": "Delete",
-  "cancelRequest": "Cancel Request",
-  "enterReason": "Enter reason for cancellation",
-  "exit": "Exit",
-  "planIdMissing": "Plan ID is missing",
-  "requestDeletedSuccessfully": "Request deleted successfully",
-  "requestCanceledSuccessfully": "Request canceled successfully",
-  "errorMessage": "Error: {errorMessage}",
-
-
-  "scanMessage": "Please scan the QR code",
-  "errorFetchingData": "Error fetching data",
-  "authTokenNotFound": "Authentication token not found",
-
-
-
-  "location_sharing_title": "Location Sharing",
-  "location_sharing_message": "Data transmission is already running. To stop it, press 'Stop'.",
-  "location_sharing_started": "Location sharing has started",
-
-  "startLocationSharing": "Start location sharing",
-  "sharingLocation": "Sharing location",
-  "stop": "Stop",
-  "pause": "Pause",
-  "resume": "Resume",
-  "paused": "Paused",
-  "searchingYourLocation": "Searching your location",
-
   "language" : "Language",
   "theme": "Theme",
   "dark": "Dark",
@@ -130,7 +11,16 @@
   "userAgreement": "User agreement",
   "privacyPolicy": "Privacy policy",
 
-  "typeYourMessage": "Type your message...",
+  "confirmed": "Confirmed",
+  "pending": "Pending",
+  "rejected": "Rejected",
+  "canceled": "Canceled",
+  "unknown": "Unknown",
+  "errorRetrievingStatus": "Error retrieving status",
+
+  "m": "m",
+  "latitude": "Latitude",
+  "longitude": "Longitude",
 
   "notifications": "Notifications",
   "noNotifications": "No notifications",
@@ -138,48 +28,230 @@
   "noNews": "No news available.",
 
 
-  "invalidRadius": "Invalid radius value",
-  "invalidFlightHeight": "Invalid flight height value",
-  "invalidPermitNumber": "Invalid permit number",
-  "invalidContractNumber": "Invalid contract number",
-  "invalidLatLngFormat": "Invalid coordinates format. Use 'latitude longitude' format",
-  "invalidLatitudeLongitude": "Invalid values for latitude or longitude",
-  "invalidStartDate": "Invalid start date",
-  "invalidFlightStartDateTime": "Invalid flight start date and time",
-  "invalidFlightEndDateTime": "Invalid flight end date and time",
-  "invalidPermitDate": "Invalid permit date",
-  "invalidContractDate": "Invalid contract date",
-  "invalidRequesterName": "Requester name cannot be empty",
-  "invalidModel": "Model must be selected",
-  "invalidRegion": "The flight region cannot be empty",
-  "invalidPurpose": "Purpose must be selected",
-  "invalidPhoneNumber": "Invalid phone number",
-  "invalidEmail": "Invalid email format",
-  "invalidFlightSign": "Flight sign must be selected",
-  "invalidOperatorName": "Operator name cannot be empty",
 
-  "invalidBpla": "Please select at least one BPLA",
-  "invalidOperators": "Please select at least one operator",
-  "invalidRequestNumber": "Request number cannot be empty",
+
+  "loginView_loginToAccount": "Log in to your account",
+  "loginView_email": "Email",
+  "loginView_password": "Password",
+  "loginView_login": "Login",
+  "loginView_register": "Register",
 
 
 
-  "m": "m",
-  "latitude": "Latitude",
-  "longitude": "Longitude",
-  "@m": {
-    "description": "Abbreviation for meters"
-  },
-  "@latitude": {
-    "description": "Label for latitude coordinate"
-  },
-  "@longitude": {
-    "description": "Label for longitude coordinate"
-  },
 
-  "request_pending": "Request is pending",
-  "request_canceled": "Request has been canceled",
-  "request_rejected": "Request has been rejected",
-  "unknown_status": "Unknown status",
-  "error_retrieving_status": "Error retrieving status"
+  "emailView_register": "Register",
+  "emailView_email": "Email",
+  "emailView_continueLabel": "Continue",
+  "emailView_alreadyHaveAccount": "Already have an account? Log in",
+  "emailView_invalidEmailFormat": "Invalid email format",
+  "emailView_termsOfService": "By clicking 'Continue', you accept the Terms of Service",
+
+
+
+
+  "infoView_register": "Register",
+  "infoView_createPassword": "Create a password",
+  "infoView_repeatPassword": "Repeat the password",
+  "infoView_confirmationCode": "Confirmation code",
+  "infoView_surname": "Surname",
+  "infoView_name": "Name",
+  "infoView_phone": "Phone",
+  "infoView_verificationSent": "We have sent a verification code to",
+  "infoView_acceptTerms": "By clicking 'Continue', you accept the Terms of Service",
+
+
+
+
+  "mainView_requests": "Requests",
+  "mainView_add": "Add",
+  "mainView_scan": "Scan",
+  "mainView_profile": "Profile",
+  "mainView_hi": "Hi",
+  "mainView_support": "Support",
+  "mainView_settings": "Settings",
+  "mainView_aboutApp": "About app",
+  "mainView_logout": "Logout",
+  "mainView_available24": "Operators available 24/7",
+
+
+
+
+  "profileView_profile": "Profile",
+  "profileView_surname": "Surname",
+  "profileView_name": "Name",
+  "profileView_phone": "Phone",
+  "profileView_password": "Password",
+  "profileView_changePassword": "Change password",
+
+  "profileView_newPassword": "New password",
+  "profileView_confirmPassword": "Confirm password",
+  "profileView_save": "Save",
+  "profileView_change": "Change",
+  "profileView_submitRequest": "Submit Request",
+  "profileView_passwordChanged": "Your password has been changed successfully.",
+  "profileView_profileUpdated": "Profile updated successfully.",
+
+
+
+
+  "requestListView_noDataFound": "No data found",
+  "requestListView_search": "Search",
+
+
+
+
+  "settingsView_save": "Save",
+
+
+
+
+  "scanView_scanMessage": "Please scan the QR code",
+  "scanView_errorFetchingData": "Error fetching data",
+  "scanView_authTokenNotFound": "Authentication token not found",
+  "scanView_back": "Back",
+  "scanView_stopExistingLocationSharing": "Stop Existing Location Sharing?",
+  "scanView_locationSharingActive": "Stop Existing Location Sharing?",
+  "scanView_continue": "Continue",
+
+
+
+  "addRequestView_requestNum": "Request Number",
+  "addRequestView_chooseOperator": "Choose Operator",
+  "addRequestView_chooseOneOrMultiple": "Choose one or multiple",
+  "addRequestView_selectOperator": "Select Operator",
+  "addRequestView_selectBpla": "Select BPLA",
+  "addRequestView_chooseBpla": "Choose BPLA",
+  "addRequestView_flightStartDate": "Flight Start Date",
+  "addRequestView_requesterName": "Requester Name",
+  "addRequestView_model": "Model",
+  "addRequestView_flightSign": "Flight Sign",
+  "addRequestView_flightTimes": "Flight Times (UTC)",
+  "addRequestView_region": "Region",
+  "addRequestView_coordinates": "Coordinates (Location)",
+  "addRequestView_map": "Map",
+  "addRequestView_height": "Flight Height (m)",
+  "addRequestView_radius": "Flight Radius (m)",
+  "addRequestView_flightPurpose": "Purpose of Flight",
+  "addRequestView_operatorName": "Operator Name",
+  "addRequestView_operatorPhone": "Operator Phone",
+  "addRequestView_email": "Email",
+  "addRequestView_flightHeight": "Flight height (m)",
+  "addRequestView_flightRadius": "Flight radius (m)",
+  "addRequestView_specialPermit": "Special Permit from MoD",
+  "addRequestView_permitNumber": "Permit Number",
+  "addRequestView_contract": "Contract Number and Date",
+  "addRequestView_contractNumber": "Contract Number",
+  "addRequestView_optional": "Optional Note",
+  "addRequestView_note": "Note (optional)",
+  "addRequestView_submit": "Submit",
+  "addRequestView_cancel": "Cancel request",
+  "addRequestView_stopExistingLocationSharing": "Stop Existing Location Sharing?",
+  "addRequestView_locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
+  "addRequestView_back": "Back",
+  "addRequestView_delete": "Delete",
+  "addRequestView_cancelRequest": "Cancel Request",
+  "addRequestView_enterReason": "Enter reason for cancellation",
+  "addRequestView_exit": "Exit",
+  "addRequestView_planIdMissing": "Plan ID is missing",
+  "addRequestView_requestDeletedSuccessfully": "Request deleted successfully",
+  "addRequestView_requestCanceledSuccessfully": "Request canceled successfully",
+  "addRequestView_errorMessage": "Error: {errorMessage}",
+
+  "addRequestView_invalidRadius": "Invalid radius value",
+  "addRequestView_invalidFlightHeight": "Invalid flight height value",
+  "addRequestView_invalidPermitNumber": "Invalid permit number",
+  "addRequestView_invalidContractNumber": "Invalid contract number",
+  "addRequestView_invalidLatLngFormat": "Invalid coordinates format. Use 'latitude longitude' format",
+  "addRequestView_invalidLatitudeLongitude": "Invalid values for latitude or longitude",
+  "addRequestView_invalidStartDate": "Invalid start date",
+  "addRequestView_invalidFlightStartDateTime": "Invalid flight start date and time",
+  "addRequestView_invalidFlightEndDateTime": "Invalid flight end date and time",
+  "addRequestView_invalidPermitDate": "Invalid permit date",
+  "addRequestView_invalidContractDate": "Invalid contract date",
+  "addRequestView_invalidRequesterName": "Requester name cannot be empty",
+  "addRequestView_invalidModel": "Model must be selected",
+  "addRequestView_invalidRegion": "The flight region cannot be empty",
+  "addRequestView_invalidPurpose": "Purpose must be selected",
+  "addRequestView_invalidPhoneNumber": "Invalid phone number",
+  "addRequestView_invalidEmail": "Invalid email format",
+  "addRequestView_invalidFlightSign": "Flight sign must be selected",
+  "addRequestView_invalidOperatorName": "Operator name cannot be empty",
+  "addRequestView_invalidBpla": "Please select at least one BPLA",
+  "addRequestView_invalidOperators": "Please select at least one operator",
+  "addRequestView_invalidRequestNumber": "Request number cannot be empty",
+
+
+
+  "showRequestView_startLocationSharing": "Start location sharing",
+  "showRequestView_requestNum": "Request Number",
+  "showRequestView_chooseOperator": "Choose Operator",
+  "showRequestView_chooseOneOrMultiple": "Choose one or multiple",
+  "showRequestView_selectOperator": "Select Operator",
+  "showRequestView_selectBpla": "Select BPLA",
+  "showRequestView_chooseBpla": "Choose BPLA",
+  "showRequestView_flightStartDate": "Flight Start Date",
+  "showRequestView_requesterName": "Requester Name",
+  "showRequestView_model": "Model",
+  "showRequestView_flightSign": "Flight Sign",
+  "showRequestView_flightTimes": "Flight Times (UTC)",
+  "showRequestView_region": "Region",
+  "showRequestView_coordinates": "Coordinates (Location)",
+  "showRequestView_map": "Map",
+  "showRequestView_height": "Flight Height (m)",
+  "showRequestView_radius": "Flight Radius (m)",
+  "showRequestView_flightPurpose": "Purpose of Flight",
+  "showRequestView_operatorName": "Operator Name",
+  "showRequestView_operatorPhone": "Operator Phone",
+  "showRequestView_email": "Email",
+  "showRequestView_flightHeight": "Flight height (m)",
+  "showRequestView_flightRadius": "Flight radius (m)",
+  "showRequestView_specialPermit": "Special Permit from MoD",
+  "showRequestView_permitNumber": "Permit Number",
+  "showRequestView_contract": "Contract Number and Date",
+  "showRequestView_contractNumber": "Contract Number",
+  "showRequestView_optional": "Optional Note",
+  "showRequestView_note": "Note (optional)",
+  "showRequestView_submit": "Submit",
+  "showRequestView_cancel": "Cancel request",
+  "showRequestView_stopExistingLocationSharing": "Stop Existing Location Sharing?",
+  "showRequestView_locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
+  "showRequestView_back": "Back",
+  "showRequestView_delete": "Delete",
+  "showRequestView_cancelRequest": "Cancel Request",
+  "showRequestView_enterReason": "Enter reason for cancellation",
+  "showRequestView_exit": "Exit",
+  "showRequestView_planIdMissing": "Plan ID is missing",
+  "showRequestView_requestDeletedSuccessfully": "Request deleted successfully",
+  "showRequestView_requestCanceledSuccessfully": "Request canceled successfully",
+  "showRequestView_errorMessage": "Error: {errorMessage}",
+
+  "showRequestView_locationSharingTitle": "Location sharing",
+  "showRequestView_locationSharingMessage": "Data sharing is already active. If you press continue, the previous broadcast will be paused.",
+  "showRequestView_locationSharingStarted": "Location sharing started",
+  "showRequestView_continue": "Continue",
+
+
+
+
+  "mapShareLocationView_startLocationSharing": "Start location sharing",
+  "mapShareLocationView_sharingLocation": "Sharing location",
+  "mapShareLocationView_stop": "Stop",
+  "mapShareLocationView_pause": "Pause",
+  "mapShareLocationView_resume": "Resume",
+  "mapShareLocationView_paused": "Paused",
+  "mapShareLocationView_searchingYourLocation": "Searching your location",
+  "mapShareLocationView_profileUpdated": "Profile updated",
+
+
+
+
+  "supportView_typeYourMessage": "Type your message..."
+
+
+
+
+
+
+
+
 }

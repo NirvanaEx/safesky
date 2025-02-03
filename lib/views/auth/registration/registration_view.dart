@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'email_view.dart';
-import 'verify_view.dart';
 import 'info_view.dart';
 
 class RegistrationView extends StatefulWidget {

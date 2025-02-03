@@ -219,34 +219,34 @@ class AddRequestViewModel extends ChangeNotifier {
 
     // Проверка даты начала
     if (startDate == null) {
-      return {'status': 'error', 'message': localizations?.invalidStartDate ?? "Invalid start date"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidStartDate ?? "Invalid start date"};
     }
 
 
     // Проверка номера заявки
     if (requestNumController.text.trim().isEmpty) {
-      return {'status': 'error', 'message': localizations?.invalidRequestNumber ?? "Request number cannot be empty"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidRequestNumber ?? "Request number cannot be empty"};
     }
 
     // Проверка выбора БПЛА
     if (selectedBplas.isEmpty) {
-      return {'status': 'error', 'message': localizations?.invalidBpla ?? "Please select at least one BPLA"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidBpla ?? "Please select at least one BPLA"};
     }
 
 
     // Проверка времени начала полета
     if (flightStartDateTime == null) {
-      return {'status': 'error', 'message': localizations?.invalidFlightStartDateTime ?? "Invalid flight start date"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidFlightStartDateTime ?? "Invalid flight start date"};
     }
 
     // Проверка времени окончания полета
     if (flightEndDateTime == null) {
-      return {'status': 'error', 'message': localizations?.invalidFlightEndDateTime ?? "Invalid flight end date"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidFlightEndDateTime ?? "Invalid flight end date"};
     }
 
     // Проверка времени начала полета
     if (regionController.text.isEmpty ) {
-      return {'status': 'error', 'message': localizations?.invalidRegion ?? "Invalid flight area"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidRegion ?? "Invalid flight area"};
     }
 
 
@@ -255,47 +255,47 @@ class AddRequestViewModel extends ChangeNotifier {
     // Проверка координат
     List<String> latLngParts = latLngController.text.split(" ");
     if (latLngParts.length != 2) {
-      return {'status': 'error', 'message': localizations?.invalidLatLngFormat ?? "Invalid coordinates format"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidLatLngFormat ?? "Invalid coordinates format"};
     }
 
     double? latitude = double.tryParse(latLngParts[0]);
     double? longitude = double.tryParse(latLngParts[1]);
     if (latitude == null || longitude == null) {
-      return {'status': 'error', 'message': localizations?.invalidLatitudeLongitude ?? "Invalid latitude/longitude"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidLatitudeLongitude ?? "Invalid latitude/longitude"};
     }
 
     // Проверка высоты полета
     double? flightHeight = double.tryParse(flightHeightController.text);
     if (flightHeight == null) {
-      return {'status': 'error', 'message': localizations?.invalidFlightHeight ?? "Invalid flight height"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidFlightHeight ?? "Invalid flight height"};
     }
 
     // Проверка радиуса
     double? radius = double.tryParse(radiusController.text);
     if (radius == null) {
-      return {'status': 'error', 'message': localizations?.invalidRadius ?? "Invalid radius"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidRadius ?? "Invalid radius"};
     }
 
     // Проверка выбора цели полета
     if (selectedPurpose == null || selectedPurpose!.trim().isEmpty) {
-      return {'status': 'error', 'message': localizations?.invalidPurpose ?? "Please select purpose"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidPurpose ?? "Please select purpose"};
     }
 
     // Проверка выбора операторов
     if (selectedOperators.isEmpty) {
-      return {'status': 'error', 'message': localizations?.invalidOperators ?? "Please select at least one operator"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidOperators ?? "Please select at least one operator"};
     }
 
     // Проверка номера телефона
     String phoneNumber = "$selectedCountryCode ${phoneController.text}";
     if (phoneController.text.isEmpty || phoneController.text.length < 7) {
-      return {'status': 'error', 'message': localizations?.invalidPhoneNumber ?? "Invalid phone number"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidPhoneNumber ?? "Invalid phone number"};
     }
 
     // Проверка email
     String email = emailController.text;
     if (email.isEmpty || !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email)) {
-      return {'status': 'error', 'message': localizations?.invalidEmail ?? "Invalid email"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidEmail ?? "Invalid email"};
     }
 
 

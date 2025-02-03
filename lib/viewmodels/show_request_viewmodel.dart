@@ -14,6 +14,8 @@ import '../viewmodels/map_share_location_viewmodel.dart';
 import '../models/request/status_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../views/my_custom_views/my_custom_dialog.dart';
+
 
 class ShowRequestViewModel extends ChangeNotifier {
   PlanDetailModel? planDetailModel;
@@ -74,24 +76,12 @@ class ShowRequestViewModel extends ChangeNotifier {
       final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
       if (locationVM.currentRequestId != null) {
-        final shouldStop = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(AppLocalizations.of(context)!.location_sharing_title),
-              content: Text(AppLocalizations.of(context)!.location_sharing_message),
-              actions: <Widget>[
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.back),
-                  onPressed: () => Navigator.of(context).pop(false),
-                ),
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.stop),
-                  onPressed: () => Navigator.of(context).pop(true),
-                ),
-              ],
-            );
-          },
+        final shouldStop = await MyCustomDialog.showOkCancelNotificationDialog(
+          context,
+          AppLocalizations.of(context)!.showRequestView_locationSharingTitle,
+          AppLocalizations.of(context)!.showRequestView_locationSharingMessage,
+          cancelText: AppLocalizations.of(context)!.showRequestView_back,
+          okText: AppLocalizations.of(context)!.showRequestView_continue,
         );
 
         if (shouldStop != true) {
@@ -104,7 +94,7 @@ class ShowRequestViewModel extends ChangeNotifier {
       // Показ уведомления о начале передачи данных
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.location_sharing_started),
+          content: Text(AppLocalizations.of(context)!.showRequestView_locationSharingStarted),
           duration: Duration(seconds: 3),
         ),
       );
@@ -131,7 +121,7 @@ class ShowRequestViewModel extends ChangeNotifier {
       // Проверка статуса заявки и выполнение соответствующих действий
       if (status == 1) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${localizations.request_pending}: ${planDetailModel?.state}')),
+          SnackBar(content: Text('${localizations.pending}: ${planDetailModel?.state}')),
         );
       } else if (status == 2) {
         Navigator.push(
@@ -144,20 +134,20 @@ class ShowRequestViewModel extends ChangeNotifier {
         );
       } else if (status == 3) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${localizations.request_canceled}: ${planDetailModel?.state}')),
+          SnackBar(content: Text('${localizations.canceled}: ${planDetailModel?.state}')),
         );
       } else if (status == 4) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${localizations.request_rejected}: ${planDetailModel?.state}')),
+          SnackBar(content: Text('${localizations.rejected}: ${planDetailModel?.state}')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${localizations.unknown_status}: ${planDetailModel?.state}')),
+          SnackBar(content: Text('${localizations.unknown}: ${planDetailModel?.state}')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${localizations.error_retrieving_status}: $e')),
+        SnackBar(content: Text('${localizations.errorRetrievingStatus}: $e')),
       );
     } finally {
       isSharing = false;
@@ -210,6 +200,20 @@ class ShowRequestViewModel extends ChangeNotifier {
       return;
     }
 
+    // Показываем диалог подтверждения удаления
+    final shouldDelete = await MyCustomDialog.showOkCancelNotificationDialog(
+      context,
+      'Подтверждение удаления',
+      'Вы действительно хотите удалить заявку?',
+      cancelText: 'Отмена',
+      okText: 'Удалить',
+    );
+
+    if (shouldDelete != true) {
+      // Пользователь отменил удаление
+      return;
+    }
+
     try {
       final response = await RequestService().deleteRequest(planDetailModel!.planId!);
       if (response.statusCode == 200) {
@@ -237,4 +241,5 @@ class ShowRequestViewModel extends ChangeNotifier {
       );
     }
   }
+
 }

@@ -33,7 +33,7 @@ class AboutAppView extends StatelessWidget {
               color: Color(0xFF323955),
             ),
             Text(
-              localizations.aboutApp,
+              localizations.mainView_aboutApp,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             FutureBuilder<String>(

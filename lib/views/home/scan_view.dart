@@ -156,7 +156,7 @@ class _ScanViewState extends State<ScanView> {
       right: 0,
       child: Center(
         child: Text(
-          localizations.scanMessage,
+          localizations.scanView_scanMessage,
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,
@@ -172,17 +172,17 @@ class _ScanViewState extends State<ScanView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(localizations.stopExistingLocationSharing),
-          content: Text(localizations.locationSharingActive),
+          title: Text(localizations.scanView_stopExistingLocationSharing),
+          content: Text(localizations.scanView_locationSharingActive),
           actions: <Widget>[
             TextButton(
-              child: Text(localizations.back),
+              child: Text(localizations.scanView_back),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
             TextButton(
-              child: Text(localizations.stop),
+              child: Text(localizations.scanView_continue),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },

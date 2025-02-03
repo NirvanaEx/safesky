@@ -23,6 +23,19 @@ class AddRequestView extends StatefulWidget {
 
 class _AddRequestViewState extends State<AddRequestView> {
 
+  @override
+  void initState() {
+    super.initState();
+    // Выполняем установку даты после первого кадра, чтобы избежать ошибок контекста.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<AddRequestViewModel>(context, listen: false);
+      if (viewModel.startDate == null) {
+        // Устанавливаем завтрашнюю дату
+        viewModel.updateStartDate(context, DateTime.now().add(Duration(days: 1)));
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +52,12 @@ class _AddRequestViewState extends State<AddRequestView> {
           children: [
             Center(
               child: Text(
-                localizations.submitRequest,
+                localizations.addRequestView_submit,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 16),
-            _buildLabel(localizations.flightStartDate),
+            _buildLabel(localizations.addRequestView_flightStartDate),
             _buildDateOnlyPickerField(
               date: viewModel.startDate,
               hintText: "01.01.2023",
@@ -54,6 +67,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                 }
               },
             ),
+            // Если дата задана и форма не загружается, показываем оставшуюся форму.
             if (viewModel.startDate != null && !viewModel.isLoading)
               _formAfterGetStartDate(),
           ],
@@ -70,13 +84,13 @@ class _AddRequestViewState extends State<AddRequestView> {
       crossAxisAlignment: CrossAxisAlignment.start,
 
       children: [
-        _buildLabel(localizations.requesterName),
-        _buildTextField(viewModel.requesterNameController, hintText: localizations.requesterName, readOnly: true),
+        _buildLabel(localizations.addRequestView_requesterName),
+        _buildTextField(viewModel.requesterNameController, hintText: localizations.addRequestView_requesterName, readOnly: true),
         SizedBox(height: 16),
-        _buildLabel(localizations.requestNum),
-        _buildTextField(viewModel.requestNumController, hintText: localizations.requestNum, isDecimal: true),
+        _buildLabel(localizations.addRequestView_requestNum),
+        _buildTextField(viewModel.requestNumController, hintText: localizations.addRequestView_requestNum, isDecimal: true),
         SizedBox(height: 16),
-        _buildLabel(localizations.model),
+        _buildLabel(localizations.addRequestView_model),
 
         MultiSelectDropdown<Bpla>(
           items: viewModel.bplaList,
@@ -85,12 +99,12 @@ class _AddRequestViewState extends State<AddRequestView> {
             viewModel.setBpla(selected);
           },
           itemLabel: (bpla) => "${bpla.name}",
-          title: localizations.selectBpla,
-          buttonText: localizations.chooseBpla,
+          title: localizations.addRequestView_selectBpla,
+          buttonText: localizations.addRequestView_chooseBpla,
         ),
 
         SizedBox(height: 16),
-        _buildLabel(localizations.flightTimes),
+        _buildLabel(localizations.addRequestView_flightTimes),
         Column(
           children: [
             _buildDatePickerField(
@@ -107,15 +121,15 @@ class _AddRequestViewState extends State<AddRequestView> {
           ],
         ),
         SizedBox(height: 16),
-        _buildLabel(localizations.region),
-        _buildTextField(viewModel.regionController, hintText: localizations.region, isText: true),
+        _buildLabel(localizations.addRequestView_region),
+        _buildTextField(viewModel.regionController, hintText: localizations.addRequestView_region, isText: true),
 
         SizedBox(height: 16),
-        _buildLabel(localizations.coordinates),
+        _buildLabel(localizations.addRequestView_coordinates),
         Row(
           children: [
             Expanded(
-              child: _buildTextField(viewModel.latLngController, hintText: localizations.coordinates, readOnly: true),
+              child: _buildTextField(viewModel.latLngController, hintText: localizations.addRequestView_coordinates, readOnly: true),
             ),
             TextButton(
               onPressed: () async {
@@ -131,7 +145,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                   viewModel.updateCoordinatesAndRadius(coordinates, radius);
                 }
               },
-              child: Text(localizations.map),
+              child: Text(localizations.addRequestView_map),
             ),
           ],
         ),
@@ -142,7 +156,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel(localizations.flightHeight),
+                  _buildLabel(localizations.addRequestView_flightHeight),
                   _buildTextField(viewModel.flightHeightController, hintText: '0', isDecimal: true)
                 ],
               ),
@@ -152,7 +166,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel(localizations.flightRadius),
+                  _buildLabel(localizations.addRequestView_flightRadius),
                   _buildTextField(viewModel.radiusController, hintText: '0', isDecimal: true)
                 ],
               ),
@@ -160,44 +174,44 @@ class _AddRequestViewState extends State<AddRequestView> {
           ],
         ),
         SizedBox(height: 16),
-        _buildLabel(localizations.flightPurpose),
+        _buildLabel(localizations.addRequestView_flightPurpose),
         _buildDropdown<String>(
           items: viewModel.purposeList,
           selectedValue: viewModel.selectedPurpose,
           onChanged: (value) => viewModel.setPurpose(value!),
-          hint: localizations.flightPurpose,
+          hint: localizations.addRequestView_flightPurpose,
           getItemName: (purpose) => purpose,
         ),
         SizedBox(height: 16),
-        _buildLabel(localizations.operatorName),
+        _buildLabel(localizations.addRequestView_operatorName),
         MultiSelectDropdown<Operator>(
           items: viewModel.operatorList,
           selectedValues: viewModel.selectedOperators,
           onChanged: (values) {
             viewModel.setOperators(values);
           },
-          title: localizations.chooseOperator,
-          hint: localizations.chooseOneOrMultiple,
-          buttonText: localizations.selectOperator,
+          title: localizations.addRequestView_chooseOperator,
+          hint: localizations.addRequestView_chooseOneOrMultiple,
+          buttonText: localizations.addRequestView_selectOperator,
           itemLabel: (operator) => "${operator.surname} ${operator.name} ${operator.patronymic ?? ''}",
         ),
         SizedBox(height: 16),
-        _buildLabel(localizations.operatorPhone),
+        _buildLabel(localizations.addRequestView_operatorPhone),
         _buildPhoneField(viewModel, context),
         SizedBox(height: 16),
-        _buildLabel(localizations.email),
+        _buildLabel(localizations.addRequestView_email),
         _buildTextField(viewModel.emailController, hintText: 'my@mail.com', isText: true),
         SizedBox(height: 16),
-        _buildLabel(localizations.specialPermit),
+        _buildLabel(localizations.addRequestView_specialPermit),
         _buildTextField(viewModel.permitNumberController, hintText: '-', isText: true, readOnly: true),
 
         SizedBox(height: 16),
-        _buildLabel(localizations.contract),
+        _buildLabel(localizations.addRequestView_contract),
         _buildTextField(viewModel.contractNumberController, hintText: '-', isText: true, readOnly: true),
 
         SizedBox(height: 16),
-        _buildLabel(localizations.note),
-        _buildTextField(viewModel.noteController, hintText: localizations.optional, isText: true),
+        _buildLabel(localizations.addRequestView_note),
+        _buildTextField(viewModel.noteController, hintText: localizations.addRequestView_optional, isText: true),
         SizedBox(height: 30),
         Center(
           child: ElevatedButton(
@@ -229,7 +243,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               minimumSize: Size(double.infinity, 48),
             ),
-            child: Text(localizations.submit, style: TextStyle(fontSize: 16)),
+            child: Text(localizations.addRequestView_submit, style: TextStyle(fontSize: 16)),
           ),
         ),
       ],

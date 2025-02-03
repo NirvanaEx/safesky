@@ -160,13 +160,13 @@ class _InfoViewState extends State<InfoView> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(localizations.register, style: TextStyle(fontSize: 22, color: Colors.white)),
+                        Text(localizations.infoView_register, style: TextStyle(fontSize: 22, color: Colors.white)),
                         SizedBox(height: 20),
                         TextField(
                           controller: _nameController,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.person, color: Colors.grey),
-                            hintText: localizations.name,
+                            hintText: localizations.infoView_name,
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.9),
                             border: OutlineInputBorder(
@@ -181,7 +181,7 @@ class _InfoViewState extends State<InfoView> {
                           controller: _surnameController,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.person_outline, color: Colors.grey),
-                            hintText: localizations.surname,
+                            hintText: localizations.infoView_surname,
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.9),
                             border: OutlineInputBorder(
@@ -228,7 +228,7 @@ class _InfoViewState extends State<InfoView> {
                                   controller: _phoneController,
                                   keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
-                                    hintText: localizations.phone,
+                                    hintText: localizations.infoView_phone,
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
                                   ),
@@ -251,7 +251,7 @@ class _InfoViewState extends State<InfoView> {
                               ),
                               onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                             ),
-                            hintText: localizations.createPassword,
+                            hintText: localizations.infoView_createPassword,
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.9),
                             border: OutlineInputBorder(
@@ -274,7 +274,7 @@ class _InfoViewState extends State<InfoView> {
                               ),
                               onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                             ),
-                            hintText: localizations.repeatPassword,
+                            hintText: localizations.infoView_repeatPassword,
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.9),
                             border: OutlineInputBorder(
@@ -295,7 +295,7 @@ class _InfoViewState extends State<InfoView> {
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.verified, color: Colors.grey),
-                            hintText: localizations.confirmationCode,
+                            hintText: localizations.infoView_confirmationCode,
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.9),
                             border: OutlineInputBorder(
@@ -352,11 +352,11 @@ class _InfoViewState extends State<InfoView> {
                           ),
                           child: authViewModel.isLoading
                               ? CircularProgressIndicator(color: Colors.white)
-                              : Text(localizations.register, style: TextStyle(fontSize: 16)),
+                              : Text(localizations.infoView_register, style: TextStyle(fontSize: 16)),
                         ),
                         SizedBox(height: 16),
                         Text(
-                          localizations.acceptTerms,
+                          localizations.infoView_acceptTerms,
                           style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
                           textAlign: TextAlign.center,
                         ),

@@ -1,121 +1,4 @@
 {
-  "loginToAccount": "Hisobingizga kiring",
-  "email": "Elektron pochta",
-  "password": "Parol",
-  "login": "Kirish",
-  "register": "Ro‘yxatdan o‘tish",
-
-  "createPassword": "Parol yarating",
-  "repeatPassword": "Parolni takrorlang",
-
-  "confirmationCode": "Tasdiqlash kodi",
-
-
-  "continueLabel": "Davom etish",
-  "alreadyHaveAccount": "Sizda allaqachon hisob bormi? Kirish",
-  "termsOfService": "“Davom etish” tugmasini bosish orqali Foydalanish shartlarini qabul qilasiz",
-  "verificationSent": "Biz tasdiqlash kodini jo‘natdik",
-  "acceptTerms": "“Davom etish” tugmasini bosish orqali Foydalanish shartlarini qabul qilasiz",
-  "phone": "Telefon",
-  "name": "Ism",
-  "surname": "Familiya",
-  "invalidEmailFormat": "Noto‘g‘ri elektron pochta formati",
-  "invalidCodeFormat": "Noto'g'ri kod formati. Iltimos, 6 xonali kodni kiriting.",
-
-
-  "requests": "So‘rovlar",
-  "add": "Qo‘shish",
-  "scan": "Skanerlash",
-  "profile": "Profil",
-  "hi": "Salom",
-  "support": "Qo‘llab-quvvatlash",
-  "settings": "Sozlamalar",
-  "aboutApp": "Ilova haqida",
-
-  "logout": "Chiqish",
-  "available24": "Operatorlar 24/7 xizmatda",
-  "search": "Qidiruv",
-  "confirmed": "Tasdiqlangan",
-  "pending": "Kutilmoqda",
-  "rejected": "Rad etilgan",
-
-  "canceled": "Bekor qilingan",
-
-  "noDataFound": "Ma’lumot topilmadi",
-
-  "changePassword": "Parolni o'zgartirish",
-  "newPassword": "Yangi parol",
-  "confirmPassword": "Parolni tasdiqlash",
-  "save": "Saqlash",
-  "change": "O'zgartirish",
-  "passwordChanged": "Parolingiz muvaffaqiyatli o'zgartirildi.",
-
-
-  "requestNum": "Ariza raqami",
-
-  "chooseOperator": "Operatorlarni tanlash",
-  "chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
-  "selectOperator": "Operatorni tanlang",
-
-  "selectBpla": "BPLA ni tanlang",
-  "chooseBpla": "BPLA ni tanlash",
-
-  "submitRequest": "So'rov yuborish",
-  "flightStartDate": "Parvoz boshlanish sanasi",
-  "requesterName": "So'rovchi ismi",
-  "model": "Model",
-  "flightSign": "Parvoz belgisi",
-  "flightTimes": "Parvoz vaqtlari (UTC)",
-  "region": "Hudud",
-  "coordinates": "Koordinatalar (joylashuv)",
-  "map": "Xarita",
-  "height": "Parvoz balandligi (m)",
-  "radius": "Parvoz radiusi (m)",
-  "flightPurpose": "Parvoz maqsadi",
-  "operatorName": "Operator ismi",
-  "operatorPhone": "Operator telefoni",
-  "flightHeight" : "Parvoz balandligi (m)",
-  "flightRadius" : "Parvoz radiusi (m)",
-  "specialPermit": "Mudofaa vazirligidan maxsus ruxsat",
-  "permitNumber": "Ruxsat raqami",
-  "contract": "Shartnoma raqami va sanasi",
-  "contractNumber": "Shartnoma raqami",
-  "optional": "Ixtiyoriy izoh",
-  "note": "Izoh (ixtiyoriy)",
-  "submit": "Yuborish",
-  "cancel": "So'rovni bekor qilish",
-  "stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
-  "locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
-  "back": "Orqaga",
-
-  "delete": "O'chirish",
-  "cancelRequest": "So‘rovni bekor qilish",
-  "enterReason": "Bekor qilish sababini kiriting",
-  "exit": "Chiqish",
-  "planIdMissing": "Reja ID si mavjud emas",
-  "requestDeletedSuccessfully": "So‘rov muvaffaqiyatli o‘chirildi",
-  "requestCanceledSuccessfully": "So‘rov muvaffaqiyatli bekor qilindi",
-  "errorMessage": "Xatolik: {errorMessage}",
-
-  "scanMessage": "Iltimos, QR-kodni skaner qiling",
-  "errorFetchingData": "Ma'lumotni olishda xato",
-  "authTokenNotFound": "Autentifikatsiya tokeni topilmadi",
-  "profileUpdated": "Profil muvaffaqiyatli yangilandi.",
-
-
-  "location_sharing_title": "Joylashuv almashinuvi",
-  "location_sharing_message": "Ma'lumot uzatilmoqda. Uni to'xtatish uchun 'To'xtatish' tugmasini bosing.",
-  "location_sharing_started": "Joylashuv almashinuvi boshlandi",
-
-  "startLocationSharing": "Joylashuv ulashishni boshlash",
-  "sharingLocation": "Joylashuv ulashilmoqda",
-  "stop": "To‘xtatish",
-  "pause": "Pauza",
-  "resume": "Davom ettirish",
-  "paused": "To‘xtatilgan",
-  "searchingYourLocation": "Joylashuvingiz topilmoqda",
-
-
   "language" : "Til",
   "theme": "Mavzui",
   "dark": "Qorong'i",
@@ -128,7 +11,16 @@
   "userAgreement": "Foydalanuvchi kelishuvi",
   "privacyPolicy": "Maxfiylik siyosati",
 
-  "typeYourMessage": "Xabaringizni yozing...",
+  "confirmed": "Tasdiqlangan",
+  "pending": "Kutilmoqda",
+  "rejected": "Rad etilgan",
+  "canceled": "Bekor qilingan",
+  "unknown": "Noma'lum",
+  "errorRetrievingStatus": "Statusni olishda xato",
+
+  "m": "m",
+  "latitude": "Kenglik",
+  "longitude": "Uzunlik",
 
   "notifications" : "Bildirishnomalar",
   "noNotifications": "Bildirishnomalar yo'q",
@@ -136,47 +28,224 @@
   "noNews": "Yangiliklar yo'q.",
 
 
-  "invalidRadius": "Radius qiymati noto'g'ri",
-  "invalidFlightHeight": "Parvoz balandligi qiymati noto'g'ri",
-  "invalidPermitNumber": "Ruxsatnoma raqami noto'g'ri",
-  "invalidContractNumber": "Shartnoma raqami noto'g'ri",
-  "invalidLatLngFormat": "Koordinatalar formati noto'g'ri. Formatni 'kenglik uzunlik' shaklida kiriting",
-  "invalidLatitudeLongitude": "Kenglik yoki uzunlik qiymatlari noto'g'ri",
-  "invalidStartDate": "Boshlanish sanasi noto'g'ri",
-  "invalidFlightStartDateTime": "Parvoz boshlanish vaqti noto'g'ri",
-  "invalidFlightEndDateTime": "Parvoz tugash vaqti noto'g'ri",
-  "invalidPermitDate": "Ruxsatnoma sanasi noto'g'ri",
-  "invalidContractDate": "Shartnoma sanasi noto'g'ri",
-  "invalidRequesterName": "Ariza beruvchi nomi bo'sh bo'lishi mumkin emas",
-  "invalidModel": "Model tanlanishi kerak",
-  "invalidRegion": "Parvoz hududi bo‘sh bo‘lishi mumkin emas",
-  "invalidPurpose": "Maqsad tanlanishi kerak",
-  "invalidPhoneNumber": "Noto'g'ri telefon raqami",
-  "invalidEmail": "Email formati noto'g'ri",
-  "invalidFlightSign": "Parvoz belgisi tanlanishi kerak",
-  "invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas",
 
-  "invalidBpla": "Iltimos, kamida bitta BPLA ni tanlang",
-  "invalidOperators": "Iltimos, kamida bitta operatorni tanlang",
-  "invalidRequestNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
+  "loginView_loginToAccount": "Akkauntizga kiring",
+  "loginView_email": "Elektron pochta",
+  "loginView_password": "Parol",
+  "loginView_login": "Kirish",
+  "loginView_register": "Ro‘yxatdan o‘tish",
 
 
-  "m": "m",
-  "latitude": "Kenglik",
-  "longitude": "Uzunlik",
-  "@m": {
-    "description": "Metr uchun qisqartma"
-  },
-  "@latitude": {
-    "description": "Kenglik koordinatasi uchun yorliq"
-  },
-  "@longitude": {
-    "description": "Uzunlik koordinatasi uchun yorliq"
-  },
 
-  "request_pending": "Ariza ko'rib chiqilmoqda",
-  "request_canceled": "Ariza bekor qilindi",
-  "request_rejected": "Ariza rad etildi",
-  "unknown_status": "Noma'lum holat",
-  "error_retrieving_status": "Holatni olishda xatolik"
+
+  "emailView_register": "Ro‘yxatdan o‘tish",
+  "emailView_email": "Elektron pochta",
+  "emailView_continueLabel": "Davom etish",
+  "emailView_alreadyHaveAccount": "Allaqachon hisobingiz bormi? Kirish",
+  "emailView_invalidEmailFormat": "Email formati noto‘g‘ri",
+  "emailView_termsOfService": "'Davom etish' tugmasini bosish orqali siz foydalanish shartlariga rozilik bildirasiz",
+
+
+
+
+  "infoView_register": "Ro‘yxatdan o‘tish",
+  "infoView_createPassword": "Parol yarating",
+  "infoView_repeatPassword": "Parolni takrorlang",
+  "infoView_confirmationCode": "Tasdiqlash kodi",
+  "infoView_surname": "Familiya",
+  "infoView_name": "Ism",
+  "infoView_phone": "Telefon",
+  "infoView_verificationSent": "Biz tasdiqlash kodini quyidagi raqamga yubordik:",
+  "infoView_acceptTerms": "'Davom etish' tugmasini bosish orqali siz foydalanish shartlariga rozilik bildirasiz",
+
+
+
+
+  "mainView_requests": "So‘rovlar",
+  "mainView_add": "Qo‘shish",
+  "mainView_scan": "Skanerlash",
+  "mainView_profile": "Profil",
+  "mainView_hi": "Salom",
+  "mainView_support": "Qo‘llab-quvvatlash",
+  "mainView_settings": "Sozlamalar",
+  "mainView_aboutApp": "Ilova haqida",
+  "mainView_logout": "Chiqish",
+  "mainView_available24": "Operatorlar 24/7 xizmatda",
+
+
+
+
+  "profileView_profile": "Profil",
+  "profileView_surname": "Familiya",
+  "profileView_name": "Ism",
+  "profileView_phone": "Telefon",
+  "profileView_password": "Parol",
+  "profileView_Password": "Parolni o'zgartirish",
+
+  "profileView_newPassword": "Yangi parol",
+  "profileView_confirmPassword": "Parolni tasdiqlash",
+  "profileView_save": "Saqlash",
+  "profileView_change": "O'zgartirish",
+  "profileView_submitRequest": "Arizani yuborish",
+  "profileView_passwordChanged": "Parolingiz muvaffaqiyatli o'zgartirildi.",
+  "profileView_profileUpdated": "Profil muvaffaqiyatli yangilandi.",
+
+
+
+
+  "requestListView_search": "Qidiruv",
+  "requestListView_noDataFound": "Ma’lumot topilmadi",
+
+
+
+
+  "settingsView_save": "Saqlash",
+
+
+
+
+  "scanView_scanMessage": "Iltimos, QR-kodni skaner qiling",
+  "scanView_errorFetchingData": "Ma'lumotni olishda xato",
+  "scanView_authTokenNotFound": "Autentifikatsiya tokeni topilmadi",
+  "scanView_back": "Back",
+  "scanView_stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
+  "scanView_locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
+  "scanView_continue": "Davom etish",
+
+
+
+
+  "addRequestView_requestNum": "Ariza raqami",
+  "addRequestView_chooseOperator": "Operatorlarni tanlash",
+  "addRequestView_chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
+  "addRequestView_selectOperator": "Operatorni tanlang",
+  "addRequestView_selectBpla": "BPLA ni tanlang",
+  "addRequestView_chooseBpla": "BPLA ni tanlash",
+  "addRequestView_flightStartDate": "Parvoz boshlanish sanasi",
+  "addRequestView_requesterName": "So'rovchi ismi",
+  "addRequestView_model": "Model",
+  "addRequestView_flightSign": "Parvoz belgisi",
+  "addRequestView_flightTimes": "Parvoz vaqtlari (UTC)",
+  "addRequestView_region": "Hudud",
+  "addRequestView_coordinates": "Koordinatalar (joylashuv)",
+  "addRequestView_map": "Xarita",
+  "addRequestView_height": "Parvoz balandligi (m)",
+  "addRequestView_radius": "Parvoz radiusi (m)",
+  "addRequestView_flightPurpose": "Parvoz maqsadi",
+  "addRequestView_operatorName": "Operator ismi",
+  "addRequestView_operatorPhone": "Operator telefoni",
+  "addRequestView_email": "Email",
+  "addRequestView_flightHeight": "Parvoz balandligi (m)",
+  "addRequestView_flightRadius": "Parvoz radiusi (m)",
+  "addRequestView_specialPermit": "Mudofaa vazirligidan maxsus ruxsat",
+  "addRequestView_permitNumber": "Ruxsat raqami",
+  "addRequestView_contract": "Shartnoma raqami va sanasi",
+  "addRequestView_contractNumber": "Shartnoma raqami",
+  "addRequestView_optional": "Ixtiyoriy izoh",
+  "addRequestView_note": "Izoh (ixtiyoriy)",
+  "addRequestView_submit": "Yuborish",
+  "addRequestView_cancel": "So'rovni bekor qilish",
+  "addRequestView_stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
+  "addRequestView_locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
+  "addRequestView_back": "Orqaga",
+  "addRequestView_delete": "O'chirish",
+  "addRequestView_cancelRequest": "So‘rovni bekor qilish",
+  "addRequestView_enterReason": "Bekor qilish sababini kiriting",
+  "addRequestView_exit": "Chiqish",
+  "addRequestView_planIdMissing": "Reja ID si mavjud emas",
+  "addRequestView_requestDeletedSuccessfully": "So‘rov muvaffaqiyatli o‘chirildi",
+  "addRequestView_requestCanceledSuccessfully": "So‘rov muvaffaqiyatli bekor qilindi",
+  "addRequestView_errorMessage": "Xatolik: {errorMessage}",
+
+  "addRequestView_invalidRadius": "Radius qiymati noto'g'ri",
+  "addRequestView_invalidFlightHeight": "Parvoz balandligi qiymati noto'g'ri",
+  "addRequestView_invalidPermitNumber": "Ruxsatnoma raqami noto'g'ri",
+  "addRequestView_invalidContractNumber": "Shartnoma raqami noto'g'ri",
+  "addRequestView_invalidLatLngFormat": "Koordinatalar formati noto'g'ri. Formatni 'kenglik uzunlik' shaklida kiriting",
+  "addRequestView_invalidLatitudeLongitude": "Kenglik yoki uzunlik qiymatlari noto'g'ri",
+  "addRequestView_invalidStartDate": "Boshlanish sanasi noto'g'ri",
+  "addRequestView_invalidFlightStartDateTime": "Parvoz boshlanish vaqti noto'g'ri",
+  "addRequestView_invalidFlightEndDateTime": "Parvoz tugash vaqti noto'g'ri",
+  "addRequestView_invalidPermitDate": "Ruxsatnoma sanasi noto'g'ri",
+  "addRequestView_invalidContractDate": "Shartnoma sanasi noto'g'ri",
+  "addRequestView_invalidRequesterName": "Ariza beruvchi nomi bo'sh bo'lishi mumkin emas",
+  "addRequestView_invalidModel": "Model tanlanishi kerak",
+  "addRequestView_invalidRegion": "Parvoz hududi bo‘sh bo‘lishi mumkin emas",
+  "addRequestView_invalidPurpose": "Maqsad tanlanishi kerak",
+  "addRequestView_invalidPhoneNumber": "Noto'g'ri telefon raqami",
+  "addRequestView_invalidEmail": "Email formati noto'g'ri",
+  "addRequestView_invalidFlightSign": "Parvoz belgisi tanlanishi kerak",
+  "addRequestView_invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas",
+  "addRequestView_invalidBpla": "Iltimos, kamida bitta BPLA ni tanlang",
+  "addRequestView_invalidOperators": "Iltimos, kamida bitta operatorni tanlang",
+  "addRequestView_invalidRequestNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
+
+
+
+  "showRequestView__startLocationSharing": "Joylashuv ulashishni boshlash",
+  "showRequestView_requestNum": "Ariza raqami",
+  "showRequestView_chooseOperator": "Operatorlarni tanlash",
+  "showRequestView_chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
+  "showRequestView_selectOperator": "Operatorni tanlang",
+  "showRequestView_selectBpla": "BPLA ni tanlang",
+  "showRequestView_chooseBpla": "BPLA ni tanlash",
+  "showRequestView_flightStartDate": "Parvoz boshlanish sanasi",
+  "showRequestView_requesterName": "So'rovchi ismi",
+  "showRequestView_model": "Model",
+  "showRequestView_flightSign": "Parvoz belgisi",
+  "showRequestView_flightTimes": "Parvoz vaqtlari (UTC)",
+  "showRequestView_region": "Hudud",
+  "showRequestView_coordinates": "Koordinatalar (joylashuv)",
+  "showRequestView_map": "Xarita",
+  "showRequestView_height": "Parvoz balandligi (m)",
+  "showRequestView_radius": "Parvoz radiusi (m)",
+  "showRequestView_flightPurpose": "Parvoz maqsadi",
+  "showRequestView_operatorName": "Operator ismi",
+  "showRequestView_operatorPhone": "Operator telefoni",
+  "showRequestView_email": "Email",
+  "showRequestView_flightHeight": "Parvoz balandligi (m)",
+  "showRequestView_flightRadius": "Parvoz radiusi (m)",
+  "showRequestView_specialPermit": "Mudofaa vazirligidan maxsus ruxsat",
+  "showRequestView_permitNumber": "Ruxsat raqami",
+  "showRequestView_contract": "Shartnoma raqami va sanasi",
+  "showRequestView_contractNumber": "Shartnoma raqami",
+  "showRequestView_optional": "Ixtiyoriy izoh",
+  "showRequestView_note": "Izoh (ixtiyoriy)",
+  "showRequestView_submit": "Yuborish",
+  "showRequestView_cancel": "So'rovni bekor qilish",
+  "showRequestView_stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
+  "showRequestView_locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
+  "showRequestView_back": "Orqaga",
+  "showRequestView_delete": "O'chirish",
+  "showRequestView_cancelRequest": "So‘rovni bekor qilish",
+  "showRequestView_enterReason": "Bekor qilish sababini kiriting",
+  "showRequestView_exit": "Chiqish",
+  "showRequestView_planIdMissing": "Reja ID si mavjud emas",
+  "showRequestView_requestDeletedSuccessfully": "So‘rov muvaffaqiyatli o‘chirildi",
+  "showRequestView_requestCanceledSuccessfully": "So‘rov muvaffaqiyatli bekor qilindi",
+  "showRequestView_errorMessage": "Xatolik: {errorMessage}",
+
+  "showRequestView_locationSharingTitle": "Joylashuvni ulashish",
+  "showRequestView_locationSharingMessage": "Ma'lumot ulashish allaqachon boshlangan. Agar davom ettirsangiz, oldingi efir to'xtatiladi.",
+  "showRequestView_locationSharingStarted": "Joylashuv ulashish boshlandi",
+  "showRequestView_continue": "Davom etish",
+
+
+
+  "mapShareLocationView_startLocationSharing": "Joylashuv ulashishni boshlash",
+  "mapShareLocationView_sharingLocation": "Joylashuv ulashilmoqda",
+  "mapShareLocationView_stop": "To‘xtatish",
+  "mapShareLocationView_pause": "Pauza",
+  "mapShareLocationView_resume": "Davom ettirish",
+  "mapShareLocationView_paused": "To‘xtatilgan",
+  "mapShareLocationView_searchingYourLocation": "Joylashuvingiz topilmoqda",
+
+
+
+
+  "supportView_typeYourMessage": "Xabaringizni yozing..."
+
+
+
+
 }

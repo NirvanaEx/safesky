@@ -38,7 +38,7 @@ class _SupportViewState extends State<SupportView> {
           },
         ),
         title: Text(
-          localizations.support,
+          localizations.mainView_settings,
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -160,7 +160,7 @@ class _SupportViewState extends State<SupportView> {
                     maxLines: null,
                     minLines: 1,
                     decoration: InputDecoration(
-                      hintText: localizations.typeYourMessage,
+                      hintText: localizations.supportView_typeYourMessage,
                       border: InputBorder.none,
                     ),
                   ),

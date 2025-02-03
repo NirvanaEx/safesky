@@ -55,27 +55,27 @@ class _ProfileViewState extends State<ProfileView> {
           children: [
             Center(
               child: Text(
-                localizations.profile,
+                localizations.profileView_profile,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 30),
-            _buildLabel(localizations.name),
-            _buildTextField(_nameController, hintText: localizations.name),
+            _buildLabel(localizations.profileView_name),
+            _buildTextField(_nameController, hintText: localizations.profileView_name),
             SizedBox(height: 16),
-            _buildLabel(localizations.surname),
-            _buildTextField(_surnameController, hintText: localizations.surname),
+            _buildLabel(localizations.profileView_surname),
+            _buildTextField(_surnameController, hintText: localizations.profileView_surname),
             SizedBox(height: 16),
-            _buildLabel(localizations.phone),
+            _buildLabel(localizations.profileView_phone),
             _buildPhoneField(),
             SizedBox(height: 16),
-            _buildLabel(localizations.password),
+            _buildLabel(localizations.profileView_password),
             _buildPasswordField(),
             SizedBox(height: 20),
             TextButton(
               onPressed: () => _showChangePasswordDialog(context),
               child: Text(
-                localizations.changePassword,
+                localizations.profileView_changePassword,
                 style: TextStyle(color: Colors.blue, fontSize: 16),
               ),
             ),
@@ -97,7 +97,7 @@ class _ProfileViewState extends State<ProfileView> {
                     );
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(localizations.profileUpdated)),
+                      SnackBar(content: Text(localizations.profileView_profileUpdated)),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +126,7 @@ class _ProfileViewState extends State<ProfileView> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                    : Text(localizations.save, style: TextStyle(fontSize: 16)),
+                    : Text(localizations.profileView_save, style: TextStyle(fontSize: 16)),
               ),
             ),
           ],
@@ -262,7 +262,7 @@ class _ProfileViewState extends State<ProfileView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    localizations.changePassword,
+                    localizations.profileView_changePassword,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
@@ -270,7 +270,7 @@ class _ProfileViewState extends State<ProfileView> {
                     controller: newPasswordController,
                     obscureText: !isPasswordVisible,
                     decoration: InputDecoration(
-                      hintText: localizations.newPassword,
+                      hintText: localizations.profileView_newPassword,
                       filled: true,
                       fillColor: Colors.grey[200],
                       prefixIcon: Icon(Icons.lock, color: Colors.grey),
@@ -297,7 +297,7 @@ class _ProfileViewState extends State<ProfileView> {
                     controller: confirmPasswordController,
                     obscureText: !isPasswordVisible,
                     decoration: InputDecoration(
-                      hintText: localizations.confirmPassword,
+                      hintText: localizations.profileView_confirmPassword,
                       filled: true,
                       fillColor: Colors.grey[200],
                       prefixIcon: Icon(Icons.lock, color: Colors.grey),
@@ -330,7 +330,7 @@ class _ProfileViewState extends State<ProfileView> {
                       if (isSuccess) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(localizations.passwordChanged)),
+                          SnackBar(content: Text(localizations.profileView_changePassword)),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -345,7 +345,7 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 80, vertical: 16),
                     ),
-                    child: Text(localizations.change, style: TextStyle(fontSize: 16)),
+                    child: Text(localizations.profileView_change, style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),

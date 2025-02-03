@@ -98,19 +98,19 @@ class _MainViewState extends State<MainView> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: localizations.requests,
+            label: localizations.mainView_requests,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
-            label: localizations.add,
+            label: localizations.mainView_add,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.qr_code_scanner),
-            label: localizations.scan,
+            label: localizations.mainView_scan,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: localizations.profile,
+            label: localizations.mainView_profile,
           ),
         ],
       ),
@@ -143,7 +143,7 @@ class _MainViewState extends State<MainView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${localizations.hi}, ${authViewModel.user?.surname} ${authViewModel.user?.name}',
+                          '${localizations.mainView_hi}, ${authViewModel.user?.surname} ${authViewModel.user?.name}',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Divider(),
@@ -159,7 +159,7 @@ class _MainViewState extends State<MainView> {
                         // ),
                         ListTile(
                           leading: Icon(Icons.settings, color: Colors.black),
-                          title: Text(localizations.settings),
+                          title: Text(localizations.mainView_settings),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -169,7 +169,7 @@ class _MainViewState extends State<MainView> {
                         ),
                         ListTile(
                           leading: Icon(Icons.info_outline, color: Colors.black),
-                          title: Text(localizations.aboutApp),
+                          title: Text(localizations.mainView_aboutApp),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -179,7 +179,7 @@ class _MainViewState extends State<MainView> {
                         ),
                         ListTile(
                           leading: Icon(Icons.logout, color: Colors.black),
-                          title: Text(localizations.logout),
+                          title: Text(localizations.mainView_logout),
                           onTap: () async {
                             final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
                             await authViewModel.logout();
@@ -219,7 +219,7 @@ class _MainViewState extends State<MainView> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        localizations.available24,
+                        localizations.mainView_available24,
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
