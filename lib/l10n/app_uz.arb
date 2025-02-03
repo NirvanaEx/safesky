@@ -215,20 +215,37 @@
   "showRequestView_cancel": "So'rovni bekor qilish",
   "showRequestView_stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
   "showRequestView_locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
-  "showRequestView_back": "Orqaga",
   "showRequestView_delete": "O'chirish",
-  "showRequestView_cancelRequest": "So‘rovni bekor qilish",
-  "showRequestView_enterReason": "Bekor qilish sababini kiriting",
-  "showRequestView_exit": "Chiqish",
+  "showRequestView_backDialog": "Orqaga",
+  "showRequestView_cancelRequestDialog": "So‘rovni bekor qilish",
+  "showRequestView_enterReasonDialog": "Bekor qilish sababini kiriting",
+  "showRequestView_exitDialog": "Chiqish",
   "showRequestView_planIdMissing": "Reja ID si mavjud emas",
   "showRequestView_requestDeletedSuccessfully": "So‘rov muvaffaqiyatli o‘chirildi",
   "showRequestView_requestCanceledSuccessfully": "So‘rov muvaffaqiyatli bekor qilindi",
   "showRequestView_errorMessage": "Xatolik: {errorMessage}",
+  "showRequestView_deleteConfirmationTitleDialog": "O'chirishni tasdiqlash",
+  "showRequestView_deleteConfirmationMessageDialog": "Siz rostdan ham arizani o'chirmoqchimisiz?",
+  "showRequestView_cancelDialog": "Bekor qilish",
+  "showRequestView_deleteDialog": "O'chirish",
 
   "showRequestView_locationSharingTitle": "Joylashuvni ulashish",
   "showRequestView_locationSharingMessage": "Ma'lumot ulashish allaqachon boshlangan. Agar davom ettirsangiz, oldingi efir to'xtatiladi.",
   "showRequestView_locationSharingStarted": "Joylashuv ulashish boshlandi",
   "showRequestView_continue": "Davom etish",
+
+
+
+
+  "mapSelectLocationView_appBarTitle": "Joylashuvni tanlang",
+  "mapSelectLocationView_latitudeHint": "Kenglik",
+  "mapSelectLocationView_longitudeHint": "Uzunlik",
+  "mapSelectLocationView_ok": "OK",
+  "mapSelectLocationView_radiusHint": "Radius (m)",
+  "mapSelectLocationView_invalidCoordinates": "Iltimos, to'g'ri koordinatalarni kiriting (kenglik: -90 dan 90 gacha, uzunlik: -180 dan 180 gacha)",
+  "mapSelectLocationView_invalidRadius": "Iltimos, to'g'ri radius qiymatini kiriting",
+  "mapSelectLocationView_save": "Saqlash",
+
 
 
 

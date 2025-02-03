@@ -99,8 +99,10 @@ class NotificationService {
   static Future<void> _stopLocationSharing() async {
     final locationVM = navigatorKey.currentContext?.read<MapShareLocationViewModel>();
     if (locationVM != null) {
-      locationVM.resetLocationSharing(); // Останавливаем задачу и сбрасываем статус
+      locationVM.resetLocationSharing(); // Сбрасываем состояние трансляции
     }
+    // Явно отменяем уведомление, если оно осталось активным
+    await cancelNotification();
   }
 
 }

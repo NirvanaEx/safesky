@@ -8,7 +8,7 @@ class MyCustomDialog {
       BuildContext context,
       String title,
       String message, {
-        String cancelText = "Отмена",
+        String cancelText = "Cancel",
         String okText = "OK",
       }) {
     return showDialog<bool>(
@@ -72,6 +72,51 @@ class MyCustomDialog {
               },
               child: Text(
                 "OK",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  static Future<String?> showCancelReasonDialog(
+      BuildContext context,
+      String title,
+      String hintText, {
+        String cancelText = "Cancel",
+        String okText = "OK",
+      }) async {
+    TextEditingController reasonController = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          content: TextField(
+            controller: reasonController,
+            decoration: InputDecoration(hintText: hintText),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                cancelText,
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(reasonController.text),
+              child: Text(
+                okText,
                 style: TextStyle(fontSize: 16),
               ),
             ),

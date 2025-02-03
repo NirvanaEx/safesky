@@ -8,11 +8,11 @@ class TestDataGenerator {
     for (int i = 1; i <= count; i++) {
       requests.add(RequestModelMain(
         planId: i,
-        applicationNum: "App #$i",
+        applicationNum: "$i",
         planDate: "2025-02-02T15:27:57.823Z",
         timeFrom: "2025-02-02T15:27:57.823Z",
         timeTo: "2025-02-02T15:27:57.823Z",
-        stateId: (i % 3) + 1, // для разнообразия
+        stateId: (i % 4) + 1, // для разнообразия
         state: "State ${(i % 3) + 1}",
       ));
     }
@@ -71,7 +71,7 @@ class TestDataGenerator {
         docDate: DateTime.now(),
       ),
       source: "Test Source",
-      stateId: 2,
+      stateId: 1,
       state: "Test State",
       checkUrl: "https://example.com/check/$id",
       cancelReason: "Test cancel reason",

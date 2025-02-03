@@ -80,7 +80,7 @@ class ShowRequestViewModel extends ChangeNotifier {
           context,
           AppLocalizations.of(context)!.showRequestView_locationSharingTitle,
           AppLocalizations.of(context)!.showRequestView_locationSharingMessage,
-          cancelText: AppLocalizations.of(context)!.showRequestView_back,
+          cancelText: AppLocalizations.of(context)!.showRequestView_backDialog,
           okText: AppLocalizations.of(context)!.showRequestView_continue,
         );
 
@@ -91,13 +91,6 @@ class ShowRequestViewModel extends ChangeNotifier {
         }
       }
 
-      // Показ уведомления о начале передачи данных
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.showRequestView_locationSharingStarted),
-          duration: Duration(seconds: 3),
-        ),
-      );
 
       // Переход к MapShareLocationView
       await navigateToMapShareLocationView(context);
@@ -157,9 +150,11 @@ class ShowRequestViewModel extends ChangeNotifier {
 
 
   Future<void> cancelRequest(BuildContext context, {String? cancelReason}) async {
+    final localizations = AppLocalizations.of(context)!;
+
     if (planDetailModel?.planId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Plan ID is missing')),
+        SnackBar(content: Text(localizations.showRequestView_planIdMissing)),
       );
       return;
     }
@@ -168,7 +163,7 @@ class ShowRequestViewModel extends ChangeNotifier {
       final response = await RequestService().cancelRequest(planDetailModel!.planId!, cancelReason ?? '');
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request canceled successfully')),
+          SnackBar(content: Text(localizations.showRequestView_requestCanceledSuccessfully)),
         );
         // Можно обновить состояние модели после отмены
         planDetailModel = null; // или обновить статус, если есть механизм
@@ -193,9 +188,11 @@ class ShowRequestViewModel extends ChangeNotifier {
   }
 
   Future<void> deleteRequest(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
+
     if (planDetailModel?.planId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Plan ID is missing')),
+        SnackBar(content: Text(localizations.showRequestView_planIdMissing)),
       );
       return;
     }
@@ -203,10 +200,10 @@ class ShowRequestViewModel extends ChangeNotifier {
     // Показываем диалог подтверждения удаления
     final shouldDelete = await MyCustomDialog.showOkCancelNotificationDialog(
       context,
-      'Подтверждение удаления',
-      'Вы действительно хотите удалить заявку?',
-      cancelText: 'Отмена',
-      okText: 'Удалить',
+      localizations.showRequestView_deleteConfirmationTitleDialog,
+      localizations.showRequestView_deleteConfirmationMessageDialog,
+      cancelText: localizations.showRequestView_cancelDialog,
+      okText: localizations.showRequestView_deleteDialog,
     );
 
     if (shouldDelete != true) {

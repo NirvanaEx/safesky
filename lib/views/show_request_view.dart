@@ -12,6 +12,7 @@ import 'map/map_show_location_view.dart';
 import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
+import 'my_custom_views/my_custom_dialog.dart';
 
 class ShowRequestView extends StatefulWidget {
   final int? requestId;
@@ -261,29 +262,15 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    String? cancelReason = await showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        TextEditingController reasonController = TextEditingController();
-                        return AlertDialog(
-                          title: Text(localizations.showRequestView_cancelRequest),
-                          content: TextField(
-                            controller: reasonController,
-                            decoration: InputDecoration(hintText: localizations.showRequestView_enterReason),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text(localizations.showRequestView_exit),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(reasonController.text),
-                              child: Text(localizations.showRequestView_submit),
-                            ),
-                          ],
-                        );
-                      },
+                    // Получаем причину отмены через кастомное диалоговое окно
+                    String? cancelReason = await MyCustomDialog.showCancelReasonDialog(
+                      context,
+                      localizations.showRequestView_cancelRequestDialog, // Заголовок диалога
+                      localizations.showRequestView_enterReasonDialog,   // Подсказка в TextField
+                      cancelText: localizations.showRequestView_exitDialog,
+                      okText: localizations.showRequestView_submit,
                     );
+
                     if (cancelReason != null && cancelReason.isNotEmpty) {
                       await viewModel.cancelRequest(context, cancelReason: cancelReason);
                     }

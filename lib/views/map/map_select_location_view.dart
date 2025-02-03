@@ -4,6 +4,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class MapSelectLocationView extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class MapSelectLocationView extends StatefulWidget {
 }
 
 class _MapSelectLocationViewState extends State<MapSelectLocationView> {
+
   final LatLng initialPosition = LatLng(41.311081, 69.240562); // Координаты для Ташкента
   late MapController _mapController;
   bool _showLatLngInputs = false;
@@ -45,12 +48,14 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   }
 
   void _applyLatLng() {
+    final localizations = AppLocalizations.of(context)!;
+
     try {
       double lat = double.parse(_latController.text.replaceAll(',', '.'));
       double lng = double.parse(_lngController.text.replaceAll(',', '.'));
 
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        throw FormatException("Неверные координаты");
+        throw const FormatException("Incorrect coordinates");
       }
 
       setState(() {
@@ -62,7 +67,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Введите корректные координаты (широта: -90 до 90, долгота: -180 до 180)"),
+          content: Text(localizations.mapSelectLocationView_invalidCoordinates),
           backgroundColor: Colors.red,
         ),
       );
@@ -70,6 +75,8 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   }
 
   void _applyRadius() {
+    final localizations = AppLocalizations.of(context)!;
+
     try {
       double radius = double.parse(_radiusController.text);
       setState(() {
@@ -79,7 +86,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Введите корректное значение радиуса"),
+          content: Text(localizations.mapSelectLocationView_invalidRadius),
           backgroundColor: Colors.red,
         ),
       );
@@ -130,6 +137,8 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   }
 
   Widget _buildCoordinateInput() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Positioned(
       top: 0,
       left: 0,
@@ -140,20 +149,20 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
         child: Row(
           children: [
             Expanded(
-              child: _buildTextField(_latController, "Широта"),
+              child: _buildTextField(_latController, localizations.mapSelectLocationView_latitudeHint),
             ),
             SizedBox(width: 8),
             Expanded(
-              child: _buildTextField(_lngController, "Долгота"),
+              child: _buildTextField(_lngController, localizations.mapSelectLocationView_longitudeHint),
             ),
             SizedBox(width: 8),
             ElevatedButton(
               onPressed: _applyLatLng,
-              child: Text("ОК"),
               style: ElevatedButton.styleFrom(
                 primary: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
+              child: Text(localizations.mapSelectLocationView_ok),
             ),
           ],
         ),
@@ -162,6 +171,8 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   }
 
   Widget _buildRadiusInput() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Positioned(
       top: 0,
       left: 0,
@@ -172,7 +183,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
         child: Row(
           children: [
             Expanded(
-              child: _buildTextField(_radiusController, "Радиус (м)"),
+              child: _buildTextField(_radiusController, localizations.mapSelectLocationView_radiusHint),
             ),
             SizedBox(width: 8),
             ElevatedButton(
@@ -208,13 +219,15 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Выбор местоположения"),
+        title: Text(localizations.mapSelectLocationView_appBarTitle),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -304,7 +317,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                   padding: EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  "Сохранить",
+                  localizations.mapSelectLocationView_save,
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),

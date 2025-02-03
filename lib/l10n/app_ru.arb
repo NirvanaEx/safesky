@@ -216,20 +216,36 @@
   "showRequestView_cancel": "Отменить заявку",
   "showRequestView_stopExistingLocationSharing": "Остановить существующую задачу обмена местоположением?",
   "showRequestView_locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
-  "showRequestView_back": "Назад",
+  "showRequestView_backDialog": "Назад",
   "showRequestView_delete": "Удалить",
-  "showRequestView_cancelRequest": "Отмена заявки",
-  "showRequestView_enterReason": "Введите причину отмены",
-  "showRequestView_exit": "Выход",
+  "showRequestView_cancelRequestDialog": "Отмена заявки",
+  "showRequestView_enterReasonDialog": "Введите причину отмены",
+  "showRequestView_exitDialog": "Выход",
   "showRequestView_planIdMissing": "ID плана отсутствует",
   "showRequestView_requestDeletedSuccessfully": "Заявка успешно удалена",
   "showRequestView_requestCanceledSuccessfully": "Заявка успешно отменена",
   "showRequestView_errorMessage": "Ошибка: {errorMessage}",
+  "showRequestView_deleteConfirmationTitleDialog": "Подтверждение удаления",
+  "showRequestView_deleteConfirmationMessageDialog": "Вы действительно хотите удалить заявку?",
+  "showRequestView_cancelDialog": "Отмена",
+  "showRequestView_deleteDialog": "Удалить",
 
   "showRequestView_locationSharingTitle": "Передача местоположения",
   "showRequestView_locationSharingMessage": "Передача данных уже запущена. Если нажмете на продолжить, предыдущая трансляция будет приостановлена.",
   "showRequestView_locationSharingStarted": "Передача местоположения началась",
   "showRequestView_continue": "Продолжить",
+
+
+
+
+  "mapSelectLocationView_appBarTitle": "Выбор местоположения",
+  "mapSelectLocationView_latitudeHint": "Широта",
+  "mapSelectLocationView_longitudeHint": "Долгота",
+  "mapSelectLocationView_ok": "ОК",
+  "mapSelectLocationView_radiusHint": "Радиус (м)",
+  "mapSelectLocationView_invalidCoordinates": "Введите корректные координаты (широта: -90 до 90, долгота: -180 до 180)",
+  "mapSelectLocationView_invalidRadius": "Введите корректное значение радиуса",
+  "mapSelectLocationView_save": "Сохранить",
 
 
 

@@ -215,20 +215,36 @@
   "showRequestView_cancel": "Cancel request",
   "showRequestView_stopExistingLocationSharing": "Stop Existing Location Sharing?",
   "showRequestView_locationSharingActive": "A location sharing task is already active. Would you like to stop it and start a new one?",
-  "showRequestView_back": "Back",
   "showRequestView_delete": "Delete",
-  "showRequestView_cancelRequest": "Cancel Request",
-  "showRequestView_enterReason": "Enter reason for cancellation",
-  "showRequestView_exit": "Exit",
+  "showRequestView_backDialog": "Back",
+  "showRequestView_cancelRequestDialog": "Cancel Request",
+  "showRequestView_enterReasonDialog": "Enter reason for cancellation",
+  "showRequestView_exitDialog": "Exit",
   "showRequestView_planIdMissing": "Plan ID is missing",
   "showRequestView_requestDeletedSuccessfully": "Request deleted successfully",
   "showRequestView_requestCanceledSuccessfully": "Request canceled successfully",
   "showRequestView_errorMessage": "Error: {errorMessage}",
+  "showRequestView_deleteConfirmationTitleDialog": "Delete Confirmation",
+  "showRequestView_deleteConfirmationMessageDialog": "Do you really want to delete the request?",
+  "showRequestView_cancelDialog": "Cancel",
+  "showRequestView_deleteDialog": "Delete",
 
   "showRequestView_locationSharingTitle": "Location sharing",
   "showRequestView_locationSharingMessage": "Data sharing is already active. If you press continue, the previous broadcast will be paused.",
   "showRequestView_locationSharingStarted": "Location sharing started",
   "showRequestView_continue": "Continue",
+
+
+
+
+  "mapSelectLocationView_appBarTitle": "Select Location",
+  "mapSelectLocationView_latitudeHint": "Latitude",
+  "mapSelectLocationView_longitudeHint": "Longitude",
+  "mapSelectLocationView_ok": "OK",
+  "mapSelectLocationView_radiusHint": "Radius (m)",
+  "mapSelectLocationView_invalidCoordinates": "Please enter valid coordinates (latitude: -90 to 90, longitude: -180 to 180)",
+  "mapSelectLocationView_invalidRadius": "Please enter a valid radius value",
+  "mapSelectLocationView_save": "Save",
 
 
 

@@ -143,7 +143,7 @@ class _MainViewState extends State<MainView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${localizations.mainView_hi}, ${authViewModel.user?.surname} ${authViewModel.user?.name}',
+                          '${localizations.mainView_hi}, ${authViewModel.user?.surname ?? 'John'} ${authViewModel.user?.name ?? 'Doe'}',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Divider(),

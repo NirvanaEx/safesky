@@ -121,11 +121,11 @@ class MapShareLocationViewModel extends ChangeNotifier {
       final res = await _locationShareService.pauseLocationSharing(_currentUUID!);
       if (res['statusCode'] == 200) {
         _isPaused = true;
+        // Отключаем уведомление при паузе:
+        NotificationService.cancelNotification();
         _showSnackbar(context, "Location sharing paused");
       } else {
-        // _showSnackbar(context, "Failed to pause location sharing: ${res['body']}");
         _showSnackbar(context, "Failed to pause location sharing");
-
       }
       notifyListeners();
     }
