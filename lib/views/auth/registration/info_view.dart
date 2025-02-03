@@ -343,7 +343,7 @@ class _InfoViewState extends State<InfoView> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.black,
+                            backgroundColor: Colors.black,
                             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),

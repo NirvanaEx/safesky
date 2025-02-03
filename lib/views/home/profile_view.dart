@@ -110,7 +110,7 @@ class _ProfileViewState extends State<ProfileView> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.black,
+                  backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -339,7 +339,7 @@ class _ProfileViewState extends State<ProfileView> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

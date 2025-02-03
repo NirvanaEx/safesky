@@ -238,7 +238,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               }
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.black,
+              backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
               padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               minimumSize: Size(double.infinity, 48),

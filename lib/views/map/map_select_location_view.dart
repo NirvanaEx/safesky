@@ -159,7 +159,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
             ElevatedButton(
               onPressed: _applyLatLng,
               style: ElevatedButton.styleFrom(
-                primary: Colors.black,
+                backgroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               child: Text(localizations.mapSelectLocationView_ok),
@@ -190,7 +190,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
               onPressed: _applyRadius,
               child: Text("ОК"),
               style: ElevatedButton.styleFrom(
-                primary: Colors.black,
+                backgroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
@@ -312,7 +312,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.black,
+                  backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   padding: EdgeInsets.symmetric(vertical: 16),
                 ),

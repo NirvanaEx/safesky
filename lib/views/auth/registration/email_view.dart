@@ -120,7 +120,7 @@ class _EmailViewState extends State<EmailView> {
                     ElevatedButton(
                       onPressed: _onContinue,
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
+                        backgroundColor: Colors.black,
                         padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
