@@ -71,7 +71,7 @@ class TestDataGenerator {
         docDate: DateTime.now(),
       ),
       source: "Test Source",
-      stateId: 1,
+      stateId: 2,
       state: "Test State",
       checkUrl: "https://example.com/check/$id",
       cancelReason: "Test cancel reason",

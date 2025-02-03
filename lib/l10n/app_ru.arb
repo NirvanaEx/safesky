@@ -261,6 +261,16 @@
 
 
 
+  "notification_channelName": "Трансляция местоположения",
+  "notification_channelDescription": "Уведомление о трансляции местоположения",
+  "notification_activeTitle": "Трансляция местоположения активна",
+  "notification_activeBody": "Ваше местоположение передается",
+  "notification_stopAction": "Остановить трансляцию",
+
+
+
+
+
   "supportView_typeYourMessage": "Напишите сообщение..."
 
 }

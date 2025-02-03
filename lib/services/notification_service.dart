@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class NotificationService {
@@ -34,11 +35,13 @@ class NotificationService {
     }
   }
 
-  static Future<void> showLocationSharingNotification() async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+  static Future<void> showLocationSharingNotification(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
+
+     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'location_channel',
-      'Location Sharing',
-      channelDescription: 'Notification for location sharing',
+      localizations.notification_channelName,
+      channelDescription: localizations.notification_channelDescription,
       importance: Importance.max,
       priority: Priority.high,
       ongoing: true,
@@ -47,18 +50,18 @@ class NotificationService {
       actions: <AndroidNotificationAction>[
         AndroidNotificationAction(
           'stop_action', // Уникальный идентификатор действия
-          'Stop Sharing', // Название кнопки завершения
+          localizations.notification_stopAction, // Название кнопки завершения
           cancelNotification: true, // Убирает уведомление при нажатии
         ),
       ],
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+     NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
 
     await _notifications.show(
       0,
-      'Location Sharing Active',
-      'Your location is being shared',
+      localizations.notification_activeTitle,
+      localizations.notification_activeBody,
       platformDetails,
       payload: 'location_view', // Указываем payload для определения целевого view
     );

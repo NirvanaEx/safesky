@@ -34,7 +34,7 @@ void callbackDispatcher() {
         desiredAccuracy: LocationAccuracy.high,
       );
       String newText = 'Current Location: ${position.latitude}, ${position.longitude}';
-      NotificationService.updateLocationNotification(newText);
+      NotificationService.updateLocationNotification( newText);
     }
 
     return Future.value(true);

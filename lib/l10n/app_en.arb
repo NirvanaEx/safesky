@@ -182,6 +182,7 @@
 
 
 
+
   "showRequestView_startLocationSharing": "Start location sharing",
   "showRequestView_requestNum": "Request Number",
   "showRequestView_chooseOperator": "Choose Operator",
@@ -257,6 +258,15 @@
   "mapShareLocationView_paused": "Paused",
   "mapShareLocationView_searchingYourLocation": "Searching your location",
   "mapShareLocationView_profileUpdated": "Profile updated",
+
+
+
+
+  "notification_channelName": "Location Sharing",
+  "notification_channelDescription": "Notification for location sharing",
+  "notification_activeTitle": "Location Sharing Active",
+  "notification_activeBody": "Your location is being shared",
+  "notification_stopAction": "Stop Sharing",
 
 
 

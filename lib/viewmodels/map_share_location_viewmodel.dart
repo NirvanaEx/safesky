@@ -68,7 +68,7 @@ class MapShareLocationViewModel extends ChangeNotifier {
       await prefs.setString('current_uuid', uuid);
       // Если метод не упал — значит статус 200, всё ок:
       // Вызываем уведомление:
-      NotificationService.showLocationSharingNotification();
+      NotificationService.showLocationSharingNotification(context);
 
       _showSnackbar(context, "Location sharing started successfully");
     } catch (e) {

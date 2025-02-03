@@ -260,6 +260,15 @@
 
 
 
+  "notification_channelName": "Joylashuvni ulashish",
+  "notification_channelDescription": "Joylashuv ulashish uchun bildirishnoma",
+  "notification_activeTitle": "Joylashuv ulashish faol",
+  "notification_activeBody": "Sizning joylashuvingiz ulashilmoqda",
+  "notification_stopAction": "Ulashishni to'xtatish",
+
+
+
+
   "supportView_typeYourMessage": "Xabaringizni yozing..."
 
 
