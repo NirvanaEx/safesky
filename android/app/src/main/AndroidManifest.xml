@@ -9,10 +9,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:label="safe_sky"
+        android:label="ATM: Safe Sky"
         android:name="${applicationName}"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
