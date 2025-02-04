@@ -341,12 +341,12 @@ class AddRequestViewModel extends ChangeNotifier {
       if (response['status'] == 200) {
         print("BPLA Plan submitted successfully: ${jsonEncode(requestBody)}");
         clearFields();
-        return {'status': 'success', 'message': "Запрос успешно отправлен!"};
+        return {'status': 'success', 'message': localizations!.addRequestView_requestSentSuccess};
       } else {
         return {'status': 'error', 'message': response['message']};
       }
     } catch (e) {
-      return {'status': 'error', 'message': 'Ошибка при отправке: $e'};
+      return {'status': 'error', 'message': localizations!.addRequestView_sendError};
     }
 
   }

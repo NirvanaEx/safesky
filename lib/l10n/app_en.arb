@@ -186,6 +186,8 @@
   "addRequestView_invalidBpla": "Please select at least one BPLA",
   "addRequestView_invalidOperators": "Please select at least one operator",
   "addRequestView_invalidRequestNumber": "Request number cannot be empty",
+  "addRequestView_requestSentSuccess": "Request sent successfully!",
+  "addRequestView_sendError": "Error while sending:",
 
 
 

@@ -187,6 +187,8 @@
   "addRequestView_invalidBpla": "Пожалуйста, выберите хотя бы один БПЛА",
   "addRequestView_invalidOperators": "Пожалуйста, выберите хотя бы одного оператора",
   "addRequestView_invalidRequestNumber": "Номер заявки не может быть пустым",
+  "addRequestView_requestSentSuccess": "Запрос успешно отправлен!",
+  "addRequestView_sendError": "Ошибка при отправке:",
 
 
 
