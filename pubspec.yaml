@@ -71,4 +71,4 @@ flutter_gen_l10n:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/app_logo.png"
+  image_path: "assets/icon/app_logo.png"
