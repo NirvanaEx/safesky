@@ -172,42 +172,6 @@ class AuthService {
     return prefs.getString('auth_token');
   }
 
-  // Метод для проверки подлинности токена
-  Future<bool> isTokenValid() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? expireAt = prefs.getString('token_expire_at');
-
-    if (expireAt == null) {
-      return false;
-    }
-
-    // Конвертируем строку даты в DateTime
-    DateTime expireDate = DateFormat("yyyy-MM-ddTHH:mm:ss").parse(expireAt, true).toLocal();
-    DateTime now = DateTime.now();
-
-    return now.isBefore(expireDate);
-  }
-
-  // Метод для проверки кода
-  Future<void> checkCode(String email, String code) async {
-    final token = await _getToken();
-    final url = Uri.parse(ApiRoutes.verifyCode);
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({'email': email, 'code': code}),
-    );
-
-    if (response.statusCode != 200) {
-      final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Failed to verify code');
-    }
-  }
-
   Future<bool> checkToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
@@ -215,7 +179,7 @@ class AuthService {
     // Если токена нет совсем, сразу возвращаем false
     if (token == null) return false;
 
-    final url = Uri.parse('https://example.com/api/v1/profile/check_token');
+    final url = Uri.parse(ApiRoutes.checkToken);
     try {
       final response = await http.get(
         url,

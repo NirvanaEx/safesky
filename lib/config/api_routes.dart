@@ -9,6 +9,7 @@ class ApiRoutes {
   static const String sendEmail = '${Config.apiUrl}/auth/otp';
 
   static const String userInfo = '${Config.apiUrl}/profile/info';
+  static const String checkToken = '${Config.apiUrl}/profile/check_token';
 
 
 

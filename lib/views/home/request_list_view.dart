@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -93,7 +94,7 @@ class _RequestListViewState extends State<RequestListView> {
                               clipBehavior: Clip.antiAlias,
                               child: ListTile(
                                 title: Text("№ ${request.applicationNum}"),
-                                subtitle: Text(request.planDate),
+                                subtitle: Text(  DateFormat('dd.MM.yyyy').format(DateTime.parse(request.planDate))),
                                 trailing: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(

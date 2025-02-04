@@ -52,19 +52,23 @@ class AuthViewModel extends ChangeNotifier {
       return false; // Токена нет — пользователь не авторизован
     }
 
+    // Используем сервис для проверки валидности токена
+    bool tokenIsValid = await _authService.checkToken();
+    if (!tokenIsValid) {
+      await logout();
+      return false;
+    }
+
     try {
-      // Попытка получить данные пользователя с сохранённым токеном
+      // Если токен валидный — получаем информацию о пользователе
       _user = await _authService.getUserInfo();
 
-      // Сохранение данных пользователя в локальное хранилище для дальнейшего использования
+      // Сохраняем данные пользователя для дальнейшего использования
       await prefs.setString('user_data', jsonEncode(_user!.toJson()));
-
       notifyListeners();
       return true;
     } catch (e) {
-      print('Authentication check failed: $e');
-
-      // Ошибка говорит о том, что токен недействителен или нет связи с сервером
+      print('Ошибка получения информации о пользователе: $e');
       await logout();
       return false;
     }
@@ -84,21 +88,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  //Шаг 2 : Метод для проверки кода верификации
-  Future<bool> checkCode(String email, String code) async {
-    _setLoading(true);
-    _errorMessage = null;
-    try {
-      await _authService.checkCode(email, code); // Отправляем код на сервер
-      _setLoading(false);
-      return true; // Успешная верификация
-    } catch (e) {
-      _errorMessage = e.toString();
-      _setLoading(false);
-      notifyListeners();
-      return false; // Ошибка верификации
-    }
-  }
+
 
   //Последний шаг
   Future<bool> register(
