@@ -76,7 +76,7 @@ class ShowRequestViewModel extends ChangeNotifier {
       final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
 
       if (locationVM.currentRequestId != null) {
-        final shouldStop = await MyCustomDialog.showOkCancelNotificationDialog(
+        final shouldContinue = await MyCustomDialog.showOkCancelNotificationDialog(
           context,
           AppLocalizations.of(context)!.showRequestView_locationSharingTitle,
           AppLocalizations.of(context)!.showRequestView_locationSharingMessage,
@@ -84,15 +84,16 @@ class ShowRequestViewModel extends ChangeNotifier {
           okText: AppLocalizations.of(context)!.showRequestView_continue,
         );
 
-        if (shouldStop != true) {
+        if (shouldContinue != true) {
           return;
         } else {
-          await locationVM.stopLocationSharing(context);
+          // Если уже идет трансляция, ставим её на паузу и очищаем состояние
+          await locationVM.pauseLocationSharing(context);
+          locationVM.resetLocationSharing();
         }
       }
 
-
-      // Переход к MapShareLocationView
+      // Переход к MapShareLocationView с новым состоянием
       await navigateToMapShareLocationView(context);
     } catch (e) {
       print('Error in handleLocationSharing: $e');

@@ -143,6 +143,12 @@ class LocationShareService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
+    await Future.delayed(Duration(seconds: 1));
+    return {
+      'statusCode': 200, // Или измените на другой код для тестирования неуспешного ответа
+      'body': 'OK (stub)',
+    };
+
     try {
       final response = await http.post(
         Uri.parse(ApiRoutes.pauseLocation),

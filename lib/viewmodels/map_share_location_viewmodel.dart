@@ -39,7 +39,9 @@ class MapShareLocationViewModel extends ChangeNotifier {
 
   void resetLocationSharing() {
     _isSharingLocation = false;
+    _isPaused = false;      // Сбрасываем флаг паузы
     _currentUUID = null;
+    _currentLocation = null; // Сбрасываем текущую локацию, если необходимо
     notifyListeners();
   }
 
@@ -49,10 +51,6 @@ class MapShareLocationViewModel extends ChangeNotifier {
   /// исключение (если сервер вернёт не 200 при первой отправке).
   Future<void> startLocationSharing(String uuid, BuildContext context) async {
     // Если уже есть активная трансляция, предлагаем её отключить
-    if (_isSharingLocation && _currentUUID != null) {
-      _showSnackbar(context, "У вас уже запущена трансляция. Остановите её, чтобы начать новую.");
-      return;
-    }
 
     _isSharingLocation = true;
     _isPaused = false;
@@ -119,13 +117,16 @@ class MapShareLocationViewModel extends ChangeNotifier {
   Future<void> pauseLocationSharing(BuildContext context) async {
     if (_currentUUID != null) {
       final res = await _locationShareService.pauseLocationSharing(_currentUUID!);
-      if (res['statusCode'] == 200) {
-        _isPaused = true;
-        // Отключаем уведомление при паузе:
-        NotificationService.cancelNotification();
-        _showSnackbar(context, "Location sharing paused");
+
+      // Если ответ отсутствует или код не равен 200, всё равно вызываем отключение уведомления
+      if (res == null || res['statusCode'] != 200) {
+        print("Pause request did not return a valid response. Calling cancelNotification regardless.");
+        await NotificationService.cancelNotification();
+        _showSnackbar(context, "Location sharing paused (fallback)");
       } else {
-        _showSnackbar(context, "Failed to pause location sharing");
+        _isPaused = true;
+        await NotificationService.cancelNotification();
+        _showSnackbar(context, "Location sharing paused");
       }
       notifyListeners();
     }
@@ -157,10 +158,24 @@ class MapShareLocationViewModel extends ChangeNotifier {
 
   /// Простой переключатель для демонстрации (пауза / возобновление)
   void togglePause(BuildContext context) {
-    _isPaused = !_isPaused;
-    notifyListeners();
-    _showSnackbar(context, _isPaused ? "Location sharing paused" : "Location sharing resumed");
+    if (!_isPaused) {
+      // If location sharing is active, pause it.
+      _isPaused = true;
+      pauseLocationSharing(context);
+      notifyListeners();
+      _showSnackbar(context, "Location sharing paused");
+    } else {
+      // If it's already paused, try to resume the location sharing.
+      _isPaused = false;
+      notifyListeners();
+      if (_currentUUID != null) {
+        startLocationSharing(_currentUUID!, context);
+      } else {
+        _showSnackbar(context, "Unable to resume: missing UUID");
+      }
+    }
   }
+
 
   void _showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
