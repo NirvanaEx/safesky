@@ -211,13 +211,23 @@ class _ShowRequestViewState extends State<ShowRequestView> {
 
                     _buildRequestInfo(
                       localizations.showRequestView_operatorPhone,
-                      viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
-                          ? viewModel.planDetailModel!.operatorList
-                          .asMap()
-                          .entries
-                          .map((entry) => "${entry.key + 1}. ${entry.value.phone ?? '-'}")
-                          .join('\n')
-                          : '-',
+                          () {
+                        final operatorListText = (viewModel.planDetailModel?.operatorList.isNotEmpty ?? false)
+                            ? viewModel.planDetailModel!.operatorList
+                            .asMap()
+                            .entries
+                            .map((entry) => "${entry.key + 1}. ${entry.value.phone ?? '-'}")
+                            .join('\n')
+                            : '-';
+                        final additionalPhones = viewModel.planDetailModel?.operatorPhones;
+                        // Если additionalPhones не пустой, удаляем пробелы и добавляем с новой строки
+                        final formattedAdditionalPhones = (additionalPhones != null && additionalPhones.isNotEmpty)
+                            ? additionalPhones.replaceAll(' ', '')
+                            : '';
+                        return formattedAdditionalPhones.isNotEmpty
+                            ? "$operatorListText\n\n*. $formattedAdditionalPhones"
+                            : operatorListText;
+                      }(),
                     ),
 
                     _buildRequestInfo(localizations.showRequestView_email,
