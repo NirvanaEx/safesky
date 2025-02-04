@@ -12,6 +12,8 @@ import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
 
+import '../my_custom_views/my_custom_dialog.dart';
+
 class MapShareLocationView extends StatefulWidget {
   final PlanDetailModel? planDetailModel;
 
@@ -299,7 +301,18 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
             // Стоп
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () => locationVM.stopLocationSharing(context),
+                onPressed: () async {
+                  final confirm = await MyCustomDialog.showOkCancelNotificationDialog(
+                    context,
+                    localizations.mapShareLocationView_confirmStopLocationSharingTitle,
+                    localizations.mapShareLocationView_confirmStopLocationSharingMessage,
+                    cancelText: localizations.mapShareLocationView_confirmStopLocationSharingNo,
+                    okText: localizations.mapShareLocationView_confirmStopLocationSharingYes,
+                  );
+                  if (confirm == true) {
+                    locationVM.stopLocationSharing(context);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.black,

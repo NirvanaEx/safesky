@@ -258,6 +258,10 @@
   "mapShareLocationView_paused": "Пауза",
   "mapShareLocationView_searchingYourLocation": "Поиск вашего местоположения",
   "mapShareLocationView_profileUpdated": "Профиль обновлен",
+  "mapShareLocationView_confirmStopLocationSharingTitle": "Завершить трансляцию",
+  "mapShareLocationView_confirmStopLocationSharingMessage": "Действительно ли вы хотите окончательно завершить трансляцию?",
+  "mapShareLocationView_confirmStopLocationSharingYes": "Да",
+  "mapShareLocationView_confirmStopLocationSharingNo": "Нет",
 
 
 

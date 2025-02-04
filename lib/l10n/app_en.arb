@@ -257,7 +257,11 @@
   "mapShareLocationView_resume": "Resume",
   "mapShareLocationView_paused": "Paused",
   "mapShareLocationView_searchingYourLocation": "Searching your location",
-  "mapShareLocationView_profileUpdated": "Profile updated",
+  "mapShareLocationView_mapShareLocationView_profileUpdated": "Profile updated",
+  "mapShareLocationView_confirmStopLocationSharingTitle": "Stop Location Sharing",
+  "mapShareLocationView_confirmStopLocationSharingMessage": "Do you really want to permanently stop the location sharing?",
+  "mapShareLocationView_confirmStopLocationSharingYes": "Yes",
+  "mapShareLocationView_confirmStopLocationSharingNo": "No",
 
 
 

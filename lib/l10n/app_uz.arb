@@ -257,6 +257,10 @@
   "mapShareLocationView_paused": "To‘xtatilgan",
   "mapShareLocationView_searchingYourLocation": "Joylashuvingiz topilmoqda",
   "mapShareLocationView_profileUpdated": "Profil yangilandi",
+  "mapShareLocationView_confirmStopLocationSharingTitle": "Joylashuv ulashishni to‘xtatish",
+  "mapShareLocationView_confirmStopLocationSharingMessage": "Joylashuv ulashishni yakuniy tarzda to‘xtatishni hohlaysizmi?",
+  "mapShareLocationView_confirmStopLocationSharingYes": "Ha",
+  "mapShareLocationView_confirmStopLocationSharingNo": "Yo‘q",
 
 
 
