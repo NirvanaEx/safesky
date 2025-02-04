@@ -82,8 +82,10 @@
   "profileView_password": "Parol",
   "profileView_Password": "Parolni o'zgartirish",
 
+  "profileView_oldPassword": "Eski parol",
   "profileView_newPassword": "Yangi parol",
   "profileView_confirmPassword": "Parolni tasdiqlash",
+  "profileView_successChangedPassword": "Parol muvaffaqiyatli o'zgartirildi",
   "profileView_save": "Saqlash",
   "profileView_change": "O'zgartirish",
   "profileView_submitRequest": "Arizani yuborish",
@@ -182,6 +184,13 @@
 
 
 
+
+  "showRequestView_execState1": "bajarilmoqda...",
+  "showRequestView_execState2": "bir daqiqadan ortiq signal yo'q",
+  "showRequestView_execState3": "bajarish to'xtatildi",
+  "showRequestView_execState4": "bajarish yakunlandi",
+  "showRequestView_execState5": "noma'lum",
+  "showRequestView_execState6": "izloviysiz bajarilmoqda",
   "showRequestView_startLocationSharing": "Joylashuv ulashishni boshlash",
   "showRequestView_requestNum": "Ariza raqami",
   "showRequestView_chooseOperator": "Operatorlarni tanlash",

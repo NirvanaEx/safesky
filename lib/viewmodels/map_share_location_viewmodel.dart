@@ -73,7 +73,9 @@ class MapShareLocationViewModel extends ChangeNotifier {
       // Если тут ловим ошибку, значит сервер вернул не 200.
       _isSharingLocation = false;
       _currentUUID = null;
-      _showSnackbar(context, "Ошибка при старте: $e");
+      print("Ошибка при старте: $e");
+      _showSnackbar(context, "Error: $e");
+
     }
 
     notifyListeners();

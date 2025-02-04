@@ -73,165 +73,175 @@ class _ShowRequestViewState extends State<ShowRequestView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: viewModel.getStatusColor(viewModel.planDetailModel?.stateId ?? 0),
-                          borderRadius: BorderRadius.circular(20),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                if (widget.requestId != null) {
+                  await Provider.of<ShowRequestViewModel>(context, listen: false)
+                      .loadRequest(widget.requestId!);
+                }
+              },
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                        child: Text(
-                          viewModel.getStatusText(viewModel.planDetailModel?.stateId ?? 0, localizations),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  if (viewModel.planDetailModel?.stateId == 2)
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _isSharing ? null : () async { // Отключаем кнопку, если идет загрузка
-                          await viewModel.handleLocationSharing(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: viewModel.getStatusColor(viewModel.planDetailModel?.stateId ?? 0),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            viewModel.getStatusText(viewModel.planDetailModel?.stateId ?? 0, localizations),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        child: _isSharing
-                            ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white, // Цвет индикатора
-                            strokeWidth: 2,
-                          ),
-                        )
-                            : Text(localizations.showRequestView_startLocationSharing),
-                      ),
+                      ],
                     ),
+                    SizedBox(height: 10),
+                    if (viewModel.planDetailModel?.activity == 1)
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isSharing ? null : () async { // Отключаем кнопку, если идет загрузка
+                            await viewModel.handleLocationSharing(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: _isSharing
+                              ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white, // Цвет индикатора
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : Text(localizations.showRequestView_startLocationSharing),
+                        ),
+                      ),
+                    if (viewModel.planDetailModel?.stateId == 2 && viewModel.planDetailModel?.execStateId != null)
+                      _buildExecStateText(viewModel.planDetailModel?.execStateId, localizations),
 
 
-                  SizedBox(height: 20),
+                    SizedBox(height: 20),
 
-                  // Данные заявки
-                  _buildRequestInfo(localizations.showRequestView_flightStartDate,
-                      viewModel.planDetailModel?.planDate != null
-                          ? dateFormat.format(viewModel.planDetailModel!.planDate!)
-                          : '-'),
-                  _buildRequestInfo(localizations.showRequestView_requesterName,
-                      viewModel.planDetailModel?.applicant ?? '-', isBold: true),
-                  _buildRequestInfo(
-                    localizations.showRequestView_model,
-                    viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
-                        ? viewModel.planDetailModel!.bplaList
-                        .asMap()
-                        .entries
-                        .map((entry) => "${entry.key + 1}. ${entry.value.name ?? '-'}")
-                        .join('\n')
-                        : '-',
-                  ),
-
-                  _buildRequestInfo(
-                    localizations.showRequestView_flightSign,
-                    viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
-                        ? viewModel.planDetailModel!.bplaList
-                        .asMap()
-                        .entries
-                        .map((entry) => "${entry.key + 1}. ${entry.value.regnum ?? '-'}")
-                        .join('\n')
-                        : '-',
-                  ),
-
-                  _buildRequestInfo(
-                  localizations.showRequestView_flightTimes,
-                  '${viewModel.planDetailModel?.timeFrom ?? '-'}\n${viewModel.planDetailModel?.timeTo ?? '-'}',
-                  ),
-
-                  _buildRequestInfo(localizations.showRequestView_region,
-                      viewModel.planDetailModel?.flightArea ?? '-'),
-
-                  // Отображение координат AUTHORIZED ZONE
-                  _buildRequestInfo(
-                    localizations.showRequestView_coordinates,
-                    zoneInfo,
-                    linkText: localizations.showRequestView_map,
-                    icon: Icons.visibility,
-                    context: context,
-                    planDetailModel: viewModel.planDetailModel
-                  ),
-
-                  // Отображение радиуса AUTHORIZED ZONE (если он есть)
-                  if (viewModel.planDetailModel?.coordList.first.radius != null)
+                    // Данные заявки
+                    _buildRequestInfo(localizations.showRequestView_flightStartDate,
+                        viewModel.planDetailModel?.planDate != null
+                            ? dateFormat.format(viewModel.planDetailModel!.planDate!)
+                            : '-'),
+                    _buildRequestInfo(localizations.showRequestView_requesterName,
+                        viewModel.planDetailModel?.applicant ?? '-', isBold: true),
                     _buildRequestInfo(
-                      localizations.showRequestView_flightRadius,
-                      '${viewModel.planDetailModel?.coordList.first.radius} ${localizations.m}',
+                      localizations.showRequestView_model,
+                      viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
+                          ? viewModel.planDetailModel!.bplaList
+                          .asMap()
+                          .entries
+                          .map((entry) => "${entry.key + 1}. ${entry.value.name ?? '-'}")
+                          .join('\n')
+                          : '-',
                     ),
 
-                  _buildRequestInfo(localizations.showRequestView_flightHeight,
-                      '${viewModel.planDetailModel?.mAltitude != null
-                          ? viewModel.planDetailModel?.mAltitude
-                          : '-'} ${localizations?.m}'),
-                  _buildRequestInfo(localizations.showRequestView_flightPurpose,
-                      viewModel.planDetailModel?.purpose ?? '-'),
-                  _buildRequestInfo(
-                    localizations.showRequestView_operatorName,
-                    viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
-                        ? viewModel.planDetailModel!.operatorList
-                        .asMap()
-                        .entries
-                        .map((entry) => "${entry.key + 1}. ${entry.value.surname ?? '-'} ${entry.value.name ?? '-'} ${entry.value.patronymic ?? ''}")
-                        .join('\n')
-                        : '-',
-                  ),
+                    _buildRequestInfo(
+                      localizations.showRequestView_flightSign,
+                      viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
+                          ? viewModel.planDetailModel!.bplaList
+                          .asMap()
+                          .entries
+                          .map((entry) => "${entry.key + 1}. ${entry.value.regnum ?? '-'}")
+                          .join('\n')
+                          : '-',
+                    ),
 
-                  _buildRequestInfo(
-                    localizations.showRequestView_operatorPhone,
-                    viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
-                        ? viewModel.planDetailModel!.operatorList
-                        .asMap()
-                        .entries
-                        .map((entry) => "${entry.key + 1}. ${entry.value.phone ?? '-'}")
-                        .join('\n')
-                        : '-',
-                  ),
+                    _buildRequestInfo(
+                    localizations.showRequestView_flightTimes,
+                    '${viewModel.planDetailModel?.timeFrom ?? '-'}\n${viewModel.planDetailModel?.timeTo ?? '-'}',
+                    ),
 
-                  _buildRequestInfo(localizations.showRequestView_email,
-                      viewModel.planDetailModel?.email ?? '-'),
-                  _buildRequestInfo(
-                      localizations.showRequestView_specialPermit,
-                      '${viewModel.planDetailModel?.permission?.orgName ?? '-'} '
-                      '${viewModel.planDetailModel?.permission?.docNum ?? '-'} '
-                      '${viewModel.planDetailModel?.permission?.docDate != null
-                      ? dateFormat.format(viewModel.planDetailModel!.permission!.docDate!)
-                          : '-'}'
-                  ),
-                  _buildRequestInfo(
-                      localizations.showRequestView_contract,
-                      '${viewModel.planDetailModel?.agreement?.docNum ?? '-'} '
-                      '${viewModel.planDetailModel?.agreement?.docDate != null
-                      ? dateFormat.format(viewModel.planDetailModel!.agreement!.docDate!)
-                          : '-'}'
-                  ),
-                  _buildRequestInfo(localizations.showRequestView_optional,
-                      viewModel.planDetailModel?.notes ?? '-'),
-                  SizedBox(height: 20),
-                ],
+                    _buildRequestInfo(localizations.showRequestView_region,
+                        viewModel.planDetailModel?.flightArea ?? '-'),
+
+                    // Отображение координат AUTHORIZED ZONE
+                    _buildRequestInfo(
+                      localizations.showRequestView_coordinates,
+                      zoneInfo,
+                      linkText: localizations.showRequestView_map,
+                      icon: Icons.visibility,
+                      context: context,
+                      planDetailModel: viewModel.planDetailModel
+                    ),
+
+                    // Отображение радиуса AUTHORIZED ZONE (если он есть)
+                    if (viewModel.planDetailModel?.coordList.first.radius != null)
+                      _buildRequestInfo(
+                        localizations.showRequestView_flightRadius,
+                        '${viewModel.planDetailModel?.coordList.first.radius} ${localizations.m}',
+                      ),
+
+                    _buildRequestInfo(localizations.showRequestView_flightHeight,
+                        '${viewModel.planDetailModel?.mAltitude != null
+                            ? viewModel.planDetailModel?.mAltitude
+                            : '-'} ${localizations?.m}'),
+                    _buildRequestInfo(localizations.showRequestView_flightPurpose,
+                        viewModel.planDetailModel?.purpose ?? '-'),
+                    _buildRequestInfo(
+                      localizations.showRequestView_operatorName,
+                      viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
+                          ? viewModel.planDetailModel!.operatorList
+                          .asMap()
+                          .entries
+                          .map((entry) => "${entry.key + 1}. ${entry.value.surname ?? '-'} ${entry.value.name ?? '-'} ${entry.value.patronymic ?? ''}")
+                          .join('\n')
+                          : '-',
+                    ),
+
+                    _buildRequestInfo(
+                      localizations.showRequestView_operatorPhone,
+                      viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
+                          ? viewModel.planDetailModel!.operatorList
+                          .asMap()
+                          .entries
+                          .map((entry) => "${entry.key + 1}. ${entry.value.phone ?? '-'}")
+                          .join('\n')
+                          : '-',
+                    ),
+
+                    _buildRequestInfo(localizations.showRequestView_email,
+                        viewModel.planDetailModel?.email ?? '-'),
+                    _buildRequestInfo(
+                        localizations.showRequestView_specialPermit,
+                        '${viewModel.planDetailModel?.permission?.orgName ?? '-'} '
+                        '${viewModel.planDetailModel?.permission?.docNum ?? '-'} '
+                        '${viewModel.planDetailModel?.permission?.docDate != null
+                        ? dateFormat.format(viewModel.planDetailModel!.permission!.docDate!)
+                            : '-'}'
+                    ),
+                    _buildRequestInfo(
+                        localizations.showRequestView_contract,
+                        '${viewModel.planDetailModel?.agreement?.docNum ?? '-'} '
+                        '${viewModel.planDetailModel?.agreement?.docDate != null
+                        ? dateFormat.format(viewModel.planDetailModel!.agreement!.docDate!)
+                            : '-'}'
+                    ),
+                    _buildRequestInfo(localizations.showRequestView_optional,
+                        viewModel.planDetailModel?.notes ?? '-'),
+                    SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
@@ -290,7 +300,52 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     );
   }
 
+  Widget _buildExecStateText(int? execStateId, AppLocalizations localizations) {
+    String text;
+    switch (execStateId) {
+      case 1:
+        text = localizations.showRequestView_execState1;
+        break;
+      case 2:
+        text = localizations.showRequestView_execState2;
+        break;
+      case 3:
+        text = localizations.showRequestView_execState3;
+        break;
+      case 4:
+        text = localizations.showRequestView_execState4;
+        break;
+      case 5:
+        text = localizations.showRequestView_execState5;
+        break;
+      case 6:
+        text = localizations.showRequestView_execState6;
+        break;
+      default:
+        return SizedBox.shrink();
+    }
 
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Align(
+        alignment: Alignment.centerRight, // выравнивание вправо
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
 
   Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context, PlanDetailModel? planDetailModel}) {

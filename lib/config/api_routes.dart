@@ -10,6 +10,8 @@ class ApiRoutes {
 
   static const String userInfo = '${Config.apiUrl}/profile/info';
   static const String checkToken = '${Config.apiUrl}/profile/check_token';
+  static const String changeProfileData = '${Config.apiUrl}/profile/info';
+  static const String changePassword = '${Config.apiUrl}/profile/change_password';
 
 
 
@@ -31,14 +33,10 @@ class ApiRoutes {
 
 
 
-  static const String verifyCode = '${Config.apiUrl}/auth/verify-code';
 
 
   static const String logout = '${Config.apiUrl}/auth/logout';
 
-  static const String changePassword = '${Config.apiUrl}/auth/change-password';
-  static const String validateToken = '${Config.apiUrl}/auth/validate-token';
-  static const String changeProfileData = '${Config.apiUrl}/auth/change-profile-data';
 
 
 

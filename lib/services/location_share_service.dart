@@ -26,31 +26,31 @@ class LocationShareService {
     _isSharingLocation = true;
     _currentUUID = uuid;
 
-    // Получаем текущую локацию (однократно) и отправляем на сервер,
-    // чтобы сразу проверить, возвращает ли сервер код 200.
+    // Получаем начальную позицию
     Position initialPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
+
+    // Устанавливаем _lastLocation на начальную позицию
+    _lastLocation = LatLng(initialPosition.latitude, initialPosition.longitude);
 
     final startResponse = await _updateLocation(
       _currentUUID!,
       initialPosition.accuracy,
     );
 
-    // // Если сервер вернул что-то, кроме 200, выходим с ошибкой:
-    // if (startResponse['statusCode'] != 200) {
-    //   // Останавливаем локальный процесс, так как сервер не подтвердил.
-    //   _isSharingLocation = false;
-    //   _currentUUID = null;
-    //   _positionStreamSubscription?.cancel();
-    //   _timer?.cancel();
-    //
-    //   throw Exception(
-    //     'Не удалось начать передачу локации: ${startResponse['body']}',
-    //   );
-    // }
+    if (startResponse['statusCode'] != 200) {
+      _isSharingLocation = false;
+      _currentUUID = null;
+      _positionStreamSubscription?.cancel();
+      _timer?.cancel();
 
-    // Если всё ок, продолжаем подписку на стрим:
+      throw Exception(
+        'Не удалось начать передачу локации: ${startResponse['body']}',
+      );
+    }
+
+    // Подписываемся на поток обновлений местоположения
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -64,8 +64,7 @@ class LocationShareService {
       }
     });
 
-    // И запускаем таймер, чтобы раз в минуту отправлять локацию
-    // (даже если стрим ничего не вернул).
+    // Запускаем таймер для периодической отправки
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) async {
       if (_lastLocation != null) {
         Position position = await Geolocator.getCurrentPosition();
@@ -143,11 +142,11 @@ class LocationShareService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
-    await Future.delayed(Duration(seconds: 1));
-    return {
-      'statusCode': 200, // Или измените на другой код для тестирования неуспешного ответа
-      'body': 'OK (stub)',
-    };
+    // await Future.delayed(Duration(seconds: 1));
+    // return {
+    //   'statusCode': 200, // Или измените на другой код для тестирования неуспешного ответа
+    //   'body': 'OK (stub)',
+    // };
 
     try {
       final response = await http.post(
@@ -175,15 +174,15 @@ class LocationShareService {
   ///
   /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: возвращаем также код и тело ответа.
   Future<Map<String, dynamic>> stopLocationSharingRequest(String uuid) async {
-    await Future.delayed(Duration(seconds: 1)); // Имитация сетевого запроса
 
-    return {
-      'statusCode': 200,
-      'body': jsonEncode({
-        'message': 'Location sharing stopped successfully',
-        'uuid': uuid,
-      }),
-    };
+    // await Future.delayed(Duration(seconds: 1)); // Имитация сетевого запроса
+    // return {
+    //   'statusCode': 200,
+    //   'body': jsonEncode({
+    //     'message': 'Location sharing stopped successfully',
+    //     'uuid': uuid,
+    //   }),
+    // };
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');

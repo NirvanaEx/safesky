@@ -6,6 +6,8 @@ import 'package:safe_sky/viewmodels/add_request_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../auth/login_view.dart';
+
 class ProfileView extends StatefulWidget {
   @override
   _ProfileViewState createState() => _ProfileViewState();
@@ -165,10 +167,10 @@ class _ProfileViewState extends State<ProfileView> {
     // Доступные страны
     final List<Map<String, String>> countries = [
       {"code": "+998", "flag": "🇺🇿"},
-      {"code": "+1", "flag": "🇺🇸"},
-      {"code": "+44", "flag": "🇬🇧"},
-      {"code": "+7", "flag": "🇷🇺"},
-      {"code": "+997", "flag": "🇰🇿"},
+      // {"code": "+1", "flag": "🇺🇸"},
+      // {"code": "+44", "flag": "🇬🇧"},
+      // {"code": "+7", "flag": "🇷🇺"},
+      // {"code": "+997", "flag": "🇰🇿"},
     ];
 
     return Container(
@@ -247,9 +249,12 @@ class _ProfileViewState extends State<ProfileView> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final oldPasswordController = TextEditingController();
         final newPasswordController = TextEditingController();
         final confirmPasswordController = TextEditingController();
-        bool isPasswordVisible = false;
+        bool isOldPasswordVisible = false;
+        bool isNewPasswordVisible = false;
+        bool isConfirmPasswordVisible = false;
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -266,22 +271,23 @@ class _ProfileViewState extends State<ProfileView> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
+                  // Поле для старого пароля
                   TextField(
-                    controller: newPasswordController,
-                    obscureText: !isPasswordVisible,
+                    controller: oldPasswordController,
+                    obscureText: !isOldPasswordVisible,
                     decoration: InputDecoration(
-                      hintText: localizations.profileView_newPassword,
+                      hintText: localizations.profileView_oldPassword, // Добавьте соответствующую строку в локализации
                       filled: true,
                       fillColor: Colors.grey[200],
                       prefixIcon: Icon(Icons.lock, color: Colors.grey),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          isOldPasswordVisible ? Icons.visibility : Icons.visibility_off,
                           color: Colors.grey,
                         ),
                         onPressed: () {
                           setState(() {
-                            isPasswordVisible = !isPasswordVisible;
+                            isOldPasswordVisible = !isOldPasswordVisible;
                           });
                         },
                       ),
@@ -293,9 +299,38 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ),
                   SizedBox(height: 16),
+                  // Поле для нового пароля
+                  TextField(
+                    controller: newPasswordController,
+                    obscureText: !isNewPasswordVisible,
+                    decoration: InputDecoration(
+                      hintText: localizations.profileView_newPassword,
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isNewPasswordVisible = !isNewPasswordVisible;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  // Поле для подтверждения нового пароля
                   TextField(
                     controller: confirmPasswordController,
-                    obscureText: !isPasswordVisible,
+                    obscureText: !isConfirmPasswordVisible,
                     decoration: InputDecoration(
                       hintText: localizations.profileView_confirmPassword,
                       filled: true,
@@ -303,12 +338,12 @@ class _ProfileViewState extends State<ProfileView> {
                       prefixIcon: Icon(Icons.lock, color: Colors.grey),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                           color: Colors.grey,
                         ),
                         onPressed: () {
                           setState(() {
-                            isPasswordVisible = !isPasswordVisible;
+                            isConfirmPasswordVisible = !isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -323,14 +358,21 @@ class _ProfileViewState extends State<ProfileView> {
                   ElevatedButton(
                     onPressed: () async {
                       final isSuccess = await authViewModel.changePassword(
+                        oldPasswordController.text,
                         newPasswordController.text,
                         confirmPasswordController.text,
                       );
 
                       if (isSuccess) {
                         Navigator.pop(context);
+                        // Переход на LoginView после успешной смены пароля
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginView()),
+                              (route) => false,
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(localizations.profileView_changePassword)),
+                          SnackBar(content: Text(localizations.profileView_successChangedPassword)),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -355,5 +397,7 @@ class _ProfileViewState extends State<ProfileView> {
       },
     );
   }
+
+
 
 }

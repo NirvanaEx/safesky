@@ -203,8 +203,9 @@ class AuthService {
 
 
 
-  // Метод для изменения данных профиля
-  Future<void> changeProfileData(String name, String surname, String phoneNumber) async {
+// Метод для изменения данных профиля
+  Future<void> changeProfileData(
+      String name, String surname, String phone) async {
     final token = await _getToken();
     final url = Uri.parse(ApiRoutes.changeProfileData);
 
@@ -215,20 +216,21 @@ class AuthService {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
-        'name': name,
         'surname': surname,
-        'phoneNumber': phoneNumber,
+        'name': name,
+        'phone': phone,
       }),
     );
 
     if (response.statusCode != 200) {
-      final errorData = jsonDecode(response.body);
+      final errorData = jsonDecode(utf8.decode(response.bodyBytes));
       throw Exception(errorData['message'] ?? 'Failed to update profile data');
     }
   }
 
-  // Метод для изменения пароля
-  Future<void> changePassword(String newPassword) async {
+// Метод для изменения пароля
+  Future<void> changePassword(
+      String oldPassword, String newPassword, String passwordConfirm) async {
     final token = await _getToken();
     final url = Uri.parse(ApiRoutes.changePassword);
 
@@ -238,34 +240,23 @@ class AuthService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({'newPassword': newPassword}),
+      body: jsonEncode({
+        'oldPassword': oldPassword,
+        'password': newPassword,
+        'passwordConfirm': passwordConfirm,
+      }),
     );
 
     if (response.statusCode != 200) {
-      final errorData = jsonDecode(response.body);
+      final errorData = jsonDecode(utf8.decode(response.bodyBytes));
       throw Exception(errorData['message'] ?? 'Failed to change password');
     }
+    logout();
   }
-
   // Метод для выхода
   Future<void> logout() async {
-    final token = await _getToken();
-    final url = Uri.parse(ApiRoutes.logout);
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to logout');
-    } else {
       // Удаляем токен из SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('auth_token');
-    }
   }
 }

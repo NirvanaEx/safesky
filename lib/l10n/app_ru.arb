@@ -82,8 +82,10 @@
   "profileView_password": "Пароль",
   "profileView_changePassword": "Изменить пароль",
 
+  "profileView_oldPassword": "Старый пароль",
   "profileView_newPassword": "Новый пароль",
   "profileView_confirmPassword": "Повторите пароль",
+  "profileView_successChangedPassword": "Пароль был успешно изменен",
   "profileView_save": "Сохранить",
   "profileView_change": "Изменить",
   "profileView_submitRequest": "Отправить заявку",
@@ -183,6 +185,12 @@
 
 
 
+  "showRequestView_execState1": "выполнение...",
+  "showRequestView_execState2": "нет сигнала более минуты",
+  "showRequestView_execState3": "выполнение приостановлено",
+  "showRequestView_execState4": "выполнение завершено",
+  "showRequestView_execState5": "неизвестно",
+  "showRequestView_execState6": "выполнение без отслеживания",
   "showRequestView_startLocationSharing": "Начать трансляцию",
   "showRequestView_requestNum": "Номер заявки",
   "showRequestView_chooseOperator": "Выбор операторов",

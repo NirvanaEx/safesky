@@ -83,8 +83,10 @@
   "profileView_password": "Password",
   "profileView_changePassword": "Change password",
 
+  "profileView_oldPassword": "Old password",
   "profileView_newPassword": "New password",
   "profileView_confirmPassword": "Confirm password",
+  "profileView_successChangedPassword": "Password successfully changed",
   "profileView_save": "Save",
   "profileView_change": "Change",
   "profileView_submitRequest": "Submit Request",
@@ -183,6 +185,12 @@
 
 
 
+  "showRequestView_execState1": "executing...",
+  "showRequestView_execState2": "no signal for more than a minute",
+  "showRequestView_execState3": "execution paused",
+  "showRequestView_execState4": "execution completed",
+  "showRequestView_execState5": "unknown",
+  "showRequestView_execState6": "execution without tracking",
   "showRequestView_startLocationSharing": "Start location sharing",
   "showRequestView_requestNum": "Request Number",
   "showRequestView_chooseOperator": "Choose Operator",

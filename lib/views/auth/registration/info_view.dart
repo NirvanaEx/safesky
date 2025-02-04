@@ -40,10 +40,10 @@ class _InfoViewState extends State<InfoView> {
 
   final List<Map<String, String>> _countries = [
     {"code": "+998", "flag": "🇺🇿"},
-    {"code": "+1", "flag": "🇺🇸"},
-    {"code": "+44", "flag": "🇬🇧"},
-    {"code": "+7", "flag": "🇷🇺"},
-    {"code": "+997", "flag": "🇰🇿"},
+    // {"code": "+1", "flag": "🇺🇸"},
+    // {"code": "+44", "flag": "🇬🇧"},
+    // {"code": "+7", "flag": "🇷🇺"},
+    // {"code": "+997", "flag": "🇰🇿"},
   ];
 
   void initState() {

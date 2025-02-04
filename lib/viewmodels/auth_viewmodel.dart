@@ -132,7 +132,7 @@ class AuthViewModel extends ChangeNotifier {
 
 
   // Метод для смены пароля
-  Future<bool> changePassword(String newPassword, String confirmPassword) async {
+  Future<bool> changePassword(String oldPassword, String newPassword, String confirmPassword) async {
     if (newPassword != confirmPassword) {
       _errorMessage = 'Passwords do not match';
       notifyListeners();
@@ -142,7 +142,7 @@ class AuthViewModel extends ChangeNotifier {
     _setLoading(true);
     _errorMessage = null;
     try {
-      await _authService.changePassword(newPassword); // Запрос на сервер для смены пароля
+      await _authService.changePassword(oldPassword, newPassword, confirmPassword);
       _setLoading(false);
       return true; // Успешная смена пароля
     } catch (e) {

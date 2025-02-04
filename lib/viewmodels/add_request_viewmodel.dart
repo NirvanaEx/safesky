@@ -71,10 +71,10 @@ class AddRequestViewModel extends ChangeNotifier {
   // Доступные страны
   final List<Map<String, String>> countries = [
     {"code": "+998", "flag": "🇺🇿"},
-    {"code": "+1", "flag": "🇺🇸"},
-    {"code": "+44", "flag": "🇬🇧"},
-    {"code": "+7", "flag": "🇷🇺"},
-    {"code": "+997", "flag": "🇰🇿"},
+    // {"code": "+1", "flag": "🇺🇸"},
+    // {"code": "+44", "flag": "🇬🇧"},
+    // {"code": "+7", "flag": "🇷🇺"},
+    // {"code": "+997", "flag": "🇰🇿"},
   ];
 
   String? errorMessage;
