@@ -45,5 +45,31 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Разрешения и их описания -->
+
+	<!-- Геолокация (при использовании в фоне) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to provide location-based services and to share your location with contacts.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app requires continuous access to your location, even in the background, for safety and tracking purposes.</string>
+
+	<!-- Фоновые задачи: разрешены режимы работы в фоне (например, для отслеживания локации и получения уведомлений) -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- Уведомления -->
+	<!-- Для уведомлений отдельного usage description не требуется, но если используется сбор данных, можно добавить следующее: -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app collects data to provide personalized experience and location sharing functionality.</string>
+
+	<!-- Камера (фото) -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera to allow you to take photos.</string>
+
 </dict>
 </plist>
