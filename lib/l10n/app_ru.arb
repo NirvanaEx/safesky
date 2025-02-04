@@ -257,6 +257,7 @@
   "mapShareLocationView_resume": "Продолжить",
   "mapShareLocationView_paused": "Пауза",
   "mapShareLocationView_searchingYourLocation": "Поиск вашего местоположения",
+  "mapShareLocationView_profileUpdated": "Профиль обновлен",
 
 
 
@@ -270,7 +271,5 @@
 
 
 
-
   "supportView_typeYourMessage": "Напишите сообщение..."
-
 }

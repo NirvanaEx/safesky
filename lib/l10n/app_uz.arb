@@ -182,7 +182,7 @@
 
 
 
-  "showRequestView__startLocationSharing": "Joylashuv ulashishni boshlash",
+  "showRequestView_startLocationSharing": "Joylashuv ulashishni boshlash",
   "showRequestView_requestNum": "Ariza raqami",
   "showRequestView_chooseOperator": "Operatorlarni tanlash",
   "showRequestView_chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
@@ -256,6 +256,7 @@
   "mapShareLocationView_resume": "Davom ettirish",
   "mapShareLocationView_paused": "To‘xtatilgan",
   "mapShareLocationView_searchingYourLocation": "Joylashuvingiz topilmoqda",
+  "mapShareLocationView_profileUpdated": "Profil yangilandi",
 
 
 
@@ -270,8 +271,4 @@
 
 
   "supportView_typeYourMessage": "Xabaringizni yozing..."
-
-
-
-
 }
