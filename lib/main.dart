@@ -100,6 +100,7 @@ class _MyAppState extends State<MyApp> {
               '/login': (context) => LoginView(), // <-- Роут на экран логина
               // Добавьте остальные, если нужно
             },
+
           );
         },
       ),

@@ -27,6 +27,12 @@
   "news": "Новости",
   "noNews": "Нет новостей.",
 
+  "tokenPreExpirationTitle": "Внимание",
+  "tokenPreExpirationMessage": "Требуется перезаход в аккаунт через 5 минут",
+  "tokenFinalTitle": "Вы вышли",
+  "tokenFinalMessage": "Вы вышли с аккаунта",
+
+
 
 
   "loginView_loginToAccount": "Войти в аккаунт",

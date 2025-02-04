@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../models/user_model.dart';
+import '../views/my_custom_views/my_custom_dialog.dart';
+import 'notification_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthService {
 
@@ -28,13 +32,14 @@ class AuthService {
       print('Server response: $responseData');  // Логируем ответ сервера
 
       if (response.statusCode == 200) {
-        // Сохраняем токен и дату истечения
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', responseData['token']);
         await prefs.setString('token_expire_at', responseData['expireAt']);
 
-        print('Token saved: ${responseData['token']}');  // Лог токена
+        // Запускаем таймер для автоматического logout
+        _startTokenExpirationTimer(responseData['expireAt']);
 
+        print('Token saved: ${responseData['token']}');
         return true;  // Успешный вход
       } else {
         // Логируем сообщение об ошибке и выбрасываем исключение
@@ -47,6 +52,41 @@ class AuthService {
     }
   }
 
+  void _startTokenExpirationTimer(String expireAtString) {
+    final expireAt = DateTime.parse(expireAtString);
+    // Вычисляем оставшуюся длительность токена
+    final duration = expireAt.difference(DateTime.now());
+    // За сколько времени до истечения показываем предупреждение (например, 5 минут)
+    final preExpirationTime = Duration(minutes: 5);
+
+    // Если оставшееся время больше preExpirationTime, запускаем предварительный таймер
+    if (duration > preExpirationTime) {
+      Timer(duration - preExpirationTime, () {
+        // Показываем уведомление (без кнопки, просто уведомление)
+        NotificationService.showTokenExpirationNotification();
+        final context = NotificationService.navigatorKey.currentContext;
+        if (context != null) {
+          final localizations = AppLocalizations.of(context)!;
+          // Показываем диалоговое окно с локализованным сообщением о требуемом перезаходе
+          MyCustomDialog.showNotificationDialog(
+              context,
+              localizations.tokenPreExpirationTitle, //
+              localizations.tokenPreExpirationMessage
+          );
+
+        }
+      });
+    }
+
+    Timer(duration, () async {
+      // Показываем финальное уведомление перед выходом
+      await NotificationService.showTokenExpirationNotification(isFinal: true);
+      // Выходим из аккаунта и переходим на страницу логина
+      AuthService().logout();
+      NotificationService.navigatorKey.currentState
+          ?.pushNamedAndRemoveUntil('/login', (route) => false);
+    });
+  }
 
   // Метод для отправки email
   Future<Map<String, dynamic>> sendEmail(String username) async {
@@ -175,9 +215,10 @@ class AuthService {
   Future<bool> checkToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
+    final tokenExpireAt = prefs.getString('token_expire_at');
 
-    // Если токена нет совсем, сразу возвращаем false
-    if (token == null) return false;
+    // Если токена или даты истечения нет, сразу возвращаем false
+    if (token == null || tokenExpireAt == null) return false;
 
     final url = Uri.parse(ApiRoutes.checkToken);
     try {
@@ -188,19 +229,17 @@ class AuthService {
         },
       );
 
-      // 200 - всё ОК, токен валидный
       if (response.statusCode == 200) {
+        // Запускаем таймер для автоматического logout
+        _startTokenExpirationTimer(tokenExpireAt);
         return true;
       } else {
-        // Любой другой статус код означает, что токен недействителен
         return false;
       }
     } catch (e) {
-      // Сюда попадём, если нет сети или любая другая ошибка при запросе
       return false;
     }
   }
-
 
 
 // Метод для изменения данных профиля

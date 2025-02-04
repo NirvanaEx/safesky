@@ -27,6 +27,11 @@
   "news": "News",
   "noNews": "No news available.",
 
+  "tokenPreExpirationTitle": "Attention",
+  "tokenPreExpirationMessage": "Account re-login required in 5 minutes",
+  "tokenFinalTitle": "Logged Out",
+  "tokenFinalMessage": "You have been logged out of your account",
+
 
 
 

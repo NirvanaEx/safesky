@@ -27,6 +27,12 @@
   "news": "Yangiliklar",
   "noNews": "Yangiliklar yo'q.",
 
+  "tokenPreExpirationTitle": "Diqqat",
+  "tokenPreExpirationMessage": "5 daqiqadan so'ng akkauntga qayta kirish talab qilinadi",
+  "tokenFinalTitle": "Chiqib ketdingiz",
+  "tokenFinalMessage": "Siz akkauntingizdan chiqib ketdingiz",
+
+
 
 
   "loginView_loginToAccount": "Akkauntizga kiring",

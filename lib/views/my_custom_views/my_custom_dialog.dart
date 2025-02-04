@@ -50,9 +50,8 @@ class MyCustomDialog {
   }
 
   /// Пример простого диалога с кнопкой "OK"
-  static void showNotificationDialog(
-      BuildContext context, String title, String message) {
-    showDialog(
+  static Future<void> showNotificationDialog(BuildContext context, String title, String message) {
+    return showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
