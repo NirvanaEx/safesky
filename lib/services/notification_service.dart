@@ -73,13 +73,7 @@ class NotificationService {
       ongoing: true,
       autoCancel: false,
       showWhen: false,
-      actions: <AndroidNotificationAction>[
-        AndroidNotificationAction(
-          'stop_action', // Уникальный идентификатор действия
-          localizations.notification_stopAction, // Название кнопки завершения
-          cancelNotification: true, // Убирает уведомление при нажатии
-        ),
-      ],
+      // Параметр actions удалён – кнопка не будет отображаться.
     );
 
     // Добавляем настройки для iOS
