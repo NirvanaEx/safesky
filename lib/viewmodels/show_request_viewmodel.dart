@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:safe_sky/viewmodels/request_list_viewmodel.dart';
 import '../models/plan_detail_model.dart';
 import '../models/request_model.dart';
 import '../models/area_point_location_model.dart';
@@ -169,6 +170,8 @@ class ShowRequestViewModel extends ChangeNotifier {
         // Можно обновить состояние модели после отмены
         planDetailModel = null; // или обновить статус, если есть механизм
         notifyListeners();
+        Provider.of<RequestListViewModel>(context, listen: false).refreshRequests();
+        Navigator.of(context).pop();
       } else {
         var errorMessage = 'Failed to cancel request';
         try {
@@ -221,6 +224,8 @@ class ShowRequestViewModel extends ChangeNotifier {
         // Можно обновить состояние модели после удаления
         planDetailModel = null; // или обновить статус, если есть механизм
         notifyListeners();
+        Provider.of<RequestListViewModel>(context, listen: false).refreshRequests();
+        Navigator.of(context).pop();
       } else {
         var errorMessage = 'Failed to delete request';
         try {

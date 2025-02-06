@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+import 'package:safe_sky/viewmodels/show_request_viewmodel.dart';
+import 'package:safe_sky/views/show_request_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/plan_detail_model.dart';
 import '../services/location_share_service.dart';
@@ -103,6 +106,9 @@ class MapShareLocationViewModel extends ChangeNotifier {
         NotificationService.cancelNotification();
 
         _showSnackbar(context, "Location sharing stopped");
+        await Provider.of<ShowRequestViewModel>(context, listen: false).loadRequest(_planDetailModel!.planId);
+        Navigator.of(context).pop();
+
       } else {
         // Иначе показываем ошибку, локально не выключаем
         // _showSnackbar(context, "Failed to stop location sharing: ${res['body']}");
