@@ -244,6 +244,7 @@
   "showRequestView_deleteConfirmationMessageDialog": "Do you really want to delete the request?",
   "showRequestView_cancelDialog": "Cancel",
   "showRequestView_deleteDialog": "Delete",
+  "showRequestView_fieldEmptyError": "Field cannot be empty",
 
   "showRequestView_locationSharingTitle": "Location sharing",
   "showRequestView_locationSharingMessage": "Data sharing is already active. If you press continue, the previous broadcast will be paused.",
@@ -272,7 +273,6 @@
   "mapShareLocationView_resume": "Resume",
   "mapShareLocationView_paused": "Paused",
   "mapShareLocationView_searchingYourLocation": "Searching your location",
-  "mapShareLocationView_mapShareLocationView_profileUpdated": "Profile updated",
   "mapShareLocationView_confirmStopLocationSharingTitle": "Stop Location Sharing",
   "mapShareLocationView_confirmStopLocationSharingMessage": "Do you really want to permanently stop the location sharing?",
   "mapShareLocationView_confirmStopLocationSharingYes": "Yes",

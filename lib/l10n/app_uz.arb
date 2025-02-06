@@ -86,7 +86,7 @@
   "profileView_name": "Ism",
   "profileView_phone": "Telefon",
   "profileView_password": "Parol",
-  "profileView_Password": "Parolni o'zgartirish",
+  "profileView_changePassword": "Parolni o'zgartirish",
 
   "profileView_oldPassword": "Eski parol",
   "profileView_newPassword": "Yangi parol",
@@ -115,7 +115,7 @@
   "scanView_scanMessage": "Iltimos, QR-kodni skaner qiling",
   "scanView_errorFetchingData": "Ma'lumotni olishda xato",
   "scanView_authTokenNotFound": "Autentifikatsiya tokeni topilmadi",
-  "scanView_back": "Back",
+  "scanView_back": "Orqaga",
   "scanView_stopExistingLocationSharing": "Mavjud joylashuv ulashish vazifasini to'xtatilsinmi?",
   "scanView_locationSharingActive": "Joylashuv ulashish vazifasi allaqachon faollashtirilgan. Uni to'xtatib, yangisini boshlashni xohlaysizmi?",
   "scanView_continue": "Davom etish",
@@ -245,6 +245,8 @@
   "showRequestView_deleteConfirmationMessageDialog": "Siz rostdan ham arizani o'chirmoqchimisiz?",
   "showRequestView_cancelDialog": "Bekor qilish",
   "showRequestView_deleteDialog": "O'chirish",
+  "showRequestView_fieldEmptyError": "Maydon bo‘sh bo‘lmasligi kerak",
+
 
   "showRequestView_locationSharingTitle": "Joylashuvni ulashish",
   "showRequestView_locationSharingMessage": "Ma'lumot ulashish allaqachon boshlangan. Agar davom ettirsangiz, oldingi efir to'xtatiladi.",

@@ -245,6 +245,7 @@
   "showRequestView_deleteConfirmationMessageDialog": "Вы действительно хотите удалить заявку?",
   "showRequestView_cancelDialog": "Отмена",
   "showRequestView_deleteDialog": "Удалить",
+  "showRequestView_fieldEmptyError": "Поле не может быть пустым",
 
   "showRequestView_locationSharingTitle": "Передача местоположения",
   "showRequestView_locationSharingMessage": "Передача данных уже запущена. Если нажмете на продолжить, предыдущая трансляция будет приостановлена.",

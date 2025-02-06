@@ -275,7 +275,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 ),
               ),
             )
-          else if (viewModel.planDetailModel?.stateId == 2)
+          else if (viewModel.planDetailModel?.stateId == 2 &&
+                   viewModel.planDetailModel?.activity == 0 &&
+                   viewModel.planDetailModel?.execStateId != 4
+          )
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyCustomDialog {
   /// Отображает диалоговое окно с заголовком, сообщением и кнопками "OK" и "Отмена"
@@ -89,9 +90,13 @@ class MyCustomDialog {
         String okText = "OK",
       }) async {
     TextEditingController reasonController = TextEditingController();
+    // Сохраняем родительский context для показа SnackBar
+    final parentContext = context;
+    final localizations = AppLocalizations.of(context)!;
+
     return showDialog<String>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -106,14 +111,22 @@ class MyCustomDialog {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(
                 cancelText,
                 style: TextStyle(fontSize: 16),
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(reasonController.text),
+              onPressed: () {
+                if (reasonController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(parentContext).showSnackBar(
+                    SnackBar(content: Text(localizations.showRequestView_fieldEmptyError)),
+                  );
+                  return;
+                }
+                Navigator.of(dialogContext).pop(reasonController.text);
+              },
               child: Text(
                 okText,
                 style: TextStyle(fontSize: 16),
@@ -124,4 +137,5 @@ class MyCustomDialog {
       },
     );
   }
+
 }
