@@ -1,12 +1,13 @@
 import 'config.dart';
 
 class ApiRoutes {
-  static const String add_request = '${Config.apiUrl}/add_request';
 
   // Роуты для авторизации
   static const String login = '${Config.apiUrl}/auth/login';
   static const String register = '${Config.apiUrl}/auth/reg';
   static const String sendEmail = '${Config.apiUrl}/auth/otp';
+  static const String refreshToken = '${Config.apiUrl}/auth/refresh';
+
 
   static const String userInfo = '${Config.apiUrl}/profile/info';
   static const String checkToken = '${Config.apiUrl}/profile/check_token';
@@ -36,10 +37,5 @@ class ApiRoutes {
 
 
   static const String logout = '${Config.apiUrl}/auth/logout';
-
-
-
-
-
 
 }

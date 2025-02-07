@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/api_routes.dart';
 import '../config/config.dart';
+import 'auth_service.dart';
 
 class LocationShareService {
   bool _isSharingLocation = false;
@@ -17,11 +18,40 @@ class LocationShareService {
 
   bool get isSharingLocation => _isSharingLocation;
 
-  /// Запуск процесса обмена местоположением
-  ///
-  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: после установки флага `_isSharingLocation = true`
-  /// делаем первый запрос на сервер через `_updateLocation`, чтобы проверить статус.
-  /// Если получаем не 200, прерываем процесс (отключаем таймер, стрим и выбрасываем ошибку).
+  /// Возвращает токен из SharedPreferences.
+  Future<String?> _getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
+  /// Универсальная обёртка для запросов с авторизацией.
+  /// Если получен ответ с кодом 401, пытаемся обновить токен через AuthService
+  /// и повторяем запрос, проверяя, что новый токен не равен null.
+  Future<http.Response> _makeAuthorizedRequest(
+      Future<http.Response> Function(String token) requestFunc) async {
+    String? token = await _getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+    var response = await requestFunc(token);
+    if (response.statusCode == 401) {
+      // Пытаемся обновить токен через AuthService
+      bool refreshed = await AuthService().tokenRefresh();
+      if (!refreshed) {
+        throw Exception('Unauthorized and failed to refresh token');
+      }
+      token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token is null after refresh');
+      }
+      response = await requestFunc(token);
+    }
+    return response;
+  }
+
+  /// Запуск процесса обмена местоположением.
+  /// После установки флага _isSharingLocation делается первый запрос на сервер,
+  /// чтобы проверить статус. Если статус не 200 – процесс прерывается.
   Future<void> startLocationSharing(String uuid) async {
     _isSharingLocation = true;
     _currentUUID = uuid;
@@ -42,7 +72,7 @@ class LocationShareService {
     if (startResponse['statusCode'] != 200) {
       _isSharingLocation = false;
       _currentUUID = null;
-      _positionStreamSubscription?.cancel();
+      await _positionStreamSubscription?.cancel();
       _timer?.cancel();
 
       throw Exception(
@@ -75,10 +105,8 @@ class LocationShareService {
     print("Location sharing started with requestId: $_currentUUID");
   }
 
-  /// Остановка процесса обмена местоположением (локально)
-  ///
-  /// Не делает запрос на сервер, а только отключает таймер и стрим.
-  /// Используется внутри, когда надо прервать локальную отправку геоданных.
+  /// Остановка процесса обмена местоположением (локально).
+  /// Отключает таймер и поток без отправки запроса на сервер.
   Future<void> stopLocationSharing() async {
     _isSharingLocation = false;
     _currentUUID = null;
@@ -89,14 +117,9 @@ class LocationShareService {
     print("Location sharing stopped (local).");
   }
 
-  /// Метод для обновления местоположения на сервере
-  ///
-  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: теперь возвращаем Map со статусом и телом ответа,
-  /// чтобы наверху легко понимать — успешен запрос или нет.
+  /// Метод для обновления местоположения на сервере.
+  /// Возвращает Map со статусом и телом ответа.
   Future<Map<String, dynamic>> _updateLocation(String uuid, double accuracy) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth_token');
-
     Map<String, dynamic> locationData = {
       "uuid": uuid,
       "latitude": _lastLocation?.latitude,
@@ -105,14 +128,16 @@ class LocationShareService {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse(ApiRoutes.updateLocation),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(locationData),
-      );
+      final response = await _makeAuthorizedRequest((token) async {
+        return await http.post(
+          Uri.parse(ApiRoutes.updateLocation),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(locationData),
+        );
+      });
 
       final decodedResponse = utf8.decode(response.bodyBytes);
 
@@ -136,26 +161,18 @@ class LocationShareService {
   }
 
   /// Приостановка обмена локацией (запрос к серверу).
-  ///
-  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: возвращаем также код и тело ответа.
+  /// Возвращает Map со статусом и телом ответа.
   Future<Map<String, dynamic>> pauseLocationSharing(String uuid) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth_token');
-
-    // await Future.delayed(Duration(seconds: 1));
-    // return {
-    //   'statusCode': 200, // Или измените на другой код для тестирования неуспешного ответа
-    //   'body': 'OK (stub)',
-    // };
-
     try {
-      final response = await http.post(
-        Uri.parse(ApiRoutes.pauseLocation),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-        body: {"uuid": uuid},
-      );
+      final response = await _makeAuthorizedRequest((token) async {
+        return await http.post(
+          Uri.parse(ApiRoutes.pauseLocation),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+          body: {"uuid": uuid},
+        );
+      });
 
       return {
         'statusCode': response.statusCode,
@@ -171,30 +188,18 @@ class LocationShareService {
   }
 
   /// Остановка обмена локацией (запрос к серверу).
-  ///
-  /// КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: возвращаем также код и тело ответа.
+  /// Возвращает Map со статусом и телом ответа.
   Future<Map<String, dynamic>> stopLocationSharingRequest(String uuid) async {
-
-    // await Future.delayed(Duration(seconds: 1)); // Имитация сетевого запроса
-    // return {
-    //   'statusCode': 200,
-    //   'body': jsonEncode({
-    //     'message': 'Location sharing stopped successfully',
-    //     'uuid': uuid,
-    //   }),
-    // };
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth_token');
-
     try {
-      final response = await http.post(
-        Uri.parse(ApiRoutes.stopLocation),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-        body: {"uuid": uuid},
-      );
+      final response = await _makeAuthorizedRequest((token) async {
+        return await http.post(
+          Uri.parse(ApiRoutes.stopLocation),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+          body: {"uuid": uuid},
+        );
+      });
 
       return {
         'statusCode': response.statusCode,
