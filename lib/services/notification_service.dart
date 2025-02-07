@@ -127,26 +127,23 @@ class NotificationService {
     );
   }
 
-  static Future<void> showTokenExpirationNotification({bool isFinal = false}) async {
+  static Future<void> showLoggedOutNotification() async {
+
     final context = navigatorKey.currentContext;
     final localizations = context != null ? AppLocalizations.of(context)! : null;
 
     // Если локализации недоступны, используются значения по умолчанию
-    final title = isFinal
-        ? (localizations?.tokenFinalTitle ?? 'Вы вышли')
-        : (localizations?.tokenPreExpirationTitle ?? 'Внимание');
-    final message = isFinal
-        ? (localizations?.tokenFinalMessage ?? 'Вы вышли из приложения')
-        : (localizations?.tokenPreExpirationMessage ?? 'До окончания токена осталось 10 минут. Нажмите на уведомление для выхода.');
+    final title = localizations?.tokenFinalTitle ?? 'You are out';
+    final message = localizations?.tokenFinalMessage ?? 'You are out from app';
+
 
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'token_channel',
-      'Token Expiration',
+      'logout_channel',
+      'Logout',
       channelDescription: message,
       importance: Importance.max,
       priority: Priority.high,
       autoCancel: true,
-      // Кнопки не добавляем – уведомление просто отображается
     );
 
     const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails();
@@ -157,11 +154,11 @@ class NotificationService {
     );
 
     await _notifications.show(
-      isFinal ? 2 : 1,
+      3, // уникальный id для этого уведомления
       title,
       message,
       details,
-      payload: isFinal ? 'logged_out' : 'token_expired',
+      payload: 'logged_out',
     );
   }
 

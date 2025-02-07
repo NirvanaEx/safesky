@@ -38,8 +38,6 @@ class AuthService {
         print('Token saved: ${responseData['token']}');
         print('Refresh token saved: ${responseData['refreshToken']}');
 
-        // Запускаем таймер для уведомления и автоматического выхода при истечении токена
-        _startTokenExpirationTimer(responseData['expireAt']);
         return true;
       } else {
         print('Login error: ${responseData['message']}');
@@ -59,7 +57,7 @@ class AuthService {
 
     if (refreshToken == null) {
       print('Refresh token отсутствует, выполняем выход');
-      await logout();
+      await logoutAndNavigateToLogin();
       return false;
     }
 
@@ -82,12 +80,10 @@ class AuthService {
         await prefs.setString('token_expire_at', responseData['expireAt']);
 
         print('Токен успешно обновлён: ${responseData['token']}');
-        // Перезапускаем таймер истечения токена
-        _startTokenExpirationTimer(responseData['expireAt']);
         return true;
       } else if (response.statusCode == 401) {
         print('Refresh token недействителен или истёк, выполняем выход');
-        await logout();
+        await logoutAndNavigateToLogin();
         return false;
       } else {
         print('Ошибка обновления токена, код ответа: ${response.statusCode}');
@@ -98,6 +94,19 @@ class AuthService {
       return false;
     }
   }
+
+  /// Функция, которая выполняет выход, показывает уведомление и переход на экран логина.
+  Future<void> logoutAndNavigateToLogin() async {
+    await logout();
+    // Показываем уведомление о выходе из аккаунта
+    await NotificationService.showLoggedOutNotification();
+    // Ждем пару секунд, чтобы пользователь увидел уведомление
+    await Future.delayed(Duration(seconds: 2));
+    // Переход на экран логина
+    NotificationService.navigatorKey.currentState
+        ?.pushNamedAndRemoveUntil('/login', (route) => false);
+  }
+
 
   /// Универсальная обёртка для запросов, требующих авторизации.
   /// Если сервер отвечает 401, производится попытка обновить токен и повторить запрос.
@@ -122,34 +131,6 @@ class AuthService {
     return response;
   }
 
-  /// Запуск таймера для предварительного уведомления об истечении токена
-  void _startTokenExpirationTimer(String expireAtString) {
-    final expireAt = DateTime.parse(expireAtString);
-    final duration = expireAt.difference(DateTime.now());
-    // Предупреждение за 5 минут до истечения токена
-    final preExpirationTime = Duration(minutes: 5);
-
-    if (duration > preExpirationTime) {
-      Timer(duration - preExpirationTime, () {
-        NotificationService.showTokenExpirationNotification();
-        final context = NotificationService.navigatorKey.currentContext;
-        if (context != null) {
-          final localizations = AppLocalizations.of(context)!;
-          MyCustomDialog.showNotificationDialog(
-              context,
-              localizations.tokenPreExpirationTitle,
-              localizations.tokenPreExpirationMessage);
-        }
-      });
-    }
-
-    Timer(duration, () async {
-      await NotificationService.showTokenExpirationNotification(isFinal: true);
-      await logout();
-      NotificationService.navigatorKey.currentState
-          ?.pushNamedAndRemoveUntil('/login', (route) => false);
-    });
-  }
 
   /// Метод для отправки email
   Future<Map<String, dynamic>> sendEmail(String username) async {
