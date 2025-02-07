@@ -10,40 +10,50 @@ import '../models/request_model_main.dart';
 import 'auth_service.dart';
 
 class RequestService {
-  /// Универсальная обёртка для запросов с авторизацией.
-  /// Если получен ответ 401, пытаемся обновить токен и повторить запрос.
-  Future<http.Response> _makeAuthorizedRequest(
-      Future<http.Response> Function(String token) requestFunc) async {
-    String? token = await _getToken();
-    if (token == null || token.isEmpty) {
-      throw Exception('No authentication token found');
-    }
-    var response = await requestFunc(token);
-    if (response.statusCode == 401) {
-      // Пытаемся обновить токен через AuthService
-      bool refreshed = await AuthService().tokenRefresh();
-      if (!refreshed) {
-        throw Exception('Unauthorized and failed to refresh token');
-      }
-      token = await _getToken();
-      if (token == null) {
-        throw Exception('Token is null after refresh');
-      }
-      response = await requestFunc(token);
-    }
-    return response;
+  final AuthService _authService = AuthService();
+
+  /// Получение базовых заголовков из AuthService.
+  Future<Map<String, String>> _getDefaultHeaders() async {
+    return await _authService.getDefaultHeaders();
   }
 
-  /// Получение auth_token из SharedPreferences
+  /// Получение auth_token из SharedPreferences.
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
 
+  /// Универсальная обёртка для запросов, требующих авторизации.
+  /// Принимает функцию с двумя параметрами:
+  /// [token] и [defaultHeaders] – базовые заголовки.
+  /// Если сервер возвращает 401, производится попытка обновления токена и повторного запроса.
+  Future<http.Response> _makeAuthorizedRequest(
+      Future<http.Response> Function(String token, Map<String, String> defaultHeaders)
+      requestFunc) async {
+    String? token = await _getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+    final defaultHeaders = await _getDefaultHeaders();
+    var response = await requestFunc(token, defaultHeaders);
+    if (response.statusCode == 401) {
+      // Пытаемся обновить токен через AuthService.
+      bool refreshed = await _authService.tokenRefresh();
+      if (!refreshed) {
+        throw Exception('Unauthorized and failed to refresh token');
+      }
+      token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token is null after refresh');
+      }
+      response = await requestFunc(token, defaultHeaders);
+    }
+    return response;
+  }
+
   /// Метод для отмены запроса.
-  /// Если план является тестовым (planId == 0), возвращает тестовый ответ.
+  /// Если planId равен 0 (тестовые данные) – возвращается тестовый ответ.
   Future<http.Response> cancelRequest(int planId, String cancelReason) async {
-    // Тестовые данные
     if (planId == 0) {
       print('Cancel request (TEST DATA): planId=$planId, cancelReason=$cancelReason');
       return http.Response(
@@ -61,19 +71,20 @@ class RequestService {
     print('URL: $url');
     print('Body: ${jsonEncode(requestBody)}');
 
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json; charset=utf-8',
+      };
       print('Using token: $token');
       return await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
         body: jsonEncode(requestBody),
       );
     });
 
-    // Декодирование ответа в UTF-8
     final decodedBody = utf8.decode(response.bodyBytes);
     final decodedJson = jsonDecode(decodedBody);
 
@@ -90,9 +101,8 @@ class RequestService {
   }
 
   /// Метод для удаления запроса.
-  /// Если план является тестовым (planId == 0), возвращает тестовый ответ.
+  /// Если planId равен 0 (тестовые данные) – возвращается тестовый ответ.
   Future<http.Response> deleteRequest(int planId) async {
-    // Тестовые данные
     if (planId == 0) {
       print('Delete request (TEST DATA): planId=$planId');
       return http.Response(
@@ -105,18 +115,16 @@ class RequestService {
     print('Sending delete request:');
     print('URL: $url');
 
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json; charset=utf-8',
+      };
       print('Using token: $token');
-      return await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
+      return await http.post(url, headers: headers);
     });
 
-    // Декодирование ответа в UTF-8
     final decodedBody = utf8.decode(response.bodyBytes);
     final decodedJson = jsonDecode(decodedBody);
 
@@ -134,14 +142,15 @@ class RequestService {
 
   /// Метод для получения списка основных заявок с пагинацией.
   Future<List<RequestModelMain>> fetchMainRequests({int page = 1, int count = 10}) async {
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
       print('Fetching main requests using token: $token');
       return await http.get(
         Uri.parse('${ApiRoutes.requestList}?page=$page&count=$count'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
+        headers: headers,
       );
     });
 
@@ -149,7 +158,7 @@ class RequestService {
 
     if (response.statusCode == 200) {
       try {
-        // Используем latin1 декодирование, как и в исходном коде
+        // Используем latin1-декодирование, как в исходном коде.
         final decodedBody = latin1.decode(response.bodyBytes);
         final Map<String, dynamic> jsonData = json.decode(decodedBody);
         List<RequestModelMain> requests = (jsonData['rows'] as List)
@@ -174,15 +183,13 @@ class RequestService {
   /// Метод для получения детальной информации плана по planId.
   Future<PlanDetailModel> fetchPlanDetail(int planId) async {
     final Uri url = Uri.parse('${ApiRoutes.requestDetailInfo}$planId');
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
       print('Fetching plan detail for planId=$planId using token: $token');
-      return await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
+      return await http.get(url, headers: headers);
     });
 
     if (response.statusCode == 200) {
@@ -204,18 +211,16 @@ class RequestService {
     }
   }
 
-  /// Метод для получения детальной информации плана по uuid.
+  /// Метод для получения детальной информации плана по UUID.
   Future<PlanDetailModel> fetchPlanDetailByUuid(String uuid) async {
     final Uri url = Uri.parse('${ApiRoutes.requestDetailInfoByUuid}$uuid');
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
       print('Fetching plan detail by uuid=$uuid using token: $token');
-      return await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
+      return await http.get(url, headers: headers);
     });
 
     if (response.statusCode == 200) {
@@ -242,15 +247,13 @@ class RequestService {
     final Uri uri = Uri.parse('${ApiRoutes.requestPrepare}?plan_date=$planDate');
     print('Fetching prepare data from: $uri');
 
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
       print('Using token: $token');
-      return await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
+      return await http.get(uri, headers: headers);
     });
 
     print('Response status code: ${response.statusCode}');
@@ -280,17 +283,13 @@ class RequestService {
     print('Submitting BPLA Plan to: $uri');
     print('Request Body: ${jsonEncode(requestBody)}');
 
-    final response = await _makeAuthorizedRequest((token) async {
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
       print('Using token: $token');
-      return await http.post(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(requestBody),
-      );
+      return await http.post(uri, headers: headers, body: jsonEncode(requestBody));
     });
 
     print('Response status code: ${response.statusCode}');

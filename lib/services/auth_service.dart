@@ -9,17 +9,28 @@ import 'notification_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthService {
-  /// Метод для входа пользователя
+  /// Формирует базовые заголовки для запросов,
+  /// включая Content-Type, Accept и Accept-Language.
+  Future<Map<String, String>> getDefaultHeaders() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Получаем сохранённый язык, если не задан – используем 'en'
+    String language = prefs.getString('locale') ?? 'en';
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Accept-Language': language,
+    };
+  }
+
+  /// Метод для входа пользователя.
   Future<bool> login(String username, String password) async {
     final url = Uri.parse(ApiRoutes.login);
 
     try {
+      final headers = await getDefaultHeaders();
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode({'username': username, 'password': password}),
       );
 
@@ -49,7 +60,7 @@ class AuthService {
     }
   }
 
-  /// Метод обновления токена с использованием refresh_token
+  /// Метод обновления токена с использованием refresh_token.
   Future<bool> tokenRefresh() async {
     final url = Uri.parse(ApiRoutes.refreshToken);
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -62,12 +73,10 @@ class AuthService {
     }
 
     try {
+      final headers = await getDefaultHeaders();
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode({'refresh_token': refreshToken}),
       );
 
@@ -95,7 +104,7 @@ class AuthService {
     }
   }
 
-  /// Функция, которая выполняет выход, показывает уведомление и переход на экран логина.
+  /// Функция, которая выполняет выход, показывает уведомление и переходит на экран логина.
   Future<void> logoutAndNavigateToLogin() async {
     await logout();
     // Показываем уведомление о выходе из аккаунта
@@ -106,7 +115,6 @@ class AuthService {
     NotificationService.navigatorKey.currentState
         ?.pushNamedAndRemoveUntil('/login', (route) => false);
   }
-
 
   /// Универсальная обёртка для запросов, требующих авторизации.
   /// Если сервер отвечает 401, производится попытка обновить токен и повторить запрос.
@@ -131,17 +139,15 @@ class AuthService {
     return response;
   }
 
-
-  /// Метод для отправки email
+  /// Метод для отправки email.
   Future<Map<String, dynamic>> sendEmail(String username) async {
     final url = Uri.parse(ApiRoutes.sendEmail);
 
     try {
+      final headers = await getDefaultHeaders();
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode({'username': username}),
       );
 
@@ -156,7 +162,7 @@ class AuthService {
     }
   }
 
-  /// Метод для регистрации пользователя
+  /// Метод для регистрации пользователя.
   Future<void> register({
     required String email,
     required String password,
@@ -169,11 +175,10 @@ class AuthService {
     final url = Uri.parse(ApiRoutes.register);
 
     try {
+      final headers = await getDefaultHeaders();
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode({
           'username': email,
           'password': password,
@@ -200,16 +205,14 @@ class AuthService {
     }
   }
 
-  /// Получение информации о пользователе с автоматическим обновлением токена при необходимости
+  /// Получение информации о пользователе с автоматическим обновлением токена при необходимости.
   Future<UserModel> getUserInfo() async {
     final response = await _makeAuthorizedRequest((token) async {
+      final defaultHeaders = await getDefaultHeaders();
+      final headers = {...defaultHeaders, 'Authorization': 'Bearer $token'};
       return await http.get(
         Uri.parse(ApiRoutes.userInfo),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       );
     });
 
@@ -239,21 +242,21 @@ class AuthService {
     }
   }
 
-  /// Получение текущего auth_token из SharedPreferences
+  /// Получение текущего auth_token из SharedPreferences.
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
 
-  /// Проверка валидности токена с автоматическим обновлением при необходимости
+  /// Проверка валидности токена с автоматическим обновлением при необходимости.
   Future<bool> checkToken() async {
     try {
       final response = await _makeAuthorizedRequest((token) async {
+        final defaultHeaders = await getDefaultHeaders();
+        final headers = {...defaultHeaders, 'Authorization': 'Bearer $token'};
         return await http.get(
           Uri.parse(ApiRoutes.checkToken),
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
+          headers: headers,
         );
       });
       return response.statusCode == 200;
@@ -262,15 +265,14 @@ class AuthService {
     }
   }
 
-  /// Изменение данных профиля с автоматическим обновлением токена при необходимости
+  /// Изменение данных профиля с автоматическим обновлением токена при необходимости.
   Future<void> changeProfileData(String name, String surname, String phone) async {
     final response = await _makeAuthorizedRequest((token) async {
+      final defaultHeaders = await getDefaultHeaders();
+      final headers = {...defaultHeaders, 'Authorization': 'Bearer $token'};
       return await http.post(
         Uri.parse(ApiRoutes.changeProfileData),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
         body: jsonEncode({
           'surname': surname,
           'name': name,
@@ -290,12 +292,11 @@ class AuthService {
   Future<void> changePassword(
       String oldPassword, String newPassword, String passwordConfirm) async {
     final response = await _makeAuthorizedRequest((token) async {
+      final defaultHeaders = await getDefaultHeaders();
+      final headers = {...defaultHeaders, 'Authorization': 'Bearer $token'};
       return await http.post(
         Uri.parse(ApiRoutes.changePassword),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
         body: jsonEncode({
           'oldPassword': oldPassword,
           'password': newPassword,
@@ -311,7 +312,7 @@ class AuthService {
     await logout();
   }
 
-  /// Выход из аккаунта – удаление токенов и связанных данных из SharedPreferences
+  /// Выход из аккаунта – удаление токенов и связанных данных из SharedPreferences.
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
