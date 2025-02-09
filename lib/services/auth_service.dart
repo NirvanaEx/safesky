@@ -85,7 +85,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(responseBody);
         await prefs.setString('auth_token', responseData['token']);
-        await prefs.setString('refresh_token', responseData['refresh_token']);
+        await prefs.setString('refresh_token', responseData['refreshToken']);
         await prefs.setString('token_expire_at', responseData['expireAt']);
 
         print('Токен успешно обновлён: ${responseData['token']}');

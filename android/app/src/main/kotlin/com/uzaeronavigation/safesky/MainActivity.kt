@@ -1,4 +1,4 @@
-package com.example.safe_sky
+package com.uzaeronavigation.safesky
 
 import io.flutter.embedding.android.FlutterActivity
 
