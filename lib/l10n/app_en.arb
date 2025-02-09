@@ -134,7 +134,10 @@
   "addRequestView_flightSign": "Flight Sign",
   "addRequestView_flightTimes": "Flight Times (UTC)",
   "addRequestView_region": "Region",
-  "addRequestView_coordinates": "Coordinates (Location)",
+  "addRequestView_flightOperationArea": "Flight Operation Area",
+  "addRequestView_flightOperationDistrict": "Flight Operation District",
+
+  "addRequestView_coordinates": "Coordinates",
   "addRequestView_map": "Map",
   "addRequestView_height": "Flight Height (m)",
   "addRequestView_radius": "Flight Radius (m)",

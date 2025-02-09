@@ -135,7 +135,10 @@
   "addRequestView_flightSign": "Parvoz belgisi",
   "addRequestView_flightTimes": "Parvoz vaqtlari (UTC)",
   "addRequestView_region": "Hudud",
-  "addRequestView_coordinates": "Koordinatalar (joylashuv)",
+  "addRequestView_flightOperationArea": "Parvozlarni amalga oshirish hududi",
+  "addRequestView_flightOperationDistrict": "Parvozlarni amalga oshirish tumani",
+
+  "addRequestView_coordinates": "Koordinatalar",
   "addRequestView_map": "Xarita",
   "addRequestView_height": "Parvoz balandligi (m)",
   "addRequestView_radius": "Parvoz radiusi (m)",

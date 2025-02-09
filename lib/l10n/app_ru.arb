@@ -135,7 +135,10 @@
   "addRequestView_flightSign": "Регистрационный опознавательный знак БПЛА",
   "addRequestView_flightTimes": "Время начала и окончания полета (UTC)",
   "addRequestView_region": "Регион выполнения полета",
-  "addRequestView_coordinates": "Район (координаты) выполнения полета",
+  "addRequestView_flightOperationArea": "Область выполнения полетов",
+  "addRequestView_flightOperationDistrict": "Район выполнения полетов",
+
+  "addRequestView_coordinates": "Координаты",
   "addRequestView_map": "Карта",
   "addRequestView_height": "Высота полета (м)",
   "addRequestView_radius": "Радиус полета (м)",
