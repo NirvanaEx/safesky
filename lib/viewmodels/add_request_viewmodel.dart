@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:safe_sky/models/prepare_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/district_model.dart';
+import '../models/region_model.dart';
 import '../models/request.dart';
 
 import '../services/request_service.dart';
@@ -21,7 +23,6 @@ class AddRequestViewModel extends ChangeNotifier {
   final TextEditingController requesterNameController = TextEditingController();
   final TextEditingController operatorPhoneController = TextEditingController();
   final TextEditingController requestNumController = TextEditingController();
-  final TextEditingController regionController = TextEditingController();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
@@ -35,9 +36,10 @@ class AddRequestViewModel extends ChangeNotifier {
   final TextEditingController permitNumberController = TextEditingController();
   final TextEditingController contractNumberController = TextEditingController();
 
+  final TextEditingController landmarkController = TextEditingController();
+
 
   List<Bpla> bplaList = [];
-
   List<String> purposeList = [];
 
 
@@ -45,7 +47,9 @@ class AddRequestViewModel extends ChangeNotifier {
   List<Operator> operatorList = [];
   List<Permission> permissionList = [];
   List<String> agreementList = [];
-
+  // Списки для регионов и районов
+  List<RegionModel> regionList = [];
+  List<DistrictModel> districtList = [];
 
   // Переменные для работы с датами
   DateTime? startDate;
@@ -59,6 +63,9 @@ class AddRequestViewModel extends ChangeNotifier {
   List<Bpla> selectedBplas = [];
   String? selectedPurpose;
   List<Operator> selectedOperators = [];
+  // Выбранные регион и район
+  RegionModel? selectedRegion;
+  DistrictModel? selectedDistrict;
 
   String selectedCountryCode = "+998";
 
@@ -91,9 +98,47 @@ class AddRequestViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Метод загрузки списка регионов
+  Future<void> loadRegions() async {
+    try {
+      regionList = await requestService.fetchRegions();
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching regions: $e");
+      errorMessage = "Ошибка при получении регионов";
+      notifyListeners();
+    }
+  }
+
+  // Метод загрузки списка районов по коду региона
+  Future<void> loadDistricts(String regionCode) async {
+    try {
+      districtList = await requestService.fetchDistricts(regionCode);
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching districts: $e");
+      errorMessage = "Ошибка при получении районов";
+      notifyListeners();
+    }
+  }
+
+  // Установка выбранного региона (и автоматическая загрузка районов для него)
+  void setSelectedRegion(RegionModel region) {
+    selectedRegion = region;
+    loadDistricts(region.code);
+    notifyListeners();
+  }
+
+
+  // Установка выбранного района
+  void setSelectedDistrict(DistrictModel district) {
+    selectedDistrict = district;
+    notifyListeners();
+  }
 
   Future<void> loadPrepare(String planDate) async {
     prepareData = await requestService.fetchPrepareData(planDate);
+    await loadRegions();
     notifyListeners();
   }
 
@@ -242,7 +287,7 @@ class AddRequestViewModel extends ChangeNotifier {
     }
 
     // Проверка времени начала полета
-    if (regionController.text.isEmpty ) {
+    if (landmarkController.text.isEmpty ) {
       return {'status': 'error', 'message': localizations?.addRequestView_invalidRegion ?? "Invalid flight area"};
     }
 
@@ -308,7 +353,8 @@ class AddRequestViewModel extends ChangeNotifier {
       "planDate": startDate?.toIso8601String() ?? '',
       "timeFrom": formatTimeToHHmm(flightStartDateTime),
       "timeTo": formatTimeToHHmm(flightEndDateTime),
-      "flightArea": regionController.text,
+      "flightArea": landmarkController.text,
+      "districtCode": selectedDistrict?.code,
       "zoneTypeId": 1 ?? 0,
       "purpose": selectedPurpose ?? '',
       "bplaList": selectedBplas.isNotEmpty
@@ -404,7 +450,7 @@ class AddRequestViewModel extends ChangeNotifier {
     startDateController.clear();
     flightStartDateControllerTime.clear();
     flightEndDateTimeController.clear();
-    regionController.clear();
+    landmarkController.clear();
 
 
     endDate = null;
@@ -434,6 +480,7 @@ class AddRequestViewModel extends ChangeNotifier {
     startDateController.dispose();
     flightStartDateControllerTime.dispose();
     flightEndDateTimeController.dispose();
+    landmarkController.dispose();
 
     super.dispose();
   }

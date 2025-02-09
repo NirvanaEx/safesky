@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:safe_sky/models/district_model.dart';
+import 'package:safe_sky/models/region_model.dart';
 import '../../models/request.dart';
 import '../../viewmodels/add_request_viewmodel.dart';
 import '../map/map_select_location_view.dart';
@@ -116,8 +118,28 @@ class _AddRequestViewState extends State<AddRequestView> {
           ],
         ),
         SizedBox(height: 16),
-        _buildLabel(localizations.addRequestView_region),
-        _buildTextField(viewModel.regionController, hintText: localizations.addRequestView_region, isText: true),
+        _buildLabel(localizations.addRequestView_flightOperationArea),
+        _buildDropdown<RegionModel>(
+          items: viewModel.regionList,
+          selectedValue: viewModel.selectedRegion,
+          onChanged: (value) => viewModel.setSelectedRegion(value!),
+          hint: localizations.addRequestView_flightOperationArea,
+          getItemName: (region) => region.name,
+        ),
+
+        SizedBox(height: 16),
+        _buildLabel(localizations.addRequestView_flightOperationDistrict),
+        _buildDropdown<DistrictModel>(
+          items: viewModel.districtList,
+          selectedValue: viewModel.selectedDistrict,
+          onChanged: (value) => viewModel.setSelectedDistrict(value!),
+          hint: localizations.addRequestView_flightOperationDistrict,
+          getItemName: (district) => district.name,
+        ),
+
+        SizedBox(height: 16),
+        _buildLabel(localizations.addRequestView_landmark),
+        _buildTextField(viewModel.landmarkController, hintText: localizations.addRequestView_region, isText: true),
 
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_coordinates),

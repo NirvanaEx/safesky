@@ -135,6 +135,7 @@
   "addRequestView_flightSign": "Parvoz belgisi",
   "addRequestView_flightTimes": "Parvoz vaqtlari (UTC)",
   "addRequestView_region": "Hudud",
+  "addRequestView_landmark": "Parvozlarni amalga oshirish yo'nalishi",
   "addRequestView_flightOperationArea": "Parvozlarni amalga oshirish hududi",
   "addRequestView_flightOperationDistrict": "Parvozlarni amalga oshirish tumani",
 
@@ -181,7 +182,7 @@
   "addRequestView_invalidContractDate": "Shartnoma sanasi noto'g'ri",
   "addRequestView_invalidRequesterName": "Ariza beruvchi nomi bo'sh bo'lishi mumkin emas",
   "addRequestView_invalidModel": "Model tanlanishi kerak",
-  "addRequestView_invalidRegion": "Parvoz hududi bo‘sh bo‘lishi mumkin emas",
+  "addRequestView_invalidRegion": "Parvoz amalga oshirish yo'nalishi bo‘sh bo‘lishi mumkin emas",
   "addRequestView_invalidPurpose": "Maqsad tanlanishi kerak",
   "addRequestView_invalidPhoneNumber": "Noto'g'ri telefon raqami",
   "addRequestView_invalidEmail": "Email formati noto'g'ri",

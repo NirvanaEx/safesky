@@ -28,8 +28,8 @@ class ApiRoutes {
   static const String requestDelete = '${Config.apiUrl}/bpla/plan';
 
   // Справочник
-  static const String requestDistrict = '${Config.apiUrl}/dist/district';
-  static const String requestRegion = '${Config.apiUrl}/dist/region';
+  static const String requestDistrict = '${Config.apiUrl}/dict/district';
+  static const String requestRegion = '${Config.apiUrl}/dict/region';
 
 
   // Трасляция местоположение

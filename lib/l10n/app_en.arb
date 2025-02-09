@@ -134,6 +134,7 @@
   "addRequestView_flightSign": "Flight Sign",
   "addRequestView_flightTimes": "Flight Times (UTC)",
   "addRequestView_region": "Region",
+  "addRequestView_landmark": "Flight Operation Landmark",
   "addRequestView_flightOperationArea": "Flight Operation Area",
   "addRequestView_flightOperationDistrict": "Flight Operation District",
 
@@ -180,7 +181,7 @@
   "addRequestView_invalidContractDate": "Invalid contract date",
   "addRequestView_invalidRequesterName": "Requester name cannot be empty",
   "addRequestView_invalidModel": "Model must be selected",
-  "addRequestView_invalidRegion": "The flight region cannot be empty",
+  "addRequestView_invalidRegion": "The landmark cannot be empty",
   "addRequestView_invalidPurpose": "Purpose must be selected",
   "addRequestView_invalidPhoneNumber": "Invalid phone number",
   "addRequestView_invalidEmail": "Invalid email format",
