@@ -77,7 +77,7 @@ class AuthService {
       final response = await http.post(
         url,
         headers: headers,
-        body: jsonEncode({'refresh_token': refreshToken}),
+        body: jsonEncode({'refreshToken': refreshToken}),
       );
 
       final String responseBody = utf8.decode(response.bodyBytes);
