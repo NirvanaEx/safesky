@@ -6,6 +6,10 @@ class PlanDetailModel {
   final String? applicationNum;
   final String? timeFrom;
   final String? timeTo;
+  final String? regionCode;
+  final String? region;
+  final String? districtCode;
+  final String? district;
   final String? flightArea;
   final int? zoneTypeId;
   final String? zoneType;
@@ -38,6 +42,10 @@ class PlanDetailModel {
     this.applicationNum,
     this.timeFrom,
     this.timeTo,
+    this.regionCode,
+    this.region,
+    this.districtCode,
+    this.district,
     this.flightArea,
     this.zoneTypeId,
     this.zoneType,
@@ -73,6 +81,11 @@ class PlanDetailModel {
         applicationNum: json['applicationNum'] as String?,
         timeFrom: json['timeFrom'] as String?,
         timeTo: json['timeTo'] as String?,
+        // Новые поля:
+        regionCode: json['regionCode'] as String?,
+        region: json['region'] as String?,
+        districtCode: json['districtCode'] as String?,
+        district: json['district'] as String?,
         flightArea: json['flightArea'] as String?,
         zoneTypeId: json['zoneTypeId'] as int?,
         zoneType: json['zoneType'] as String?,
@@ -92,9 +105,13 @@ class PlanDetailModel {
         permission: json['permission'] is Map<String, dynamic>
             ? PermissionModel.fromJson(json['permission'])
             : null,
+        // Обработка agreement: поддержка и Map, и String
         agreement: json['agreement'] is Map<String, dynamic>
             ? AgreementModel.fromJson(json['agreement'] as Map<String, dynamic>)
-            : null,        source: json['source'] as String?,
+            : (json['agreement'] is String
+            ? AgreementModel(docNum: json['agreement'] as String, docDate: null)
+            : null),
+        source: json['source'] as String?,
         stateId: json['stateId'] as int?,
         state: json['state'] as String?,
         checkUrl: json['checkUrl'] as String?,

@@ -16,6 +16,7 @@ class ApiRoutes {
 
 
 
+  // Заявки
   static const String requestList = '${Config.apiUrl}/bpla/plan/list';
   static const String requestPrepare = '${Config.apiUrl}/bpla/plan/prepare';
 
@@ -26,6 +27,10 @@ class ApiRoutes {
   static const String requestCancel = '${Config.apiUrl}/bpla/plan';
   static const String requestDelete = '${Config.apiUrl}/bpla/plan';
 
+  // Справочник
+  static const String requestDistrict = '${Config.apiUrl}/dist/district';
+  static const String requestRegion = '${Config.apiUrl}/dist/region';
+
 
   // Трасляция местоположение
   static const String updateLocation = '${Config.apiUrl}/bpla/operator/track';
@@ -33,9 +38,5 @@ class ApiRoutes {
   static const String stopLocation = '${Config.apiUrl}/bpla/operator/stop';
 
 
-
-
-
-  static const String logout = '${Config.apiUrl}/auth/logout';
 
 }

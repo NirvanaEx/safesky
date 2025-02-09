@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
+import '../models/district_model.dart';
 import '../models/plan_detail_model.dart';
 import '../models/prepare_model.dart';
+import '../models/region_model.dart';
 import '../models/request_model_main.dart';
 import 'auth_service.dart';
 
@@ -274,6 +276,76 @@ class RequestService {
       throw Exception('Failed to load data: ${response.statusCode}');
     }
   }
+
+  Future<List<RegionModel>> fetchRegions() async {
+    final Uri url = Uri.parse(ApiRoutes.requestRegion);
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
+      print('Fetching regions token: $token');
+      return await http.get(url, headers: headers);
+    });
+
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes);
+      print('decodedBody: $decodedBody');
+      try {
+        final Map<String, dynamic> jsonData = json.decode(decodedBody);
+        print('Parsed JSON map: $jsonData');
+        final List<dynamic> data = jsonData['data'] as List<dynamic>;
+        final regions = data
+            .map((e) => RegionModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        print('Parsed regions successfully: $regions');
+        return regions;
+      } catch (e) {
+        print("Error decoding regions: $e");
+        throw Exception('Failed to decode regions');
+      }
+    } else {
+      print("Error: ${response.statusCode} => ${response.body}");
+      throw Exception('Failed to load regions: ${response.statusCode}');
+    }
+  }
+
+  Future<List<DistrictModel>> fetchDistricts(String regionCode) async {
+    final Uri url = Uri.parse(ApiRoutes.requestDistrict).replace(queryParameters: {
+      'regionCode': regionCode,
+    });
+
+    final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
+      print('Fetching districts for regionCode: $regionCode and token: $token');
+      return await http.get(url, headers: headers);
+    });
+
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes);
+      print('decodedBody: $decodedBody');
+      try {
+        final Map<String, dynamic> jsonData = json.decode(decodedBody);
+        print('Parsed JSON map: $jsonData');
+        final List<dynamic> data = jsonData['data'] as List<dynamic>;
+        final districts = data
+            .map((e) => DistrictModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        print('Parsed districts successfully: $districts');
+        return districts;
+      } catch (e) {
+        print("Error decoding districts: $e");
+        throw Exception('Failed to decode districts');
+      }
+    } else {
+      print("Error: ${response.statusCode} => ${response.body}");
+      throw Exception('Failed to load districts: ${response.statusCode}');
+    }
+  }
+
 
   /// Метод для отправки (создания) плана BPLA.
   Future<Map<String, dynamic>> submitBplaPlan(Map<String, dynamic> requestBody) async {
