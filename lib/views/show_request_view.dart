@@ -2,16 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:safe_sky/models/plan_detail_model.dart';
-import 'package:safe_sky/models/request_model.dart';
-import 'package:safe_sky/services/request_service.dart';
-import '../models/area_point_location_model.dart';
-import '../models/request/status_model.dart';
-import '../utils/enums.dart';
 import '../viewmodels/show_request_viewmodel.dart';
 import 'map/map_show_location_view.dart';
-import 'map/map_share_location_view.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/map_share_location_viewmodel.dart';
 import 'my_custom_views/my_custom_dialog.dart';
 
 class ShowRequestView extends StatefulWidget {

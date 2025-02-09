@@ -58,6 +58,7 @@ class RequestListViewModel extends ChangeNotifier {
       _currentBatch++;
       applySearch();
     } catch (e) {
+
       print('Error loading requests: $e');
     }
   }

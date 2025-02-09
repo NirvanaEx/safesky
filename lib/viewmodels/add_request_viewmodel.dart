@@ -7,11 +7,9 @@ import 'package:safe_sky/models/prepare_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/request.dart';
-import '../models/request/flight_sign_model.dart';
 
 import '../services/request_service.dart';
-import '../utils/localization_manager.dart';
-import 'package:provider/provider.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddRequestViewModel extends ChangeNotifier {
@@ -40,7 +38,6 @@ class AddRequestViewModel extends ChangeNotifier {
 
   List<Bpla> bplaList = [];
 
-  List<FlightSignModel> flightSigns = [];
   List<String> purposeList = [];
 
 

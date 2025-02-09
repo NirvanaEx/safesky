@@ -1,18 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:safe_sky/viewmodels/request_list_viewmodel.dart';
 import '../models/plan_detail_model.dart';
-import '../models/request_model.dart';
-import '../models/area_point_location_model.dart';
+
 import '../services/request_service.dart';
-import '../utils/enums.dart';
 import '../views/map/map_share_location_view.dart';
 
 import 'package:provider/provider.dart';
 import '../viewmodels/map_share_location_viewmodel.dart';
-import '../models/request/status_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../views/my_custom_views/my_custom_dialog.dart';
@@ -32,6 +28,8 @@ class ShowRequestViewModel extends ChangeNotifier {
       planDetailModel = await requestService.fetchPlanDetail(requestId);
     } catch (e) {
       print('Error loading request: $e');
+      print('newRequest.planIds: ${requestId}');
+
     } finally {
       isLoading = false;
       notifyListeners(); // Обновление UI после загрузки

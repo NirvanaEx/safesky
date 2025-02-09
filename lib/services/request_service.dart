@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
-import '../config/config.dart';
 import '../models/plan_detail_model.dart';
 import '../models/prepare_model.dart';
-import '../models/request_model.dart';
 import '../models/request_model_main.dart';
 import 'auth_service.dart';
 
