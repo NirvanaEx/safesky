@@ -104,16 +104,16 @@ class _AddRequestViewState extends State<AddRequestView> {
         _buildLabel(localizations.addRequestView_flightTimes),
         Column(
           children: [
-            _buildDatePickerField(
-              date: viewModel.flightStartDateTime,
-              hintText: "01.01.2023 15:00",
-              onDateSelected: (date) => viewModel.updateFlightStartDateTime(date!),
+            _buildTimePickerField(
+              time: viewModel.flightStartDateTime,
+              hintText: "15:00",
+              onTimeSelected: (date) => viewModel.updateFlightStartDateTime(date!),
             ),
             SizedBox(height: 16),
-            _buildDatePickerField(
-              date: viewModel.flightEndDateTime,
-              hintText: "01.01.2023 17:00",
-              onDateSelected: (date) => viewModel.updateFlightEndDateTime(date!),
+            _buildTimePickerField(
+              time: viewModel.flightEndDateTime,
+              hintText: "17:00",
+              onTimeSelected: (date) => viewModel.updateFlightEndDateTime(date!),
             ),
           ],
         ),
@@ -124,7 +124,7 @@ class _AddRequestViewState extends State<AddRequestView> {
           selectedValue: viewModel.selectedRegion,
           onChanged: (value) => viewModel.setSelectedRegion(value!),
           hint: localizations.addRequestView_flightOperationArea,
-          getItemName: (region) => region.name,
+          getItemName: (region) => region.name ,
         ),
 
         SizedBox(height: 16),
@@ -139,7 +139,7 @@ class _AddRequestViewState extends State<AddRequestView> {
 
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_landmark),
-        _buildTextField(viewModel.landmarkController, hintText: localizations.addRequestView_region, isText: true),
+        _buildTextField(viewModel.landmarkController, hintText: localizations.addRequestView_landmark, isText: true),
 
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_coordinates),
@@ -406,6 +406,23 @@ class _AddRequestViewState extends State<AddRequestView> {
     );
   }
 
+  Widget _buildTimePickerField({required DateTime? time, required String hintText, required ValueChanged<DateTime?> onTimeSelected}) {
+    return GestureDetector(
+      onTap: () async {
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+        if (pickedTime != null) {
+          DateTime now = DateTime.now();
+          DateTime newDateTime = DateTime(now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
+          onTimeSelected(newDateTime);
+        }
+      },
+      child: _buildTimeDisplay(time, hintText),
+    );
+  }
+
   Widget _buildDateOnlyPickerField({required DateTime? date, required String hintText, required ValueChanged<DateTime?> onDateSelected}) {
     return GestureDetector(
       onTap: () async {
@@ -440,6 +457,27 @@ class _AddRequestViewState extends State<AddRequestView> {
             ),
           ),
           Icon(Icons.calendar_today, color: Colors.grey),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeDisplay(DateTime? time, String hintText) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              time == null ? hintText : DateFormat('HH:mm').format(time),
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
+          ),
+          Icon(Icons.access_time, color: Colors.grey),
         ],
       ),
     );

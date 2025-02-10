@@ -126,9 +126,10 @@ class AddRequestViewModel extends ChangeNotifier {
   void setSelectedRegion(RegionModel region) {
     selectedRegion = region;
     loadDistricts(region.code);
+    // Сброс выбранного района, чтобы избежать конфликта, если район отсутствует для нового региона
+    selectedDistrict = null;
     notifyListeners();
   }
-
 
   // Установка выбранного района
   void setSelectedDistrict(DistrictModel district) {
