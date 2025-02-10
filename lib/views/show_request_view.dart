@@ -165,7 +165,13 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     '${viewModel.planDetailModel?.timeFrom ?? '-'}\n${viewModel.planDetailModel?.timeTo ?? '-'}',
                     ),
 
-                    _buildRequestInfo(localizations.showRequestView_region,
+                    _buildRequestInfo(localizations.showRequestView_flightOperationArea,
+                        viewModel.planDetailModel?.region ?? '-'),
+
+                    _buildRequestInfo(localizations.showRequestView_flightOperationDistrict,
+                        viewModel.planDetailModel?.district ?? '-'),
+
+                    _buildRequestInfo(localizations.showRequestView_landmark,
                         viewModel.planDetailModel?.flightArea ?? '-'),
 
                     // Отображение координат AUTHORIZED ZONE

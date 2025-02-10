@@ -288,7 +288,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
     // Проверка времени начала полета
     if (landmarkController.text.isEmpty ) {
-      return {'status': 'error', 'message': localizations?.addRequestView_invalidRegion ?? "Invalid flight area"};
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidLandmark ?? "Invalid flight area"};
     }
 
 

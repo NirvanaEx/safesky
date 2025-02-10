@@ -136,7 +136,6 @@
   "addRequestView_flightTimes": "Время начала и окончания полета (UTC)",
   "addRequestView_region": "Регион выполнения полета",
   "addRequestView_landmark": "Ориентир выполнения полета",
-
   "addRequestView_flightOperationArea": "Область выполнения полетов",
   "addRequestView_flightOperationDistrict": "Район выполнения полетов",
 
@@ -183,7 +182,7 @@
   "addRequestView_invalidContractDate": "Некорректное значение даты договора",
   "addRequestView_invalidRequesterName": "Наименование заявителя не может быть пустым",
   "addRequestView_invalidModel": "Модель должна быть выбрана",
-  "addRequestView_invalidRegion": "Ориентир полета не должен быть пустым",
+  "addRequestView_invalidLandmark": "Ориентир полета не должен быть пустым",
   "addRequestView_invalidPurpose": "Цель полета должна быть выбрана",
   "addRequestView_invalidPhoneNumber": "Некорректный номер телефона",
   "addRequestView_invalidEmail": "Некорректный формат email",
@@ -217,7 +216,11 @@
   "showRequestView_flightSign": "Регистрационный опознавательный знак БПЛА",
   "showRequestView_flightTimes": "Время начала и окончания полета (UTC)",
   "showRequestView_region": "Регион выполнения полета",
-  "showRequestView_coordinates": "Район (координаты) выполнения полета",
+  "showRequestView_landmark": "Ориентир выполнения полета",
+  "showRequestView_flightOperationArea": "Область выполнения полетов",
+  "showRequestView_flightOperationDistrict": "Район выполнения полетов",
+
+  "showRequestView_coordinates": "Координаты",
   "showRequestView_map": "Карта",
   "showRequestView_height": "Высота полета (м)",
   "showRequestView_radius": "Радиус полета (м)",
