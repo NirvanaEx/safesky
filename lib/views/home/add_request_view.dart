@@ -106,13 +106,13 @@ class _AddRequestViewState extends State<AddRequestView> {
           children: [
             _buildTimePickerField(
               time: viewModel.flightStartDateTime,
-              hintText: "15:00",
+              hintText: "HH:mm",
               onTimeSelected: (date) => viewModel.updateFlightStartDateTime(date!),
             ),
             SizedBox(height: 16),
             _buildTimePickerField(
               time: viewModel.flightEndDateTime,
-              hintText: "17:00",
+              hintText: "HH:mm",
               onTimeSelected: (date) => viewModel.updateFlightEndDateTime(date!),
             ),
           ],

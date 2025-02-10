@@ -461,6 +461,8 @@ class AddRequestViewModel extends ChangeNotifier {
     contractDate = null;
     selectedBplas = [];
     selectedOperators = [];
+    selectedRegion = null;
+    selectedDistrict = null;
     selectedPurpose = null;
 
     notifyListeners();
