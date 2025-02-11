@@ -125,7 +125,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                               : Text(localizations.showRequestView_startLocationSharing),
                         ),
                       ),
-                    if (viewModel.planDetailModel?.stateId == 2 && viewModel.planDetailModel?.execStateId != null)
+                    if (viewModel.planDetailModel?.execStateId != null &&
+                        (viewModel.planDetailModel?.activity == 1 || viewModel.planDetailModel?.execStateId == 4) &&
+                        viewModel.planDetailModel?.stateId == 2
+                    )
                       _buildExecStateText(viewModel.planDetailModel?.execStateId, localizations),
 
 
