@@ -176,10 +176,11 @@ class LocationShareService {
           ...defaultHeaders,
           'Authorization': 'Bearer $token',
         };
+        final url = Uri.parse(ApiRoutes.pauseLocation).replace(queryParameters: {"uuid": uuid});
+
         return await http.post(
-          Uri.parse(ApiRoutes.pauseLocation),
+          url,
           headers: headers,
-          body: jsonEncode({"uuid": uuid}),
         );
       });
 
@@ -205,10 +206,11 @@ class LocationShareService {
           ...defaultHeaders,
           'Authorization': 'Bearer $token',
         };
+        final url = Uri.parse(ApiRoutes.stopLocation).replace(queryParameters: {"uuid": uuid});
+
         return await http.post(
-          Uri.parse(ApiRoutes.stopLocation),
+          url,
           headers: headers,
-          body: jsonEncode({"uuid": uuid}),
         );
       });
 

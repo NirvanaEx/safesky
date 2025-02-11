@@ -111,8 +111,8 @@ class MapShareLocationViewModel extends ChangeNotifier {
 
       } else {
         // Иначе показываем ошибку, локально не выключаем
-        // _showSnackbar(context, "Failed to stop location sharing: ${res['body']}");
-        _showSnackbar(context, "Failed to stop location sharing");
+        _showSnackbar(context, "Failed to stop location sharing: ${res['body']}");
+        // _showSnackbar(context, "Failed to stop location sharing");
 
       }
       notifyListeners();
