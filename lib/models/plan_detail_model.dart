@@ -3,7 +3,7 @@ class PlanDetailModel {
   final DateTime? planDate;
   final int? applicantId;
   final String? applicant;
-  final String? applicationNum;
+  final int? applicationNum;
   final String? timeFrom;
   final String? timeTo;
   final String? regionCode;
@@ -78,7 +78,7 @@ class PlanDetailModel {
         planDate: _tryParseDateTime(json['planDate']),
         applicantId: json['applicantId'] as int?,
         applicant: json['applicant'] as String?,
-        applicationNum: json['applicationNum'] as String?,
+        applicationNum: json['applicationNum'] as int?,
         timeFrom: json['timeFrom'] as String?,
         timeTo: json['timeTo'] as String?,
         // Новые поля:

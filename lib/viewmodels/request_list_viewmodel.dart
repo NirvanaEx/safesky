@@ -43,12 +43,11 @@ class RequestListViewModel extends ChangeNotifier {
     _isLoadingMore = false;
     notifyListeners();
   }
-
   Future<void> _loadRequests() async {
     try {
       final newRequests = await _requestService.fetchMainRequests(
         page: _currentBatch + 1,
-        count: 20,
+        count: 30,
         applicationNum: _searchQuery.isEmpty ? null : _searchQuery,
       );
       print("Loaded requests: ${newRequests.length}");
@@ -59,12 +58,18 @@ class RequestListViewModel extends ChangeNotifier {
 
       print("Total stored requests: ${_allRequests.length}");
 
+      // Добавляем обновление _filteredRequests:
+      _filteredRequests = _searchQuery.isEmpty
+          ? List.from(_allRequests)
+          : _allRequests.where((request) => request.applicationNum.toString().contains(_searchQuery)).toList();
+
       _currentBatch++;
-      applySearch();
+      notifyListeners();
     } catch (e) {
       print('Error loading requests: $e');
     }
   }
+
 
   void refreshRequests() {
     _allRequests.clear();
@@ -76,15 +81,6 @@ class RequestListViewModel extends ChangeNotifier {
   void onSearchChanged(String query) {
     _searchQuery = query;
     refreshRequests();
-  }
-
-  void applySearch() {
-    _filteredRequests = _searchQuery.isEmpty
-        ? List.from(_allRequests)
-        : _allRequests
-        .where((request) => request.applicationNum.contains(_searchQuery))
-        .toList();
-    notifyListeners();
   }
 
   Color getStatusColor(int stateId) {

@@ -1,6 +1,7 @@
 import 'package:safe_sky/models/request.dart';
 
 class PrepareData {
+  final int applicationNum; // новый параметр
   final List<Bpla> bplaList;
   final List<Operator> operatorList;
   final Permission? permission;  // Сделать nullable
@@ -9,6 +10,7 @@ class PrepareData {
   final List<ZoneType> zoneTypeList;
 
   PrepareData({
+    required this.applicationNum, // новый параметр в конструкторе
     required this.bplaList,
     required this.operatorList,
     this.permission,  // Nullable
@@ -19,6 +21,7 @@ class PrepareData {
 
   factory PrepareData.fromJson(Map<String, dynamic> json) {
     return PrepareData(
+      applicationNum: json['applicationNum'] ?? 0, // добавляем applicationNum
       bplaList: json['bplaList'] != null
           ? (json['bplaList'] as List<dynamic>)
           .map((item) => Bpla.fromJson(item as Map<String, dynamic>))

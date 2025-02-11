@@ -123,7 +123,7 @@
 
 
 
-  "addRequestView_requestNum": "Номер заявки",
+  "addRequestView_applicationNum": "Номер заявки",
   "addRequestView_chooseOperator": "Выбор операторов",
   "addRequestView_chooseOneOrMultiple": "Выберите одного или нескольких",
   "addRequestView_selectOperator": "Выбрать оператора",
@@ -190,7 +190,7 @@
   "addRequestView_invalidOperatorName": "Имя оператора не может быть пустым",
   "addRequestView_invalidBpla": "Пожалуйста, выберите хотя бы один БПЛА",
   "addRequestView_invalidOperators": "Пожалуйста, выберите хотя бы одного оператора",
-  "addRequestView_invalidRequestNumber": "Номер заявки не может быть пустым",
+  "addRequestView_invalidApplicationNumber": "Номер заявки не может быть пустым",
   "addRequestView_invalidDistrict": "Пожалуйста, выберите район",
 
   "addRequestView_requestSentSuccess": "Запрос успешно отправлен!",

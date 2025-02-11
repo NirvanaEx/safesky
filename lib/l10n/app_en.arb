@@ -122,7 +122,7 @@
 
 
 
-  "addRequestView_requestNum": "Request Number",
+  "addRequestView_applicationNum": "Application Number",
   "addRequestView_chooseOperator": "Choose Operator",
   "addRequestView_chooseOneOrMultiple": "Choose one or multiple",
   "addRequestView_selectOperator": "Select Operator",
@@ -189,7 +189,7 @@
   "addRequestView_invalidOperatorName": "Operator name cannot be empty",
   "addRequestView_invalidBpla": "Please select at least one BPLA",
   "addRequestView_invalidOperators": "Please select at least one operator",
-  "addRequestView_invalidRequestNumber": "Request number cannot be empty",
+  "addRequestView_invalidApplicationNumber": "Application number cannot be empty",
   "addRequestView_invalidDistrict": "Please select a district",
 
   "addRequestView_requestSentSuccess": "Request sent successfully!",

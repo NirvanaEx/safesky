@@ -8,7 +8,7 @@ class TestDataGenerator {
     for (int i = 1; i <= count; i++) {
       requests.add(RequestModelMain(
         planId: i,
-        applicationNum: "$i",
+        applicationNum: i,
         planDate: "2025-02-02T15:27:57.823Z",
         timeFrom: "2025-02-02T15:27:57.823Z",
         timeTo: "2025-02-02T15:27:57.823Z",
@@ -27,7 +27,7 @@ class TestDataGenerator {
       planDate: DateTime.now(),
       applicantId: 100 + id,
       applicant: "Applicant #$id",
-      applicationNum: "AppNum #$id",
+      applicationNum: id,
       timeFrom: "2025-02-02T15:27:57.823Z",
       timeTo: "2025-02-02T15:27:57.823Z",
       flightArea: "Test Flight Area for plan $id",

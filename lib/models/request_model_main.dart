@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class RequestModelMain {
   final int planId;
-  final String applicationNum;
+  final int applicationNum;
   final String planDate;
   final String timeFrom;
   final String timeTo;

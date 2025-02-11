@@ -123,7 +123,7 @@
 
 
 
-  "addRequestView_requestNum": "Ariza raqami",
+  "addRequestView_applicationNum": "Ariza raqami",
   "addRequestView_chooseOperator": "Operatorlarni tanlash",
   "addRequestView_chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
   "addRequestView_selectOperator": "Operatorni tanlang",
@@ -190,7 +190,7 @@
   "addRequestView_invalidOperatorName": "Operator nomi bo'sh bo'lishi mumkin emas",
   "addRequestView_invalidBpla": "Iltimos, kamida bitta BPLA ni tanlang",
   "addRequestView_invalidOperators": "Iltimos, kamida bitta operatorni tanlang",
-  "addRequestView_invalidRequestNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
+  "addRequestView_invalidApplicationNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
   "addRequestView_invalidDistrict": "Iltimos, tumanni tanlang",
 
   "addRequestView_requestSentSuccess": "So'rov muvaffaqiyatli yuborildi!",

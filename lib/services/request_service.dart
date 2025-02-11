@@ -169,7 +169,7 @@ class RequestService {
       return await http.get(url, headers: headers);
     });
 
-    print("API Response (raw bytes): ${response.bodyBytes}");
+    print("MAIN REQUEST LIST: ${response.body}");
 
     if (response.statusCode == 200) {
       try {

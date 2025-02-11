@@ -47,17 +47,11 @@ class _AddRequestViewState extends State<AddRequestView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text(
-                localizations.addRequestView_submit,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-            ),
             SizedBox(height: 16),
             _buildLabel(localizations.addRequestView_flightStartDate),
             _buildDateOnlyPickerField(
               date: viewModel.startDate,
-              hintText: "01.01.2023",
+              hintText: "dd.mm.yyyy",
               onDateSelected: (date) {
                 if (date != null) {
                   viewModel.updateStartDate(context, date);
@@ -84,8 +78,8 @@ class _AddRequestViewState extends State<AddRequestView> {
         _buildLabel(localizations.addRequestView_requesterName),
         _buildTextField(viewModel.requesterNameController, hintText: localizations.addRequestView_requesterName, readOnly: true),
         SizedBox(height: 16),
-        _buildLabel(localizations.addRequestView_requestNum),
-        _buildTextField(viewModel.requestNumController, hintText: localizations.addRequestView_requestNum, isDecimal: true),
+        _buildLabel(localizations.addRequestView_applicationNum),
+        _buildTextField(viewModel.applicationNumController, hintText: localizations.addRequestView_applicationNum),
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_model),
 

@@ -22,7 +22,7 @@ class AddRequestViewModel extends ChangeNotifier {
   // Текстовые контроллеры для полей ввода
   final TextEditingController requesterNameController = TextEditingController();
   final TextEditingController operatorPhoneController = TextEditingController();
-  final TextEditingController requestNumController = TextEditingController();
+  final TextEditingController applicationNumController = TextEditingController();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
@@ -267,8 +267,8 @@ class AddRequestViewModel extends ChangeNotifier {
 
 
     // Проверка номера заявки
-    if (requestNumController.text.trim().isEmpty) {
-      return {'status': 'error', 'message': localizations?.addRequestView_invalidRequestNumber ?? "Request number cannot be empty"};
+    if (applicationNumController.text.trim().isEmpty) {
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidApplicationNumber ?? "Application number cannot be empty"};
     }
 
     // Проверка выбора БПЛА
@@ -355,7 +355,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
     // Формируем JSON объект вручную
     Map<String, dynamic> requestBody = {
-      "applicationNum": requestNumController.text,
+      "applicationNum": applicationNumController.text,
       "planDate": startDate?.toIso8601String() ?? '',
       "timeFrom": formatTimeToHHmm(flightStartDateTime),
       "timeTo": formatTimeToHHmm(flightEndDateTime),
@@ -445,7 +445,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
   void clearFields() {
 
-    requestNumController.clear();
+    applicationNumController.clear();
     operatorPhoneController.clear();
     emailController.clear();
     noteController.clear();
@@ -469,6 +469,7 @@ class AddRequestViewModel extends ChangeNotifier {
     selectedRegion = null;
     selectedDistrict = null;
     selectedPurpose = null;
+
 
     notifyListeners();
   }
