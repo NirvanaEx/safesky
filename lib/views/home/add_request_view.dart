@@ -79,7 +79,7 @@ class _AddRequestViewState extends State<AddRequestView> {
         _buildTextField(viewModel.requesterNameController, hintText: localizations.addRequestView_requesterName, readOnly: true),
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_applicationNum),
-        _buildTextField(viewModel.applicationNumController, hintText: localizations.addRequestView_applicationNum),
+        _buildTextField(viewModel.applicationNumController, hintText: localizations.addRequestView_applicationNum, readOnly: true),
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_model),
 

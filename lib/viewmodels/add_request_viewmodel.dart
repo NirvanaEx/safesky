@@ -16,6 +16,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddRequestViewModel extends ChangeNotifier {
   final RequestService requestService = RequestService();
+  late BuildContext _buildContext;
 
   bool isLoading = false;  // Флаг загрузки данных
 
@@ -84,12 +85,13 @@ class AddRequestViewModel extends ChangeNotifier {
   String? errorMessage;
 
   Future<void> initializeData(BuildContext context, String planDate) async {
-    await Future.delayed(Duration(seconds: 1));  // Симуляция загрузки данных
+    await Future.delayed(const Duration(milliseconds: 500));  // Симуляция загрузки данных
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? applicant = prefs.getString('applicant');
 
     await loadPrepare(planDate);
     requesterNameController.text = applicant ?? '';
+    applicationNumController.text = prepareData?.applicationNum.toString() ?? '-';
     bplaList = prepareData!.bplaList;
     operatorList = prepareData!.operatorList;
     purposeList = prepareData!.purposeList;
@@ -145,6 +147,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
   // Методы обновления даты
   Future<void> updateStartDate(BuildContext context, DateTime date) async {
+    _buildContext = context;
     startDate = date;
     isLoading = true;
     errorMessage = null;  // Очистка предыдущих ошибок
@@ -445,7 +448,8 @@ class AddRequestViewModel extends ChangeNotifier {
 
   void clearFields() {
 
-    applicationNumController.clear();
+    updateStartDate(_buildContext, startDate!);
+
     operatorPhoneController.clear();
     emailController.clear();
     noteController.clear();
