@@ -191,6 +191,8 @@
   "addRequestView_invalidBpla": "Iltimos, kamida bitta BPLA ni tanlang",
   "addRequestView_invalidOperators": "Iltimos, kamida bitta operatorni tanlang",
   "addRequestView_invalidRequestNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
+  "addRequestView_invalidDistrict": "Iltimos, tumanni tanlang",
+
   "addRequestView_requestSentSuccess": "So'rov muvaffaqiyatli yuborildi!",
   "addRequestView_sendError": "Yuborishda xatolik:",
 

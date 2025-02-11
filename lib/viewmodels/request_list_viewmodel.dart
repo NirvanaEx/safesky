@@ -46,7 +46,11 @@ class RequestListViewModel extends ChangeNotifier {
 
   Future<void> _loadRequests() async {
     try {
-      final newRequests = await _requestService.fetchMainRequests(page: _currentBatch + 1, count: 20);
+      final newRequests = await _requestService.fetchMainRequests(
+        page: _currentBatch + 1,
+        count: 20,
+        applicationNum: _searchQuery.isEmpty ? null : _searchQuery,
+      );
       print("Loaded requests: ${newRequests.length}");
 
       _allRequests.addAll(
@@ -58,7 +62,6 @@ class RequestListViewModel extends ChangeNotifier {
       _currentBatch++;
       applySearch();
     } catch (e) {
-
       print('Error loading requests: $e');
     }
   }
@@ -72,7 +75,7 @@ class RequestListViewModel extends ChangeNotifier {
 
   void onSearchChanged(String query) {
     _searchQuery = query;
-    applySearch();
+    refreshRequests();
   }
 
   void applySearch() {

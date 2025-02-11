@@ -141,24 +141,38 @@ class RequestService {
   }
 
   /// Метод для получения списка основных заявок с пагинацией.
-  Future<List<RequestModelMain>> fetchMainRequests({int page = 1, int count = 10}) async {
+  Future<List<RequestModelMain>> fetchMainRequests({
+    int page = 1,
+    int count = 10,
+    String? applicationNum,
+  }) async {
+    final uri = Uri.parse(ApiRoutes.requestList);
+    final queryParameters = {
+      'page': page.toString(),
+      'count': count.toString(),
+    };
+
+    if (applicationNum != null && applicationNum.isNotEmpty) {
+      queryParameters['applicationNum'] = applicationNum;
+    }
+
+    final url = uri.replace(queryParameters: queryParameters);
+    print("Request URL: $url");
+
     final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
       final headers = {
         ...defaultHeaders,
         'Authorization': 'Bearer $token',
+        // Можно добавить Accept-Language, если нужно
       };
       print('Fetching main requests using token: $token');
-      return await http.get(
-        Uri.parse('${ApiRoutes.requestList}?page=$page&count=$count'),
-        headers: headers,
-      );
+      return await http.get(url, headers: headers);
     });
 
     print("API Response (raw bytes): ${response.bodyBytes}");
 
     if (response.statusCode == 200) {
       try {
-        // Используем latin1-декодирование, как в исходном коде.
         final decodedBody = latin1.decode(response.bodyBytes);
         final Map<String, dynamic> jsonData = json.decode(decodedBody);
         List<RequestModelMain> requests = (jsonData['rows'] as List)
@@ -166,10 +180,6 @@ class RequestService {
             .toList();
 
         print("Parsed requests count: ${requests.length}");
-        for (var request in requests) {
-          print("Request ID: ${request.planId}, Number: ${request.applicationNum}, State: ${request.state}");
-        }
-
         return requests;
       } catch (e) {
         print("Error decoding response: $e");

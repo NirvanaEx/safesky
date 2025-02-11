@@ -292,7 +292,12 @@ class AddRequestViewModel extends ChangeNotifier {
       return {'status': 'error', 'message': localizations?.addRequestView_invalidLandmark ?? "Invalid flight area"};
     }
 
-
+    if (selectedDistrict == null) {
+      return {
+        'status': 'error',
+        'message': localizations?.addRequestView_invalidDistrict ?? "Please select a district"
+      };
+    }
 
 
     // Проверка координат
