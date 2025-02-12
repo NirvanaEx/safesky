@@ -221,7 +221,10 @@
   "showRequestView_landmark": "Ориентир выполнения полета",
   "showRequestView_flightOperationArea": "Область выполнения полетов",
   "showRequestView_flightOperationDistrict": "Район выполнения полетов",
-
+  "addRequestView_routeType": "Выбор маршрута",
+  "addRequestView_routeCircle": "По кругу",
+  "addRequestView_routePolygon": "По квадрату/полигону",
+  "addRequestView_routeLine": "По линии",
   "showRequestView_coordinates": "Координаты",
   "showRequestView_map": "Карта",
   "showRequestView_height": "Высота полета (м)",
@@ -256,7 +259,8 @@
   "showRequestView_cancelDialog": "Отмена",
   "showRequestView_deleteDialog": "Удалить",
   "showRequestView_fieldEmptyError": "Поле не может быть пустым",
-
+  "addRequestView_invalidPolygonPoints": "Пожалуйста, укажите как минимум 3 точки для полигона",
+  "addRequestView_invalidLinePoints": "Пожалуйста, укажите как минимум 2 точки для линии",
   "showRequestView_locationSharingTitle": "Передача местоположения",
   "showRequestView_locationSharingMessage": "Передача данных уже запущена. Если нажмете на продолжить, предыдущая трансляция будет приостановлена.",
   "showRequestView_locationSharingStarted": "Передача местоположения началась",

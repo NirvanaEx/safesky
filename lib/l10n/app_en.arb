@@ -137,7 +137,10 @@
   "addRequestView_landmark": "Flight Operation Landmark",
   "addRequestView_flightOperationArea": "Flight Operation Area",
   "addRequestView_flightOperationDistrict": "Flight Operation District",
-
+  "addRequestView_routeType": "Route Type",
+  "addRequestView_routeCircle": "Circle",
+  "addRequestView_routePolygon": "Polygon",
+  "addRequestView_routeLine": "Line",
   "addRequestView_coordinates": "Coordinates",
   "addRequestView_map": "Map",
   "addRequestView_height": "Flight Height (m)",
@@ -191,7 +194,8 @@
   "addRequestView_invalidOperators": "Please select at least one operator",
   "addRequestView_invalidApplicationNumber": "Application number cannot be empty",
   "addRequestView_invalidDistrict": "Please select a district",
-
+  "addRequestView_invalidPolygonPoints": "Please provide at least 3 points for polygon",
+  "addRequestView_invalidLinePoints": "Please provide at least 2 points for line",
   "addRequestView_requestSentSuccess": "Request sent successfully!",
   "addRequestView_sendError": "Error while sending:",
 

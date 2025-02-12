@@ -39,6 +39,12 @@ class AddRequestViewModel extends ChangeNotifier {
 
   final TextEditingController landmarkController = TextEditingController();
 
+  List<String> routeTypeOptions = [
+    "circle",
+    // "polygon",
+    // "line"
+  ];
+  String selectedRouteType = "circle";
 
   List<Bpla> bplaList = [];
   List<String> purposeList = [];
@@ -122,6 +128,12 @@ class AddRequestViewModel extends ChangeNotifier {
       errorMessage = "Ошибка при получении районов";
       notifyListeners();
     }
+  }
+
+  //  Метод для обновления выбранного типа маршрута
+  void setSelectedRouteType(String routeType) {
+    selectedRouteType = routeType;
+    notifyListeners();
   }
 
   // Установка выбранного региона (и автоматическая загрузка районов для него)
@@ -255,7 +267,7 @@ class AddRequestViewModel extends ChangeNotifier {
           .toList();
 
 
-// Метод для получения списка ID из списка Bpla
+  // Метод для получения списка ID из списка Bpla
   List<int> get selectedBplaIds =>
       selectedBplas.map((bpla) => bpla.id).whereType<int>().toList();
 
@@ -321,11 +333,76 @@ class AddRequestViewModel extends ChangeNotifier {
       return {'status': 'error', 'message': localizations?.addRequestView_invalidFlightHeight ?? "Invalid flight height"};
     }
 
-    // Проверка радиуса
-    double? radius = double.tryParse(radiusController.text);
-    if (radius == null) {
-      return {'status': 'error', 'message': localizations?.addRequestView_invalidRadius ?? "Invalid radius"};
+    // Новый блок проверки координат и формирования coordList
+    List<dynamic> coordList;
+    if (selectedRouteType == "circle") {
+      // Проверка радиуса
+      double? radius = double.tryParse(radiusController.text);
+      if (radius == null || radius <=0) {
+        return {'status': 'error', 'message': localizations?.addRequestView_invalidRadius ?? "Invalid radius"};
+      }
+
+      // Для круга ожидается одна точка (широта и долгота), радиус парсится без обязательной проверки
+      List<String> latLngParts = latLngController.text.trim().split(" ");
+      if (latLngParts.length != 2) {
+        return {
+          'status': 'error',
+          'message': localizations?.addRequestView_invalidLatLngFormat ?? "Invalid coordinates format"
+        };
+      }
+      double? latitude = double.tryParse(latLngParts[0]);
+      double? longitude = double.tryParse(latLngParts[1]);
+      if (latitude == null || longitude == null) {
+        return {
+          'status': 'error',
+          'message': localizations?.addRequestView_invalidLatitudeLongitude ?? "Invalid latitude/longitude"
+        };
+      }
+      // Для круга радиус не проверяем – если не парсится, берем 0
+      int circleRadius = int.tryParse(radiusController.text) ?? 0;
+      coordList = [
+        {
+          "latitude": _formatLatitude(latitude),
+          "longitude": _formatLongitude(longitude),
+          "radius": circleRadius,
+        }
+      ];
+    } else if (selectedRouteType == "polygon" || selectedRouteType == "line") {
+      // Для полигона и линии ожидается массив точек, разделенных символом ';'
+      List<String> pointStrings = latLngController.text.trim().split(";");
+      int minPoints = selectedRouteType == "polygon" ? 3 : 2;
+      if (pointStrings.length < minPoints) {
+        String errorMsg = selectedRouteType == "polygon"
+            ? (localizations?.addRequestView_invalidPolygonPoints ?? "Please provide at least 3 points for polygon")
+            : (localizations?.addRequestView_invalidLinePoints ?? "Please provide at least 2 points for line");
+        return {'status': 'error', 'message': errorMsg};
+      }
+      coordList = [];
+      for (String point in pointStrings) {
+        List<String> parts = point.trim().split(" ");
+        if (parts.length != 2) {
+          return {
+            'status': 'error',
+            'message': localizations?.addRequestView_invalidLatLngFormat ?? "Invalid coordinates format"
+          };
+        }
+        double? lat = double.tryParse(parts[0]);
+        double? lng = double.tryParse(parts[1]);
+        if (lat == null || lng == null) {
+          return {
+            'status': 'error',
+            'message': localizations?.addRequestView_invalidLatitudeLongitude ?? "Invalid latitude/longitude"
+          };
+        }
+        coordList.add({
+          "latitude": _formatLatitude(lat),
+          "longitude": _formatLongitude(lng),
+        });
+      }
+    } else {
+      return {'status': 'error', 'message': "Unknown route type"};
     }
+
 
     // Проверка выбора цели полета
     if (selectedPurpose == null || selectedPurpose!.trim().isEmpty) {
@@ -356,6 +433,10 @@ class AddRequestViewModel extends ChangeNotifier {
     int? userId = prefs.getInt('userId');
     Map<String, String> formattedCoordinates = formatLatLng(latLngController.text);
 
+    int zoneTypeId = selectedRouteType == "circle"
+        ? 1
+        : (selectedRouteType == "polygon" ? 2 : 3);
+
     // Формируем JSON объект вручную
     Map<String, dynamic> requestBody = {
       "applicationNum": applicationNumController.text,
@@ -364,21 +445,13 @@ class AddRequestViewModel extends ChangeNotifier {
       "timeTo": formatTimeToHHmm(flightEndDateTime),
       "flightArea": landmarkController.text,
       "districtCode": selectedDistrict?.code,
-      "zoneTypeId": 1 ?? 0,
+      "zoneTypeId": zoneTypeId,
       "purpose": selectedPurpose ?? '',
-      "bplaList": selectedBplas.isNotEmpty
-          ? selectedBplaIds
-          : [],
+      "bplaList": selectedBplas.isNotEmpty ? selectedBplaIds : [],
       "operatorList": selectedOperators.isNotEmpty
           ? (selectedOperatorIds.contains(userId) ? selectedOperatorIds : selectedOperatorIds + [userId ?? 0])
           : [],
-      "coordList": [
-        {
-          "latitude": formattedCoordinates['latitude'],
-          "longitude": formattedCoordinates['longitude'],
-          "radius": int.tryParse(radiusController.text) ?? 0
-        }
-      ],
+      "coordList": coordList,
       "notes": noteController.text.isNotEmpty ? noteController.text : null,
       "operatorPhones": phoneNumber,
       "email": emailController.text.isNotEmpty ? emailController.text : null,

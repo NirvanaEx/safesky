@@ -138,7 +138,10 @@
   "addRequestView_landmark": "Parvozlarni amalga oshirish yo'nalishi",
   "addRequestView_flightOperationArea": "Parvozlarni amalga oshirish hududi",
   "addRequestView_flightOperationDistrict": "Parvozlarni amalga oshirish tumani",
-
+  "addRequestView_routeType": "Marshrut turi",
+  "addRequestView_routeCircle": "Aylana bo‘yicha",
+  "addRequestView_routePolygon": "Kvadrat/Poligon bo‘yicha",
+  "addRequestView_routeLine": "Chiziq bo‘yicha",
   "addRequestView_coordinates": "Koordinatalar",
   "addRequestView_map": "Xarita",
   "addRequestView_height": "Parvoz balandligi (m)",
@@ -192,7 +195,8 @@
   "addRequestView_invalidOperators": "Iltimos, kamida bitta operatorni tanlang",
   "addRequestView_invalidApplicationNumber": "Ariza raqami bo‘sh bo‘lishi mumkin emas",
   "addRequestView_invalidDistrict": "Iltimos, tumanni tanlang",
-
+  "addRequestView_invalidPolygonPoints": "Poligon uchun kamida 3 ta nuqta kiriting",
+  "addRequestView_invalidLinePoints": "Chiziq uchun kamida 2 ta nuqta kiriting",
   "addRequestView_requestSentSuccess": "So'rov muvaffaqiyatli yuborildi!",
   "addRequestView_sendError": "Yuborishda xatolik:",
 

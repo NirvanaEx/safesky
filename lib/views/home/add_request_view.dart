@@ -75,6 +75,7 @@ class _AddRequestViewState extends State<AddRequestView> {
       crossAxisAlignment: CrossAxisAlignment.start,
 
       children: [
+        SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_requesterName),
         _buildTextField(viewModel.requesterNameController, hintText: localizations.addRequestView_requesterName, readOnly: true),
         SizedBox(height: 16),
@@ -136,54 +137,81 @@ class _AddRequestViewState extends State<AddRequestView> {
         _buildTextField(viewModel.landmarkController, hintText: localizations.addRequestView_landmark, isText: true),
 
         SizedBox(height: 16),
-        _buildLabel(localizations.addRequestView_coordinates),
-        Row(
-          children: [
-            Expanded(
-              child: _buildTextField(viewModel.latLngController, hintText: localizations.addRequestView_coordinates, readOnly: true),
-            ),
-            TextButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MapSelectLocationView(),
-                  ),
-                );
-                if (result != null && result is Map<String, dynamic>) {
-                  LatLng coordinates = result['coordinates'];
-                  double? radius = result['radius'];
-                  viewModel.updateCoordinatesAndRadius(coordinates, radius);
-                }
-              },
-              child: Text(localizations.addRequestView_map),
-            ),
-          ],
+        _buildLabel(localizations.addRequestView_routeType),
+        _buildDropdown<String>(
+          items: viewModel.routeTypeOptions,
+          selectedValue: viewModel.selectedRouteType,
+          onChanged: (value) => viewModel.setSelectedRouteType(value!),
+          hint: localizations.addRequestView_routeType,
+          getItemName: (value) {
+            switch (value) {
+              case "circle":
+                return localizations.addRequestView_routeCircle; // например: "По кругу"
+              case "polygon":
+                return localizations.addRequestView_routePolygon; // например: "По Квадрату/Полигону"
+              case "line":
+                return localizations.addRequestView_routeLine; // например: "По линии"
+              default:
+                return value;
+            }
+          },
         ),
         SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildLabel(localizations.addRequestView_flightHeight),
-                  _buildTextField(viewModel.flightHeightController, hintText: '0', isDecimal: true)
-                ],
+        if (viewModel.selectedRouteType != null) ...[
+          _buildLabel(localizations.addRequestView_coordinates),
+          Row(
+            children: [
+              Expanded(
+                child: _buildTextField(viewModel.latLngController, hintText: localizations.addRequestView_coordinates, readOnly: true),
               ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildLabel(localizations.addRequestView_flightRadius),
-                  _buildTextField(viewModel.radiusController, hintText: '0', isDecimal: true)
-                ],
+              TextButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapSelectLocationView(
+                        routeType: viewModel.selectedRouteType, // Передаём выбранный тип маршрута
+                      ),
+                    ),
+                  );
+                  if (result != null && result is Map<String, dynamic>) {
+                    LatLng coordinates = result['coordinates'];
+                    double? radius = result['radius'];
+                    viewModel.updateCoordinatesAndRadius(coordinates, radius);
+                  }
+                },
+                child: Text(localizations.addRequestView_map),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+          SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel(localizations.addRequestView_flightHeight),
+                    _buildTextField(viewModel.flightHeightController, hintText: '0', isDecimal: true),
+                  ],
+                ),
+              ),
+              // Показываем поле радиуса только если выбран тип "По кругу"
+              if (viewModel.selectedRouteType == "circle") ...[
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabel(localizations.addRequestView_flightRadius),
+                      _buildTextField(viewModel.radiusController, hintText: '0', isDecimal: true),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_flightPurpose),
         _buildDropdown<String>(
