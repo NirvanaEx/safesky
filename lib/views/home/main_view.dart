@@ -21,12 +21,21 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    RequestListView(),
-    AddRequestView(),
-    EmptyView(),
-    ProfileView(),
-  ];
+  List<Widget?> _screens = List.filled(4, null, growable: false);
+
+
+  Widget _buildScreen(int index) {
+    switch (index) {
+      case 0:
+        return RequestListView();
+      case 1:
+        return AddRequestView();
+      case 3:
+        return ProfileView();
+      default:
+        return SizedBox.shrink();
+    }
+  }
 
   void _onTabTapped(int index) {
     if (index == 2) {
@@ -37,6 +46,9 @@ class _MainViewState extends State<MainView> {
     } else {
       setState(() {
         _currentIndex = index;
+        if (_screens[index] == null) {
+          _screens[index] = _buildScreen(index);
+        }
       });
     }
   }
@@ -85,10 +97,8 @@ class _MainViewState extends State<MainView> {
         ],
       ),
       drawer: _buildDrawer(localizations),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: _screens[_currentIndex] ?? _buildScreen(_currentIndex),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
