@@ -1,27 +1,29 @@
 import 'package:safe_sky/models/request.dart';
 
 class PrepareData {
-  final int applicationNum; // новый параметр
+  final int applicationNum;
   final List<Bpla> bplaList;
   final List<Operator> operatorList;
-  final Permission? permission;  // Сделать nullable
-  final Agreement? agreement;  // Изменено с String на объект Agreement
+  final Permission? permission;
+  final Agreement? agreement;
   final List<String> purposeList;
   final List<ZoneType> zoneTypeList;
+  final String email; // Новое поле
 
   PrepareData({
-    required this.applicationNum, // новый параметр в конструкторе
+    required this.applicationNum,
     required this.bplaList,
     required this.operatorList,
-    this.permission,  // Nullable
-    this.agreement,  // Nullable
+    this.permission,
+    this.agreement,
     required this.purposeList,
     required this.zoneTypeList,
+    required this.email, // Добавлено в конструктор
   });
 
   factory PrepareData.fromJson(Map<String, dynamic> json) {
     return PrepareData(
-      applicationNum: json['applicationNum'] ?? 0, // добавляем applicationNum
+      applicationNum: json['applicationNum'] ?? 0,
       bplaList: json['bplaList'] != null
           ? (json['bplaList'] as List<dynamic>)
           .map((item) => Bpla.fromJson(item as Map<String, dynamic>))
@@ -36,7 +38,7 @@ class PrepareData {
           ? Permission.fromJson(json['permission'] as Map<String, dynamic>)
           : null,
       agreement: json['agreement'] != null
-          ? Agreement.fromJson(json['agreement'] as Map<String, dynamic>)
+          ? Agreement.fromJson(json['agreement'])
           : null,
       purposeList: (json['purposeList'] as List<dynamic>?)
           ?.map((e) => e.toString())
@@ -47,6 +49,7 @@ class PrepareData {
           .map((item) => ZoneType.fromJson(item as Map<String, dynamic>))
           .toList()
           : [],
+      email: json['email'] ?? '', // Обработка email
     );
   }
 }

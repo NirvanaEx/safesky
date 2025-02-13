@@ -98,6 +98,7 @@ class AddRequestViewModel extends ChangeNotifier {
     await loadPrepare(planDate);
     requesterNameController.text = applicant ?? '';
     applicationNumController.text = prepareData?.applicationNum.toString() ?? '-';
+    emailController.text = prepareData?.email ?? '';
     bplaList = prepareData!.bplaList;
     operatorList = prepareData!.operatorList;
     purposeList = prepareData!.purposeList;
@@ -439,7 +440,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
     // Формируем JSON объект вручную
     Map<String, dynamic> requestBody = {
-      "applicationNum": applicationNumController.text,
+      // "applicationNum": applicationNumController.text,
       "planDate": startDate?.toIso8601String() ?? '',
       "timeFrom": formatTimeToHHmm(flightStartDateTime),
       "timeTo": formatTimeToHHmm(flightEndDateTime),
@@ -458,7 +459,7 @@ class AddRequestViewModel extends ChangeNotifier {
       "mAltitude": int.tryParse(flightHeightController.text) ?? 0,
     };
 
-// Логируем сформированные данные
+    // Логируем сформированные данные
     print("Submitting BPLA Plan: ${jsonEncode(requestBody)}");
 
     try {
