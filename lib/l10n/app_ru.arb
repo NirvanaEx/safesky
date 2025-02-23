@@ -123,6 +123,13 @@
 
 
 
+  "addRequestView_other": "Другое",
+  "addRequestView_operatorPhone": "Номер телефона оператора",
+  "addRequestView_additionalPhone": "Дополнительный номер телефона",
+  "addRequestView_addPhone": "Добавить номер телефона",
+  "addRequestView_flightPurpose": "Цель полёта",
+  "addRequestView_enterPurpose": "Введите цель полёта",
+  "addRequestView_flightPurposeHint": "Цель полёта",
   "addRequestView_applicationNum": "Номер заявки",
   "addRequestView_chooseOperator": "Выбор операторов",
   "addRequestView_chooseOneOrMultiple": "Выберите одного или нескольких",
@@ -143,9 +150,7 @@
   "addRequestView_map": "Карта",
   "addRequestView_height": "Высота полета (м)",
   "addRequestView_radius": "Радиус полета (м)",
-  "addRequestView_flightPurpose": "Цель полета (вид работы)",
   "addRequestView_operatorName": "Ф.И.О. оператора БПЛА",
-  "addRequestView_operatorPhone": "Номер оператора",
   "addRequestView_email": "Email",
   "addRequestView_flightHeight": "Высота полета (м)",
   "addRequestView_flightRadius": "Радиус полета (м)",

@@ -122,6 +122,13 @@
 
 
 
+  "addRequestView_other": "Other",
+  "addRequestView_operatorPhone": "Operator's phone number",
+  "addRequestView_additionalPhone": "Additional phone number",
+  "addRequestView_addPhone": "Add phone number",
+  "addRequestView_flightPurpose": "Flight purpose",
+  "addRequestView_enterPurpose": "Enter flight purpose",
+  "addRequestView_flightPurposeHint": "Flight purpose",
   "addRequestView_applicationNum": "Application Number",
   "addRequestView_chooseOperator": "Choose Operator",
   "addRequestView_chooseOneOrMultiple": "Choose one or multiple",
@@ -145,9 +152,7 @@
   "addRequestView_map": "Map",
   "addRequestView_height": "Flight Height (m)",
   "addRequestView_radius": "Flight Radius (m)",
-  "addRequestView_flightPurpose": "Purpose of Flight",
   "addRequestView_operatorName": "Operator Name",
-  "addRequestView_operatorPhone": "Operator Phone",
   "addRequestView_email": "Email",
   "addRequestView_flightHeight": "Flight height (m)",
   "addRequestView_flightRadius": "Flight radius (m)",

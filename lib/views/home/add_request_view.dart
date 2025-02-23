@@ -221,10 +221,10 @@ class _AddRequestViewState extends State<AddRequestView> {
           hint: localizations.addRequestView_flightPurpose,
           getItemName: (purpose) => purpose,
         ),
-        if (viewModel.selectedPurpose == "Другое") ...[
+        if (viewModel.selectedPurpose == localizations.addRequestView_other) ...[
           SizedBox(height: 16),
-          _buildLabel("Введите цель полёта"), // Можно заменить на локализованную строку
-          _buildTextField(viewModel.customPurposeController, hintText: "Цель полёта", isText: true),
+          _buildLabel(localizations.addRequestView_enterPurpose), // Локализация
+          _buildTextField(viewModel.customPurposeController, hintText: localizations.addRequestView_flightPurposeHint, isText: true),
         ],
 
         SizedBox(height: 16),
@@ -296,6 +296,8 @@ class _AddRequestViewState extends State<AddRequestView> {
   }
 
   Widget _buildPhoneList(AddRequestViewModel viewModel) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -306,7 +308,7 @@ class _AddRequestViewState extends State<AddRequestView> {
             controller: controller,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              hintText: 'Номер телефона оператора',
+              hintText: localizations.addRequestView_operatorPhone, // Локализация
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -324,7 +326,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                   controller: controller,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: 'Дополнительный номер телефона',
+                    hintText: localizations.addRequestView_additionalPhone, // Локализация
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -353,12 +355,13 @@ class _AddRequestViewState extends State<AddRequestView> {
               });
             },
             icon: Icon(Icons.add),
-            label: Text("Добавить номер телефона"),
+            label: Text(localizations.addRequestView_addPhone), // Локализация
           ),
         ),
       ],
     );
   }
+
 
   Widget _buildLabel(String label) {
     return Text(

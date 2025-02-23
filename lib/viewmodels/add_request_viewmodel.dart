@@ -96,6 +96,8 @@ class AddRequestViewModel extends ChangeNotifier {
   String? errorMessage;
 
   Future<void> initializeData(BuildContext context, String planDate) async {
+    final localizations = AppLocalizations.of(context)!;
+
     await Future.delayed(const Duration(milliseconds: 500));  // Симуляция загрузки данных
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? applicant = prefs.getString('applicant');
@@ -107,8 +109,8 @@ class AddRequestViewModel extends ChangeNotifier {
     bplaList = prepareData!.bplaList;
     operatorList = prepareData!.operatorList;
     purposeList = prepareData!.purposeList;
-    if (!purposeList.contains("Другое")) {
-      purposeList.add("Другое");
+    if (!purposeList.contains(localizations.addRequestView_other)) {
+      purposeList.add(localizations.addRequestView_other);
     }
     permitNumberController.text = "${prepareData?.permission?.orgName} ${prepareData!.permission?.docNum} ${prepareData!.permission?.docDate}";
     contractNumberController.text = "${prepareData!.agreement?.docNum} ${prepareData!.agreement?.docDate}";

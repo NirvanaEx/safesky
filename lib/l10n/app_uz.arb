@@ -123,6 +123,13 @@
 
 
 
+  "addRequestView_other": "Boshqa",
+  "addRequestView_operatorPhone": "Operatorning telefon raqami",
+  "addRequestView_additionalPhone": "Qo'shimcha telefon raqami",
+  "addRequestView_addPhone": "Telefon raqamini qo'shish",
+  "addRequestView_flightPurpose": "Parvoz maqsadi",
+  "addRequestView_enterPurpose": "Parvoz maqsadini kiriting",
+  "addRequestView_flightPurposeHint": "Parvoz maqsadi",
   "addRequestView_applicationNum": "Ariza raqami",
   "addRequestView_chooseOperator": "Operatorlarni tanlash",
   "addRequestView_chooseOneOrMultiple": "Bitta yoki bir nechta tanlang",
@@ -146,9 +153,7 @@
   "addRequestView_map": "Xarita",
   "addRequestView_height": "Parvoz balandligi (m)",
   "addRequestView_radius": "Parvoz radiusi (m)",
-  "addRequestView_flightPurpose": "Parvoz maqsadi",
   "addRequestView_operatorName": "Operator ismi",
-  "addRequestView_operatorPhone": "Operator telefoni",
   "addRequestView_email": "Email",
   "addRequestView_flightHeight": "Parvoz balandligi (m)",
   "addRequestView_flightRadius": "Parvoz radiusi (m)",
