@@ -27,7 +27,6 @@ class AddRequestViewModel extends ChangeNotifier {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   final TextEditingController latLngController = TextEditingController();
   final TextEditingController radiusController = TextEditingController();
   final TextEditingController flightHeightController = TextEditingController(); // Контроллер для высоты полета
@@ -39,6 +38,10 @@ class AddRequestViewModel extends ChangeNotifier {
 
   final TextEditingController landmarkController = TextEditingController();
   final TextEditingController customPurposeController = TextEditingController();
+
+  // Добавьте в начало класса
+  List<TextEditingController> operatorPhoneControllers = [];
+  List<TextEditingController> manualPhoneControllers = [];
 
 
   List<String> routeTypeOptions = [
@@ -203,11 +206,7 @@ class AddRequestViewModel extends ChangeNotifier {
     return phoneNumber;
   }
 
-  void updateCountryCode(String code) {
-    selectedCountryCode = code;
-    phoneController.clear();
-    notifyListeners();
-  }
+
 
   void updateDateField(DateTime date, TextEditingController controller) {
     // Устанавливаем отформатированную дату в контроллер
@@ -255,6 +254,11 @@ class AddRequestViewModel extends ChangeNotifier {
 
   void setOperators(List<Operator> operators) {
     selectedOperators = operators;
+    // Пересобираем контроллеры для номеров телефонов от выбранных операторов
+    operatorPhoneControllers.clear();
+    for (var op in selectedOperators) {
+      operatorPhoneControllers.add(TextEditingController(text: op.phone));
+    }
     notifyListeners();
   }
 
@@ -426,10 +430,13 @@ class AddRequestViewModel extends ChangeNotifier {
     }
 
     // Проверка номера телефона
-    String phoneNumber = "$selectedCountryCode ${phoneController.text}";
-    if (phoneController.text.isEmpty || phoneController.text.length < 7) {
+    List<String> phoneNumbers = [];
+    phoneNumbers.addAll(operatorPhoneControllers.map((c) => c.text.trim()).where((text) => text.isNotEmpty));
+    phoneNumbers.addAll(manualPhoneControllers.map((c) => c.text.trim()).where((text) => text.isNotEmpty));
+    if (phoneNumbers.isEmpty) {
       return {'status': 'error', 'message': localizations?.addRequestView_invalidPhoneNumber ?? "Invalid phone number"};
     }
+    String phoneNumbersString = phoneNumbers.join(', ');
 
     // Проверка email
     String email = emailController.text;
@@ -464,7 +471,7 @@ class AddRequestViewModel extends ChangeNotifier {
           : [],
       "coordList": coordList,
       "notes": noteController.text.isNotEmpty ? noteController.text : null,
-      "operatorPhones": phoneNumber,
+      "operatorPhones": phoneNumbersString,
       "email": emailController.text.isNotEmpty ? emailController.text : null,
       "mAltitude": int.tryParse(flightHeightController.text) ?? 0,
     };
@@ -537,7 +544,6 @@ class AddRequestViewModel extends ChangeNotifier {
     operatorPhoneController.clear();
     emailController.clear();
     noteController.clear();
-    phoneController.clear();
     latLngController.clear();
     radiusController.clear();
     flightHeightController.clear();
@@ -570,7 +576,6 @@ class AddRequestViewModel extends ChangeNotifier {
     permitNumberController.dispose();
     contractNumberController.dispose();
     noteController.dispose();
-    phoneController.dispose();
     latLngController.dispose();
     radiusController.dispose();
     flightHeightController.dispose();
@@ -579,6 +584,13 @@ class AddRequestViewModel extends ChangeNotifier {
     flightEndDateTimeController.dispose();
     landmarkController.dispose();
     customPurposeController.dispose();
+
+    for (var controller in operatorPhoneControllers) {
+      controller.dispose();
+    }
+    for (var controller in manualPhoneControllers) {
+      controller.dispose();
+    }
 
     super.dispose();
   }

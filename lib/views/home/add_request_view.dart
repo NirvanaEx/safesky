@@ -242,7 +242,7 @@ class _AddRequestViewState extends State<AddRequestView> {
         ),
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_operatorPhone),
-        _buildPhoneField(viewModel, context),
+        _buildPhoneList(viewModel),
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_email),
         _buildTextField(viewModel.emailController, hintText: 'my@mail.com', isText: true),
@@ -295,6 +295,71 @@ class _AddRequestViewState extends State<AddRequestView> {
     );
   }
 
+  Widget _buildPhoneList(AddRequestViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Отображение номеров телефонов от выбранных операторов
+        ...viewModel.operatorPhoneControllers.map((controller) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: TextField(
+            controller: controller,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+              hintText: 'Номер телефона оператора',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            ),
+          ),
+        )),
+        // Отображение вручную добавленных номеров
+        ...viewModel.manualPhoneControllers.map((controller) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    hintText: 'Дополнительный номер телефона',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    viewModel.manualPhoneControllers.remove(controller);
+                  });
+                },
+              )
+            ],
+          ),
+        )),
+        // Кнопка для добавления нового номера телефона
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: () {
+              setState(() {
+                viewModel.manualPhoneControllers.add(TextEditingController());
+              });
+            },
+            icon: Icon(Icons.add),
+            label: Text("Добавить номер телефона"),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildLabel(String label) {
     return Text(
       label,
@@ -336,51 +401,7 @@ class _AddRequestViewState extends State<AddRequestView> {
     );
   }
 
-  Widget _buildPhoneField(AddRequestViewModel viewModel, BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(30),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: viewModel.selectedCountryCode,
-              items: viewModel.countries.map((country) {
-                return DropdownMenuItem<String>(
-                  value: country['code'],
-                  child: Row(
-                    children: [
-                      SizedBox(width: 8),
-                      Text(country['flag']!, style: TextStyle(fontSize: 18)),
-                      SizedBox(width: 8),
-                      Text(country['code']!, style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) => viewModel.updateCountryCode(value!),
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: viewModel.phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: '991234567',
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 18),
-              ),
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   // Обновленный метод для выпадающих списков моделей
   Widget _buildDropdown<T>({
