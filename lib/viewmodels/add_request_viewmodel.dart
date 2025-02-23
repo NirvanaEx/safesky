@@ -7,6 +7,7 @@ import 'package:safe_sky/models/prepare_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/district_model.dart';
+import '../models/plan_detail_model.dart';
 import '../models/region_model.dart';
 import '../models/request.dart';
 
@@ -94,6 +95,69 @@ class AddRequestViewModel extends ChangeNotifier {
   ];
 
   String? errorMessage;
+
+  void autoFillWithPlanDetail(PlanDetailModel planDetail) {
+    // Заполнение текстовых полей
+    requesterNameController.text = planDetail.applicant ?? '';
+    applicationNumController.text = planDetail.applicationNum?.toString() ?? '';
+    emailController.text = planDetail.email ?? '';
+    noteController.text = planDetail.notes ?? '';
+    landmarkController.text = planDetail.flightArea ?? '';
+
+    // Заполнение полей разрешения и договора
+    permitNumberController.text = planDetail.permission != null
+        ? "${planDetail.permission!.orgName} ${planDetail.permission!.docNum} ${planDetail.permission!.docDate != null ? DateFormat('dd.MM.yyyy').format(planDetail.permission!.docDate!) : ''}"
+        : '';
+    contractNumberController.text = planDetail.agreement != null
+        ? "${planDetail.agreement!.docNum} ${planDetail.agreement!.docDate != null ? DateFormat('dd.MM.yyyy').format(planDetail.agreement!.docDate!) : ''}"
+        : '';
+
+    // Установка времени полёта (если есть)
+    if (planDetail.timeFrom != null) {
+      DateTime now = DateTime.now();
+      try {
+        final parts = planDetail.timeFrom!.split(":");
+        flightStartDateTime = DateTime(now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
+        flightStartDateControllerTime.text = DateFormat('dd.MM.yyyy HH:mm').format(flightStartDateTime!);
+      } catch (_) {}
+    }
+    if (planDetail.timeTo != null) {
+      DateTime now = DateTime.now();
+      try {
+        final parts = planDetail.timeTo!.split(":");
+        flightEndDateTime = DateTime(now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
+        flightEndDateTimeController.text = DateFormat('dd.MM.yyyy HH:mm').format(flightEndDateTime!);
+      } catch (_) {}
+    }
+
+    // Заполнение координат и радиуса (для типа "circle")
+    if (planDetail.coordList.isNotEmpty) {
+      final coord = planDetail.coordList.first;
+      if (coord.latitude != null && coord.longitude != null) {
+        latLngController.text = "${coord.latitude} ${coord.longitude}";
+      }
+      if (planDetail.zoneTypeId == 1 && coord.radius != null) {
+        radiusController.text = coord.radius.toString();
+      }
+    }
+
+    // Заполнение высоты полёта
+    if (planDetail.mAltitude != null) {
+      flightHeightController.text = planDetail.mAltitude.toString();
+    }
+
+    // Автовыбор БПЛА и операторов (если id совпадают с теми, что в списках)
+    selectedBplas = bplaList.where((bpla) => planDetail.bplaList.any((b) => b.id == bpla.id)).toList();
+    selectedOperators = operatorList.where((op) => planDetail.operatorList.any((pOp) => pOp.id == op.id)).toList();
+    operatorPhoneControllers.clear();
+    for (var op in selectedOperators) {
+      operatorPhoneControllers.add(TextEditingController(text: op.phone));
+    }
+
+    // Заполнение цели полёта
+    selectedPurpose = planDetail.purpose;
+    notifyListeners();
+  }
 
   Future<void> initializeData(BuildContext context, String planDate) async {
     final localizations = AppLocalizations.of(context)!;

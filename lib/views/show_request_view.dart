@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:safe_sky/models/plan_detail_model.dart';
 import '../viewmodels/show_request_viewmodel.dart';
+import 'home/add_request_view.dart';
 import 'map/map_show_location_view.dart';
 import 'package:provider/provider.dart';
 import 'my_custom_views/my_custom_dialog.dart';
@@ -83,9 +84,24 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        Row(
+                          children: [
+                            Text(
+                              "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
+                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddRequestView(planDetail: viewModel.planDetailModel),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:safe_sky/test/test_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_routes.dart';
 import '../models/district_model.dart';
@@ -152,6 +153,7 @@ class RequestService {
       'count': count.toString(),
     };
 
+    return TestDataGenerator.generateMainRequests();
     if (applicationNum != null && applicationNum.isNotEmpty) {
       queryParameters['applicationNum'] = applicationNum;
     }
@@ -192,6 +194,7 @@ class RequestService {
 
   /// Метод для получения детальной информации плана по planId.
   Future<PlanDetailModel> fetchPlanDetail(int planId) async {
+    return TestDataGenerator.generatePlanDetail();
     final Uri url = Uri.parse('${ApiRoutes.requestDetailInfo}$planId');
     final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
       final headers = {

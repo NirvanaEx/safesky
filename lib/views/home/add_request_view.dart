@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_sky/models/district_model.dart';
 import 'package:safe_sky/models/region_model.dart';
+import '../../models/plan_detail_model.dart';
 import '../../models/request.dart';
 import '../../viewmodels/add_request_viewmodel.dart';
 import '../map/map_select_location_view.dart';
@@ -14,6 +15,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../my_custom_views/multi_select_dropdown.dart';
 
 class AddRequestView extends StatefulWidget {
+  final PlanDetailModel? planDetail;
+  const AddRequestView({Key? key, this.planDetail}) : super(key: key);
+
   @override
   _AddRequestViewState createState() => _AddRequestViewState();
 }
@@ -23,12 +27,17 @@ class _AddRequestViewState extends State<AddRequestView> {
   @override
   void initState() {
     super.initState();
-    // Выполняем установку даты после первого кадра, чтобы избежать ошибок контекста.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = Provider.of<AddRequestViewModel>(context, listen: false);
-      if (viewModel.startDate == null) {
-        // Устанавливаем завтрашнюю дату
+      // Если план передан и содержит дату, используем её; иначе — устанавливаем завтрашнюю дату.
+      if (widget.planDetail != null && widget.planDetail!.planDate != null) {
+        viewModel.updateStartDate(context, widget.planDetail!.planDate!);
+      } else if (viewModel.startDate == null) {
         viewModel.updateStartDate(context, DateTime.now().add(Duration(days: 1)));
+      }
+      // Если план передан, автозаполнение полей
+      if (widget.planDetail != null) {
+        viewModel.autoFillWithPlanDetail(widget.planDetail!);
       }
     });
   }
