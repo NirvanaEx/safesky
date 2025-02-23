@@ -1,3 +1,4 @@
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -251,7 +252,22 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     ),
                     _buildRequestInfo(localizations.showRequestView_optional,
                         viewModel.planDetailModel?.notes ?? '-'),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    viewModel.planDetailModel?.checkUrl != null && viewModel.planDetailModel!.checkUrl!.isNotEmpty
+                        ? Column(
+                          children: [
+                            Center(
+                              child: BarcodeWidget(
+                                barcode: Barcode.qrCode(), // используем QR код
+                                data: viewModel.planDetailModel!.checkUrl!,
+                                width: 150,
+                                height: 150,
+                              ),
+                            ),
+                            const SizedBox(height: 50)
+                          ],
+                        )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),
