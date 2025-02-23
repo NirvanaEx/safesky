@@ -41,7 +41,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
   List<String> routeTypeOptions = [
     "circle",
-    // "polygon",
+    "polygon",
     // "line"
   ];
   String selectedRouteType = "circle";
@@ -97,7 +97,7 @@ class AddRequestViewModel extends ChangeNotifier {
 
     await loadPrepare(planDate);
     requesterNameController.text = applicant ?? '';
-    applicationNumController.text = prepareData?.applicationNum.toString() ?? '-';
+    // applicationNumController.text = prepareData?.applicationNum.toString() ?? '-';
     emailController.text = prepareData?.email ?? '';
     bplaList = prepareData!.bplaList;
     operatorList = prepareData!.operatorList;
@@ -282,10 +282,10 @@ class AddRequestViewModel extends ChangeNotifier {
     }
 
 
-    // Проверка номера заявки
-    if (applicationNumController.text.trim().isEmpty) {
-      return {'status': 'error', 'message': localizations?.addRequestView_invalidApplicationNumber ?? "Application number cannot be empty"};
-    }
+    // // Проверка номера заявки
+    // if (applicationNumController.text.trim().isEmpty) {
+    //   return {'status': 'error', 'message': localizations?.addRequestView_invalidApplicationNumber ?? "Application number cannot be empty"};
+    // }
 
     // Проверка выбора БПЛА
     if (selectedBplas.isEmpty) {

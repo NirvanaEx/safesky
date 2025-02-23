@@ -1,7 +1,6 @@
 import 'package:safe_sky/models/request.dart';
 
 class PrepareData {
-  final int applicationNum;
   final List<Bpla> bplaList;
   final List<Operator> operatorList;
   final Permission? permission;
@@ -11,7 +10,6 @@ class PrepareData {
   final String email; // Новое поле
 
   PrepareData({
-    required this.applicationNum,
     required this.bplaList,
     required this.operatorList,
     this.permission,
@@ -23,7 +21,6 @@ class PrepareData {
 
   factory PrepareData.fromJson(Map<String, dynamic> json) {
     return PrepareData(
-      applicationNum: json['applicationNum'] ?? 0,
       bplaList: json['bplaList'] != null
           ? (json['bplaList'] as List<dynamic>)
           .map((item) => Bpla.fromJson(item as Map<String, dynamic>))
