@@ -221,6 +221,12 @@ class _AddRequestViewState extends State<AddRequestView> {
           hint: localizations.addRequestView_flightPurpose,
           getItemName: (purpose) => purpose,
         ),
+        if (viewModel.selectedPurpose == "Другое") ...[
+          SizedBox(height: 16),
+          _buildLabel("Введите цель полёта"), // Можно заменить на локализованную строку
+          _buildTextField(viewModel.customPurposeController, hintText: "Цель полёта", isText: true),
+        ],
+
         SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_operatorName),
         MultiSelectDropdown<Operator>(

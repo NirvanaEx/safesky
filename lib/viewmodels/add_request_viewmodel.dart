@@ -38,6 +38,8 @@ class AddRequestViewModel extends ChangeNotifier {
   final TextEditingController contractNumberController = TextEditingController();
 
   final TextEditingController landmarkController = TextEditingController();
+  final TextEditingController customPurposeController = TextEditingController();
+
 
   List<String> routeTypeOptions = [
     "circle",
@@ -102,6 +104,9 @@ class AddRequestViewModel extends ChangeNotifier {
     bplaList = prepareData!.bplaList;
     operatorList = prepareData!.operatorList;
     purposeList = prepareData!.purposeList;
+    if (!purposeList.contains("Другое")) {
+      purposeList.add("Другое");
+    }
     permitNumberController.text = "${prepareData?.permission?.orgName} ${prepareData!.permission?.docNum} ${prepareData!.permission?.docDate}";
     contractNumberController.text = "${prepareData!.agreement?.docNum} ${prepareData!.agreement?.docDate}";
     notifyListeners();
@@ -242,6 +247,9 @@ class AddRequestViewModel extends ChangeNotifier {
 
   void setPurpose(String purpose) {
     selectedPurpose = purpose;
+    if (purpose != "Другое") {
+      customPurposeController.clear();
+    }
     notifyListeners();
   }
 
@@ -406,10 +414,12 @@ class AddRequestViewModel extends ChangeNotifier {
 
 
     // Проверка выбора цели полета
-    if (selectedPurpose == null || selectedPurpose!.trim().isEmpty) {
+    if (selectedPurpose == null) {
       return {'status': 'error', 'message': localizations?.addRequestView_invalidPurpose ?? "Please select purpose"};
     }
-
+    if (selectedPurpose == "Другое" && customPurposeController.text.trim().isEmpty) {
+      return {'status': 'error', 'message': localizations?.addRequestView_invalidPurpose ?? "Please enter flight purpose"};
+    }
     // Проверка выбора операторов
     if (selectedOperators.isEmpty) {
       return {'status': 'error', 'message': localizations?.addRequestView_invalidOperators ?? "Please select at least one operator"};
@@ -447,7 +457,7 @@ class AddRequestViewModel extends ChangeNotifier {
       "flightArea": landmarkController.text,
       "districtCode": selectedDistrict?.code,
       "zoneTypeId": zoneTypeId,
-      "purpose": selectedPurpose ?? '',
+      "purpose": selectedPurpose == "Другое" ? customPurposeController.text : selectedPurpose,
       "bplaList": selectedBplas.isNotEmpty ? selectedBplaIds : [],
       "operatorList": selectedOperators.isNotEmpty
           ? (selectedOperatorIds.contains(userId) ? selectedOperatorIds : selectedOperatorIds + [userId ?? 0])
@@ -568,6 +578,7 @@ class AddRequestViewModel extends ChangeNotifier {
     flightStartDateControllerTime.dispose();
     flightEndDateTimeController.dispose();
     landmarkController.dispose();
+    customPurposeController.dispose();
 
     super.dispose();
   }
