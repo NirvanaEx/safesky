@@ -131,11 +131,11 @@ class _LoginViewState extends State<LoginView> {
                           : () async {
                         FocusScope.of(context).unfocus(); // Закрываем клавиатуру
 
-                        // bool success = await authViewModel.login(
-                        //   _emailController.text,
-                        //   _passwordController.text,
-                        // );
-                        var success = true;
+                        bool success = await authViewModel.login(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+
                         if (success) {
                           Navigator.pushReplacement(
                             context,

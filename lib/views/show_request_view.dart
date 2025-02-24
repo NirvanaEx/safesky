@@ -90,17 +90,17 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                               "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
                               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddRequestView(planDetail: viewModel.planDetailModel),
-                                  ),
-                                );
-                              },
-                            ),
+                            // IconButton(
+                            //   icon: Icon(Icons.edit),
+                            //   onPressed: () {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //         builder: (context) => AddRequestView(planDetail: viewModel.planDetailModel),
+                            //       ),
+                            //     );
+                            //   },
+                            // ),
                           ],
                         ),
                         Container(

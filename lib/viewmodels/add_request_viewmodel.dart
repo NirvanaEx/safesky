@@ -96,10 +96,37 @@ class AddRequestViewModel extends ChangeNotifier {
 
   String? errorMessage;
 
-  void autoFillWithPlanDetail(PlanDetailModel planDetail) {
+  // Функция для преобразования координаты из DMS в десятичное число
+  double dmsToDecimal(String dms) {
+    final direction = dms[dms.length - 1];
+    final numericPart = dms.substring(0, dms.length - 1);
+    int degrees;
+    int minutes;
+    double seconds;
+
+    if (direction == 'N' || direction == 'S') {
+      // Ожидается формат: ddmmss(.sss)?
+      degrees = int.parse(numericPart.substring(0, 2));
+      minutes = int.parse(numericPart.substring(2, 4));
+      seconds = double.parse(numericPart.substring(4));
+    } else {
+      // Для долготы ожидается формат: dddmmss(.sss)?
+      degrees = int.parse(numericPart.substring(0, 3));
+      minutes = int.parse(numericPart.substring(3, 5));
+      seconds = double.parse(numericPart.substring(5));
+    }
+    double decimal = degrees + minutes / 60 + seconds / 3600;
+    if (direction == 'S' || direction == 'W') {
+      decimal = -decimal;
+    }
+    return decimal;
+  }
+
+  void autoFillWithPlanDetail(PlanDetailModel planDetail, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     // Заполнение текстовых полей
     requesterNameController.text = planDetail.applicant ?? '';
-    applicationNumController.text = planDetail.applicationNum?.toString() ?? '';
     emailController.text = planDetail.email ?? '';
     noteController.text = planDetail.notes ?? '';
     landmarkController.text = planDetail.flightArea ?? '';
@@ -134,7 +161,24 @@ class AddRequestViewModel extends ChangeNotifier {
     if (planDetail.coordList.isNotEmpty) {
       final coord = planDetail.coordList.first;
       if (coord.latitude != null && coord.longitude != null) {
-        latLngController.text = "${coord.latitude} ${coord.longitude}";
+        final latStr = coord.latitude!;
+        final lngStr = coord.longitude!;
+        double latitude;
+        double longitude;
+
+        if (latStr.endsWith('N') || latStr.endsWith('S')) {
+          latitude = dmsToDecimal(latStr);
+        } else {
+          latitude = double.tryParse(latStr) ?? 0.0;
+        }
+        if (lngStr.endsWith('E') || lngStr.endsWith('W')) {
+          longitude = dmsToDecimal(lngStr);
+        } else {
+          longitude = double.tryParse(lngStr) ?? 0.0;
+        }
+
+        latLngController.text =
+        "${latitude.toStringAsFixed(5)} ${longitude.toStringAsFixed(5)}";
       }
       if (planDetail.zoneTypeId == 1 && coord.radius != null) {
         radiusController.text = coord.radius.toString();
@@ -154,8 +198,18 @@ class AddRequestViewModel extends ChangeNotifier {
       operatorPhoneControllers.add(TextEditingController(text: op.phone));
     }
 
-    // Заполнение цели полёта
-    selectedPurpose = planDetail.purpose;
+    // Заполнение цели полёта с проверкой наличия в списке
+    if (purposeList.contains(planDetail.purpose)) {
+      selectedPurpose = planDetail.purpose;
+      customPurposeController.clear();
+    } else {
+      // Если цели нет в списке, выбираем "Другое" и подставляем наше значение
+      selectedPurpose = localizations.addRequestView_other; // Или localizations.addRequestView_other, если используете локализацию
+      customPurposeController.text = planDetail.purpose!;
+      if (!purposeList.contains(localizations.addRequestView_other)) {
+        purposeList.add(localizations.addRequestView_other);
+      }
+    }
     notifyListeners();
   }
 

@@ -153,7 +153,7 @@ class RequestService {
       'count': count.toString(),
     };
 
-    return TestDataGenerator.generateMainRequests();
+    // return TestDataGenerator.generateMainRequests();
     if (applicationNum != null && applicationNum.isNotEmpty) {
       queryParameters['applicationNum'] = applicationNum;
     }
@@ -194,7 +194,7 @@ class RequestService {
 
   /// Метод для получения детальной информации плана по planId.
   Future<PlanDetailModel> fetchPlanDetail(int planId) async {
-    return TestDataGenerator.generatePlanDetail();
+    // return TestDataGenerator.generatePlanDetail();
     final Uri url = Uri.parse('${ApiRoutes.requestDetailInfo}$planId');
     final response = await _makeAuthorizedRequest((token, defaultHeaders) async {
       final headers = {

@@ -37,7 +37,7 @@ class _AddRequestViewState extends State<AddRequestView> {
       }
       // Если план передан, автозаполнение полей
       if (widget.planDetail != null) {
-        viewModel.autoFillWithPlanDetail(widget.planDetail!);
+        viewModel.autoFillWithPlanDetail(widget.planDetail!, context);
       }
     });
   }
