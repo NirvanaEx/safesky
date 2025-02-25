@@ -14,13 +14,16 @@ class MapSelectLocationViewModel extends ChangeNotifier {
   bool isPolygonDrawing = false;
   int? polygonPointsCount; // заданное количество точек (минимум 3)
   List<LatLng> polygonPoints = [];
-  LatLng? tempPolygonPoint; // временная точка (устанавливается при долгом нажатии)
+  LatLng? tempPolygonPoint; // временная точка
 
   // Флаг для ручного ввода координат для полигона
   bool showManualPolygonInput = false;
 
   // --- Поля для рисования линии ---
   List<LatLng> linePoints = [];
+
+  // Флаг для ручного ввода координат для линии
+  bool showManualLineInput = false;
 
   final TextEditingController latController = TextEditingController();
   final TextEditingController lngController = TextEditingController();
@@ -44,16 +47,19 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleManualLineInput() {
+    showManualLineInput = !showManualLineInput;
+    notifyListeners();
+  }
+
   void applyLatLng(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     try {
       double lat = double.parse(latController.text.replaceAll(',', '.'));
       double lng = double.parse(lngController.text.replaceAll(',', '.'));
-
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         throw const FormatException("Incorrect coordinates");
       }
-
       markerPosition = LatLng(lat, lng);
       showLatLngInputs = false;
       notifyListeners();
@@ -89,11 +95,9 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     try {
       double lat = double.parse(latController.text.replaceAll(',', '.'));
       double lng = double.parse(lngController.text.replaceAll(',', '.'));
-
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         throw const FormatException("Incorrect coordinates");
       }
-
       if (polygonPointsCount != null &&
           polygonPoints.length >= polygonPointsCount!) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -101,9 +105,7 @@ class MapSelectLocationViewModel extends ChangeNotifier {
         );
         return;
       }
-
       polygonPoints.add(LatLng(lat, lng));
-      // Очистить поля ввода
       latController.clear();
       lngController.clear();
       showManualPolygonInput = false;
@@ -118,9 +120,31 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     }
   }
 
+  void applyManualLinePoint(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    try {
+      double lat = double.parse(latController.text.replaceAll(',', '.'));
+      double lng = double.parse(lngController.text.replaceAll(',', '.'));
+      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        throw const FormatException("Incorrect coordinates");
+      }
+      linePoints.add(LatLng(lat, lng));
+      latController.clear();
+      lngController.clear();
+      showManualLineInput = false;
+      notifyListeners();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.mapSelectLocationView_invalidCoordinates),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void onMapLongPress(LatLng latlng) {
     if (routeType == "polygon" && isPolygonDrawing) {
-      // Если достигнут лимит точек, новые точки не добавляются
       if (polygonPointsCount != null &&
           polygonPoints.length >= polygonPointsCount!) {
         return;
@@ -139,6 +163,11 @@ class MapSelectLocationViewModel extends ChangeNotifier {
       linePoints.clear();
       notifyListeners();
     }
+  }
+
+  void clearLinePoints() {
+    linePoints.clear();
+    notifyListeners();
   }
 
   // --- Методы для работы с полигоном ---
