@@ -20,6 +20,7 @@ class AddRequestViewModel extends ChangeNotifier {
   late BuildContext _buildContext;
 
   bool isLoading = false;  // Флаг загрузки данных
+  bool coordinatesExpanded = false;
 
   // Текстовые контроллеры для полей ввода
   final TextEditingController requesterNameController = TextEditingController();
@@ -262,6 +263,8 @@ class AddRequestViewModel extends ChangeNotifier {
   //  Метод для обновления выбранного типа маршрута
   void setSelectedRouteType(String routeType) {
     selectedRouteType = routeType;
+    latLngController.clear();
+    radiusController.clear();
     notifyListeners();
   }
 
@@ -334,10 +337,18 @@ class AddRequestViewModel extends ChangeNotifier {
     notifyListeners(); // Обновляем интерфейс
   }
 
-
-  void updateCoordinatesAndRadius(LatLng coordinates, double? radius) {
-    latLngController.text = '${coordinates.latitude.toStringAsFixed(5)} ${coordinates.longitude.toStringAsFixed(5)}';
-    radiusController.text = radius != null ? radius.toStringAsFixed(0) : '';
+// В add_request_viewmodel.dart, измените метод updateCoordinatesAndRadius:
+  void updateCoordinatesAndRadius(dynamic coordinates, double? radius) {
+    if (selectedRouteType == "circle") {
+      latLngController.text = '${(coordinates as LatLng).latitude.toStringAsFixed(5)} ${(coordinates as LatLng).longitude.toStringAsFixed(5)}';
+      radiusController.text = radius != null ? radius.toStringAsFixed(0) : '';
+    } else if (selectedRouteType == "polygon" || selectedRouteType == "line") {
+      List<LatLng> points = coordinates as List<LatLng>;
+      String formatted = points
+          .map((point) => '${point.latitude.toStringAsFixed(5)} ${point.longitude.toStringAsFixed(5)};')
+          .join('\n');
+      latLngController.text = formatted;
+    }
     notifyListeners();
   }
 
@@ -448,18 +459,6 @@ class AddRequestViewModel extends ChangeNotifier {
     }
 
 
-    // Проверка координат
-    List<String> latLngParts = latLngController.text.split(" ");
-    if (latLngParts.length != 2) {
-      return {'status': 'error', 'message': localizations?.addRequestView_invalidLatLngFormat ?? "Invalid coordinates format"};
-    }
-
-    double? latitude = double.tryParse(latLngParts[0]);
-    double? longitude = double.tryParse(latLngParts[1]);
-    if (latitude == null || longitude == null) {
-      return {'status': 'error', 'message': localizations?.addRequestView_invalidLatitudeLongitude ?? "Invalid latitude/longitude"};
-    }
-
     // Проверка высоты полета
     double? flightHeight = double.tryParse(flightHeightController.text);
     if (flightHeight == null) {
@@ -501,8 +500,18 @@ class AddRequestViewModel extends ChangeNotifier {
         }
       ];
     } else if (selectedRouteType == "polygon" || selectedRouteType == "line") {
-      // Для полигона и линии ожидается массив точек, разделенных символом ';'
-      List<String> pointStrings = latLngController.text.trim().split(";");
+      if (latLngController.text.trim().isEmpty) {
+        return {
+          'status': 'error',
+          'message': localizations?.addRequestView_invalidLatLngFormat ?? "Coordinates cannot be empty"
+        };
+      }
+      // Разбиваем строку по символу ';' и удаляем пустые элементы
+      List<String> pointStrings = latLngController.text
+          .trim()
+          .split(";")
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
       int minPoints = selectedRouteType == "polygon" ? 3 : 2;
       if (pointStrings.length < minPoints) {
         String errorMsg = selectedRouteType == "polygon"
@@ -512,7 +521,7 @@ class AddRequestViewModel extends ChangeNotifier {
       }
       coordList = [];
       for (String point in pointStrings) {
-        List<String> parts = point.trim().split(" ");
+        List<String> parts = point.trim().split(" ").where((s) => s.trim().isNotEmpty).toList();
         if (parts.length != 2) {
           return {
             'status': 'error',
@@ -531,6 +540,15 @@ class AddRequestViewModel extends ChangeNotifier {
           "latitude": _formatLatitude(lat),
           "longitude": _formatLongitude(lng),
         });
+      }
+      // Если это полигон, добавляем первую координату в конец (если она ещё не совпадает с последней)
+      if (selectedRouteType == "polygon" && coordList.isNotEmpty) {
+        Map<String, dynamic> firstPoint = coordList.first;
+        Map<String, dynamic> lastPoint = coordList.last;
+        if (firstPoint["latitude"] != lastPoint["latitude"] ||
+            firstPoint["longitude"] != lastPoint["longitude"]) {
+          coordList.add(firstPoint);
+        }
       }
     } else {
       return {'status': 'error', 'message': "Unknown route type"};
@@ -569,7 +587,6 @@ class AddRequestViewModel extends ChangeNotifier {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('userId');
-    Map<String, String> formattedCoordinates = formatLatLng(latLngController.text);
 
     int zoneTypeId = selectedRouteType == "circle"
         ? 1
@@ -584,7 +601,7 @@ class AddRequestViewModel extends ChangeNotifier {
       "flightArea": landmarkController.text,
       "districtCode": selectedDistrict?.code,
       "zoneTypeId": zoneTypeId,
-      "purpose": selectedPurpose == "Другое" ? customPurposeController.text : selectedPurpose,
+      "purpose": selectedPurpose ==  localizations?.addRequestView_other ? customPurposeController.text : selectedPurpose,
       "bplaList": selectedBplas.isNotEmpty ? selectedBplaIds : [],
       "operatorList": selectedOperators.isNotEmpty
           ? (selectedOperatorIds.contains(userId) ? selectedOperatorIds : selectedOperatorIds + [userId ?? 0])
@@ -619,21 +636,7 @@ class AddRequestViewModel extends ChangeNotifier {
     return DateFormat('HH:mm').format(dateTime);
   }
 
-  Map<String, String> formatLatLng(String latLngStr) {
-    List<String> coordinates = latLngStr.trim().split(' ');
 
-    if (coordinates.length != 2) {
-      throw FormatException("Invalid coordinate format. Expected 'lat lon'");
-    }
-
-    double latitude = double.tryParse(coordinates[0]) ?? 0.0;
-    double longitude = double.tryParse(coordinates[1]) ?? 0.0;
-
-    return {
-      "latitude": _formatLatitude(latitude),
-      "longitude": _formatLongitude(longitude),
-    };
-  }
 
   String _formatLatitude(double latitude) {
     int degrees = latitude.abs().toInt();

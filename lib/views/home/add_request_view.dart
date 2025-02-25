@@ -169,9 +169,40 @@ class _AddRequestViewState extends State<AddRequestView> {
         if (viewModel.selectedRouteType != null) ...[
           _buildLabel(localizations.addRequestView_coordinates),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: _buildTextField(viewModel.latLngController, hintText: localizations.addRequestView_coordinates, readOnly: true),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      viewModel.coordinatesExpanded = !viewModel.coordinatesExpanded;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Text(
+                      viewModel.latLngController.text,
+                      maxLines: viewModel.coordinatesExpanded ? null : 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  viewModel.coordinatesExpanded ? Icons.expand_less : Icons.expand_more,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  setState(() {
+                    viewModel.coordinatesExpanded = !viewModel.coordinatesExpanded;
+                  });
+                },
               ),
               TextButton(
                 onPressed: () async {
@@ -179,14 +210,14 @@ class _AddRequestViewState extends State<AddRequestView> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MapSelectLocationView(
-                        routeType: viewModel.selectedRouteType, // Передаём выбранный тип маршрута
+                        routeType: viewModel.selectedRouteType,
                       ),
                     ),
                   );
                   if (result != null && result is Map<String, dynamic>) {
-                    LatLng coordinates = result['coordinates'];
-                    double? radius = result['radius'];
-                    viewModel.updateCoordinatesAndRadius(coordinates, radius);
+                    // Для "polygon" и "line" ожидается массив точек,
+                    // а для "circle" – одиночная точка.
+                    viewModel.updateCoordinatesAndRadius(result['coordinates'], result['radius']);
                   }
                 },
                 child: Text(localizations.addRequestView_map),
