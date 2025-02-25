@@ -50,6 +50,47 @@ class MyCustomDialog {
     );
   }
 
+  static Future<void> showApplicationNumberDialog(
+      BuildContext context, String dialogTitle, String applicationNum) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          title: Center(
+            child: Text(
+              dialogTitle,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: SizedBox(
+            height: 50, // фиксированная высота для уменьшения размера диалога
+            child: Center(
+              child: Text(
+                applicationNum,
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          actions: [
+            Center(
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "OK",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   /// Пример простого диалога с кнопкой "OK"
   static Future<void> showNotificationDialog(BuildContext context, String title, String message) {
     return showDialog<void>(

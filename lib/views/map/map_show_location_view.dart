@@ -61,14 +61,36 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
   /// Если zoneTypeId = 1 (круг), берём первую точку.
   /// При появлении полигона можно расширить логику.
   LatLng? _getPlanCenter(PlanDetailModel? detail) {
-    if (detail == null) return null;
-    if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+    if (detail == null || detail.coordList == null || detail.coordList!.isEmpty) return null;
+
+    // Для полигона вычисляем центр как среднее значение всех точек
+    if (detail.zoneTypeId == 2) {
+      double sumLat = 0.0;
+      double sumLng = 0.0;
+      int count = 0;
+      for (final c in detail.coordList!) {
+        double lat = _parseCoordinate(c.latitude);
+        double lng = _parseCoordinate(c.longitude);
+        sumLat += lat;
+        sumLng += lng;
+        count++;
+      }
+      return LatLng(sumLat / count, sumLng / count);
+    }
+    // Для линии используем первую точку
+    else if (detail.zoneTypeId == 3) {
       final c = detail.coordList!.first;
-      final lat = _parseCoordinate(c.latitude);
-      final lng = _parseCoordinate(c.longitude);
+      double lat = _parseCoordinate(c.latitude);
+      double lng = _parseCoordinate(c.longitude);
       return LatLng(lat, lng);
     }
-    return null;
+    // Для круга (и других типов) используем первую точку
+    else {
+      final c = detail.coordList!.first;
+      double lat = _parseCoordinate(c.latitude);
+      double lng = _parseCoordinate(c.longitude);
+      return LatLng(lat, lng);
+    }
   }
 
   /// Анимация плавного перемещения

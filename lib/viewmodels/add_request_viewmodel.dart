@@ -619,9 +619,15 @@ class AddRequestViewModel extends ChangeNotifier {
     try {
       final response = await requestService.submitBplaPlan(requestBody);
       if (response['status'] == 200) {
+        final jsonData = response['data'];
+        int appNum = jsonData['applicationNum'];
         print("BPLA Plan submitted successfully: ${jsonEncode(requestBody)}");
         clearFields();
-        return {'status': 'success', 'message': localizations!.addRequestView_requestSentSuccess};
+        return {
+          'status': 'success',
+          'message': localizations!.addRequestView_requestSentSuccess,
+          'applicationNum': appNum.toString(),  // добавляем номер заявки в результат
+        };
       } else {
         return {'status': 'error', 'message': response['message']};
       }

@@ -13,6 +13,7 @@ import '../map/map_select_location_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../my_custom_views/multi_select_dropdown.dart';
+import '../my_custom_views/my_custom_dialog.dart';
 
 class AddRequestView extends StatefulWidget {
   final PlanDetailModel? planDetail;
@@ -301,24 +302,26 @@ class _AddRequestViewState extends State<AddRequestView> {
         Center(
           child: ElevatedButton(
             onPressed: () async {
-              // Ожидание результата submitRequest с помощью await
               Map<String, String>? result = await viewModel.submitRequest(context);
 
               if (result != null) {
-                // Получаем статус и сообщение из результата
                 String status = result['status']!;
                 String message = result['message']!;
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(message),
-                    backgroundColor: status == 'success' ? Colors.green : Colors.red,
-                  ),
-                );
-
                 if (status == 'success') {
+                  // Получаем applicationNum из результата
+                  String applicationNum = result['applicationNum'] ?? 'Unknown';
+                  await MyCustomDialog.showApplicationNumberDialog(context, localizations.showRequestView_requestNum, applicationNum);
+
                   print("Запрос успешно отправлен!");
-                  // Здесь можно добавить действия для успешного запроса
+                  // Дополнительные действия при успешном запросе
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               }
             },
