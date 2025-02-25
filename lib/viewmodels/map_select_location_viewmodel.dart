@@ -16,6 +16,12 @@ class MapSelectLocationViewModel extends ChangeNotifier {
   List<LatLng> polygonPoints = [];
   LatLng? tempPolygonPoint; // временная точка (устанавливается при долгом нажатии)
 
+  // Флаг для ручного ввода координат для полигона
+  bool showManualPolygonInput = false;
+
+  // --- Поля для рисования линии ---
+  List<LatLng> linePoints = [];
+
   final TextEditingController latController = TextEditingController();
   final TextEditingController lngController = TextEditingController();
   final TextEditingController radiusController = TextEditingController();
@@ -30,6 +36,11 @@ class MapSelectLocationViewModel extends ChangeNotifier {
 
   void toggleRadiusInput() {
     showRadiusInput = !showRadiusInput;
+    notifyListeners();
+  }
+
+  void toggleManualPolygonInput() {
+    showManualPolygonInput = !showManualPolygonInput;
     notifyListeners();
   }
 
@@ -74,21 +85,63 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     }
   }
 
-  void onMapLongPress(LatLng latlng) {
-    // Если включен режим рисования полигона, обновляем временную точку
-    if (routeType == "polygon" && isPolygonDrawing) {
-      tempPolygonPoint = latlng;
+  void applyManualPolygonPoint(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    try {
+      double lat = double.parse(latController.text.replaceAll(',', '.'));
+      double lng = double.parse(lngController.text.replaceAll(',', '.'));
+
+      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        throw const FormatException("Incorrect coordinates");
+      }
+
+      if (polygonPointsCount != null &&
+          polygonPoints.length >= polygonPointsCount!) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Достигнут лимит точек")),
+        );
+        return;
+      }
+
+      polygonPoints.add(LatLng(lat, lng));
+      // Очистить поля ввода
+      latController.clear();
+      lngController.clear();
+      showManualPolygonInput = false;
       notifyListeners();
-    } else {
-      // Иначе обновляем обычную позицию метки
-      markerPosition = latlng;
-      notifyListeners();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+          Text(localizations.mapSelectLocationView_invalidCoordinates),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
+  void onMapLongPress(LatLng latlng) {
+    if (routeType == "polygon" && isPolygonDrawing) {
+      // Если достигнут лимит точек, новые точки не добавляются
+      if (polygonPointsCount != null &&
+          polygonPoints.length >= polygonPointsCount!) {
+        return;
+      }
+      tempPolygonPoint = latlng;
+    } else if (routeType == "line") {
+      linePoints.add(latlng);
+    } else {
+      markerPosition = latlng;
+    }
+    notifyListeners();
+  }
+
   void handleLineAction() {
-    // TODO: Реализовать обработку для линии
-    print("Line action triggered");
+    // Для линии можно реализовать очистку нарисованного маршрута
+    if (linePoints.isNotEmpty) {
+      linePoints.clear();
+      notifyListeners();
+    }
   }
 
   // --- Методы для работы с полигоном ---

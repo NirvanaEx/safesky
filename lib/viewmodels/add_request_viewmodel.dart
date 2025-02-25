@@ -48,7 +48,7 @@ class AddRequestViewModel extends ChangeNotifier {
   List<String> routeTypeOptions = [
     "circle",
     "polygon",
-    // "line"
+    "line"
   ];
   String selectedRouteType = "circle";
 
