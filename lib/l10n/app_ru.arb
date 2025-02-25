@@ -283,6 +283,9 @@
   "mapSelectLocationView_invalidRadius": "Введите корректное значение радиуса",
   "mapSelectLocationView_save": "Сохранить",
 
+  "mapSelectLocationView_add": "Добавить",
+  "mapSelectLocationView_minimumPoints": "Минимум 3 точки",
+  "mapSelectLocationView_minimumLinePoints": "Введите минимум 2 точки",
 
 
 

@@ -284,6 +284,9 @@
   "mapSelectLocationView_invalidRadius": "Iltimos, to'g'ri radius qiymatini kiriting",
   "mapSelectLocationView_save": "Saqlash",
 
+  "mapSelectLocationView_add": "Qo'shish",
+  "mapSelectLocationView_minimumPoints": "Kamida 3 ta nuqta kerak",
+  "mapSelectLocationView_minimumLinePoints": "Kamida 2 ta nuqta kerak",
 
 
 

@@ -282,6 +282,10 @@
   "mapSelectLocationView_invalidRadius": "Please enter a valid radius value",
   "mapSelectLocationView_save": "Save",
 
+  "mapSelectLocationView_add": "Add",
+  "mapSelectLocationView_minimumPoints": "At least 3 points required",
+  "mapSelectLocationView_minimumLinePoints": "At least 2 points required",
+
 
 
 

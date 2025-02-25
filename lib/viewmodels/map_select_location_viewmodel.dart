@@ -12,15 +12,15 @@ class MapSelectLocationViewModel extends ChangeNotifier {
 
   // --- Поля для рисования полигона ---
   bool isPolygonDrawing = false;
-  int? polygonPointsCount; // заданное количество точек (минимум 3)
   List<LatLng> polygonPoints = [];
-  LatLng? tempPolygonPoint; // временная точка
+  LatLng? tempPolygonPoint; // временная точка для полигона
 
   // Флаг для ручного ввода координат для полигона
   bool showManualPolygonInput = false;
 
   // --- Поля для рисования линии ---
   List<LatLng> linePoints = [];
+  LatLng? tempLinePoint; // временная точка для линии
 
   // Флаг для ручного ввода координат для линии
   bool showManualLineInput = false;
@@ -98,13 +98,6 @@ class MapSelectLocationViewModel extends ChangeNotifier {
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         throw const FormatException("Incorrect coordinates");
       }
-      if (polygonPointsCount != null &&
-          polygonPoints.length >= polygonPointsCount!) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Достигнут лимит точек")),
-        );
-        return;
-      }
       polygonPoints.add(LatLng(lat, lng));
       latController.clear();
       lngController.clear();
@@ -145,38 +138,15 @@ class MapSelectLocationViewModel extends ChangeNotifier {
 
   void onMapLongPress(LatLng latlng) {
     if (routeType == "polygon" && isPolygonDrawing) {
-      if (polygonPointsCount != null &&
-          polygonPoints.length >= polygonPointsCount!) {
-        return;
-      }
       tempPolygonPoint = latlng;
     } else if (routeType == "line") {
+      // Для линии сразу добавляем точку (она отображается как location_on)
+      // и сохраняем её в tempLinePoint для показа флажка с координатами
+      tempLinePoint = latlng;
       linePoints.add(latlng);
     } else {
       markerPosition = latlng;
     }
-    notifyListeners();
-  }
-
-  void handleLineAction() {
-    if (linePoints.isNotEmpty) {
-      linePoints.clear();
-      notifyListeners();
-    }
-  }
-
-  void clearLinePoints() {
-    linePoints.clear();
-    notifyListeners();
-  }
-
-  // --- Методы для работы с полигоном ---
-  void startPolygonDrawing(int pointsCount) {
-    if (pointsCount < 3) return;
-    isPolygonDrawing = true;
-    polygonPointsCount = pointsCount;
-    polygonPoints.clear();
-    tempPolygonPoint = null;
     notifyListeners();
   }
 
@@ -188,9 +158,32 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     }
   }
 
+  void confirmTempLinePoint() {
+    tempLinePoint = null;
+    notifyListeners();
+  }
+
+  void clearLinePoints() {
+    linePoints.clear();
+    notifyListeners();
+  }
+
+  // --- Методы для работы с полигоном ---
+  void startPolygonDrawing() {
+    isPolygonDrawing = true;
+    polygonPoints.clear();
+    tempPolygonPoint = null;
+    notifyListeners();
+  }
+
   void cancelPolygonDrawing() {
     isPolygonDrawing = false;
-    polygonPointsCount = null;
+    polygonPoints.clear();
+    tempPolygonPoint = null;
+    notifyListeners();
+  }
+
+  void clearPolygonPoints() {
     polygonPoints.clear();
     tempPolygonPoint = null;
     notifyListeners();
