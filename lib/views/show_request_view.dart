@@ -21,6 +21,8 @@ class ShowRequestView extends StatefulWidget {
 
 class _ShowRequestViewState extends State<ShowRequestView> {
   bool _isSharing = false;
+  bool _coordinatesExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +45,17 @@ class _ShowRequestViewState extends State<ShowRequestView> {
 
 
     String zoneInfo = '';
-
-    if(viewModel.planDetailModel?.zoneTypeId == 1){
-      zoneInfo = '${viewModel.planDetailModel?.coordList.first.latitude ?? '-'}, ${viewModel.planDetailModel?.coordList.first.longitude ?? '-'}';
+    if (viewModel.planDetailModel?.coordList != null &&
+        viewModel.planDetailModel!.coordList!.isNotEmpty) {
+      if (viewModel.planDetailModel!.zoneTypeId == 1) {
+        zoneInfo =
+        '${viewModel.planDetailModel!.coordList!.first.latitude ?? '-'}, ${viewModel.planDetailModel!.coordList!.first.longitude ?? '-'}';
+      } else if (viewModel.planDetailModel!.zoneTypeId == 2 ||
+          viewModel.planDetailModel!.zoneTypeId == 3) {
+        zoneInfo = viewModel.planDetailModel!.coordList!
+            .map((c) => '${c.latitude ?? '-'}, ${c.longitude ?? '-'}')
+            .join('\n');
+      }
     }
 
     // Если данные загружаются, показываем индикатор загрузки
@@ -194,13 +204,24 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                     _buildRequestInfo(localizations.showRequestView_landmark,
                         viewModel.planDetailModel?.flightArea ?? '-'),
 
+                    _buildRequestInfo(
+                      localizations.showRequestView_routeType,
+                      viewModel.planDetailModel?.zoneTypeId == 1
+                          ? localizations.showRequestView_routeCircle
+                          : viewModel.planDetailModel?.zoneTypeId == 2
+                          ? localizations.showRequestView_routePolygon
+                          : viewModel.planDetailModel?.zoneTypeId == 3
+                          ? localizations.showRequestView_routeLine
+                          : '-',
+                    ),
+
                     // Отображение координат AUTHORIZED ZONE
                     _buildRequestInfo(
                       localizations.showRequestView_coordinates,
                       zoneInfo,
                       linkText: localizations.showRequestView_map,
                       icon: Icons.visibility,
-                      context: context,
+                      ctx: context,
                       planDetailModel: viewModel.planDetailModel
                     ),
 
@@ -395,50 +416,133 @@ class _ShowRequestViewState extends State<ShowRequestView> {
   }
 
 
-  Widget _buildRequestInfo(String label, String value, {bool isBold = true, String? linkText, IconData? icon, BuildContext? context, PlanDetailModel? planDetailModel}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  value,
-                  style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 16),
-                ),
-              ),
-              if (linkText != null && context != null)
-                GestureDetector(
-                  onTap: () {
-                    debugPrint('Link tapped'); // проверка, сработал ли onTap
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapShowLocationView(
-                          detailModel: planDetailModel,
-                        ),
+  Widget _buildRequestInfo(String label, String value,
+      {bool isBold = true, String? linkText, IconData? icon, BuildContext? ctx, PlanDetailModel? planDetailModel}) {
+    final BuildContext effectiveContext = ctx ?? context;
+    final localizations = AppLocalizations.of(effectiveContext)!;
+    if (label == localizations.showRequestView_coordinates) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(color: Colors.grey[600])),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _coordinatesExpanded = !_coordinatesExpanded;
+                      });
+                    },
+                    child: Text(
+                      value,
+                      maxLines: _coordinatesExpanded ? null : 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                        fontSize: 16,
                       ),
-                    );
-                  },
-                  child: Row(
-                    children: [
-                      Text(linkText, style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
-                      if (icon != null) Icon(icon, color: Colors.blue, size: 18),
-                    ],
+                    ),
                   ),
                 ),
-            ],
-          ),
-        ],
-      ),
-    );
+                IconButton(
+                  icon: Icon(
+                    _coordinatesExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: Colors.blue,
+                    size: 18,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _coordinatesExpanded = !_coordinatesExpanded;
+                    });
+                  },
+                ),
+                if (linkText != null)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        effectiveContext,
+                        MaterialPageRoute(
+                          builder: (context) => MapShowLocationView(
+                            detailModel: planDetailModel,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          linkText,
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        if (icon != null)
+                          Icon(icon, color: Colors.blue, size: 18),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(color: Colors.grey[600])),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                if (linkText != null)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        effectiveContext,
+                        MaterialPageRoute(
+                          builder: (context) => MapShowLocationView(
+                            detailModel: planDetailModel,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          linkText,
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        if (icon != null)
+                          Icon(icon, color: Colors.blue, size: 18),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
   }
+
 
 }

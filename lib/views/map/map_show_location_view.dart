@@ -62,19 +62,12 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
   /// При появлении полигона можно расширить логику.
   LatLng? _getPlanCenter(PlanDetailModel? detail) {
     if (detail == null) return null;
-
-    if (detail.zoneTypeId == 1) {
-      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
-        final c = detail.coordList!.first;
-        final lat = _parseCoordinate(c.latitude);
-        final lng = _parseCoordinate(c.longitude);
-        return LatLng(lat, lng);
-      }
+    if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+      final c = detail.coordList!.first;
+      final lat = _parseCoordinate(c.latitude);
+      final lng = _parseCoordinate(c.longitude);
+      return LatLng(lat, lng);
     }
-
-    // Если в будущем понадобится логика для полигонов:
-    // if (detail.zoneTypeId == 2) { ... }
-
     return null;
   }
 
@@ -107,8 +100,8 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
   List<Widget> buildZones(PlanDetailModel? detail) {
     if (detail == null) return [];
 
-    // Если зона круг (zoneTypeId == 1)
     if (detail.zoneTypeId == 1) {
+      // Если зона – круг
       if (detail.coordList != null && detail.coordList!.isNotEmpty) {
         final c = detail.coordList!.first;
         final lat = _parseCoordinate(c.latitude);
@@ -129,13 +122,52 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
           ),
         ];
       }
+    } else if (detail.zoneTypeId == 2) {
+      // Если зона – полигон
+      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+        List<LatLng> points = detail.coordList!
+            .map((c) => LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude)))
+            .toList();
+        // Если полигон не замкнут, добавляем первую точку в конец
+        if (points.isNotEmpty) {
+          final first = points.first;
+          final last = points.last;
+          if (first.latitude != last.latitude || first.longitude != last.longitude) {
+            points.add(first);
+          }
+        }
+        return [
+          PolygonLayer(
+            polygons: [
+              Polygon(
+                points: points,
+                color: Colors.blueAccent.withOpacity(0.2),
+                borderColor: Colors.blueAccent,
+                borderStrokeWidth: 2,
+              ),
+            ],
+          ),
+        ];
+      }
+    } else if (detail.zoneTypeId == 3) {
+      // Если зона – линия
+      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+        List<LatLng> points = detail.coordList!
+            .map((c) => LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude)))
+            .toList();
+        return [
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: points,
+                strokeWidth: 2.0,
+                color: Colors.blueAccent,
+              ),
+            ],
+          ),
+        ];
+      }
     }
-
-    // Если понадобится логика для полигонов, добавляем её здесь
-    // if (detail.zoneTypeId == 2) {
-    //   ...
-    // }
-
     return [];
   }
 

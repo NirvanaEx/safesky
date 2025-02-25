@@ -230,7 +230,10 @@
   "showRequestView_landmark": "Parvozlarni amalga oshirish yo'nalishi",
   "showRequestView_flightOperationArea": "Parvozlarni amalga oshirish hududi",
   "showRequestView_flightOperationDistrict": "Parvozlarni amalga oshirish tumani",
-
+  "showRequestView_routeType": "Marshrut turi",
+  "showRequestView_routeCircle": "Aylana bo‘yicha",
+  "showRequestView_routePolygon": "Kvadrat/Poligon bo‘yicha",
+  "showRequestView_routeLine": "Chiziq bo‘yicha",
   "showRequestView_coordinates": "Koordinatalar",
   "showRequestView_map": "Xarita",
   "showRequestView_height": "Parvoz balandligi (m)",

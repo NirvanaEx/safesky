@@ -229,7 +229,10 @@
   "showRequestView_landmark": "Flight Operation Landmark",
   "showRequestView_flightOperationArea": "Flight Operation Area",
   "showRequestView_flightOperationDistrict": "Flight Operation District",
-
+  "showRequestView_routeType": "Route Type",
+  "showRequestView_routeCircle": "Circle",
+  "showRequestView_routePolygon": "Polygon",
+  "showRequestView_routeLine": "Line",
   "showRequestView_coordinates": "Coordinates (Location)",
   "showRequestView_map": "Map",
   "showRequestView_height": "Flight Height (m)",
