@@ -60,10 +60,14 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
     });
   }
 
-  /// Перемещение карты к текущей позиции метки
+  /// При нажатии на местоположение перемещаемся к первой точке (если в режиме полигона и точки есть), иначе к стандартной метке
   void _moveToMarker() {
     _mapController.rotate(0);
-    _animateMapMovement(_viewModel.markerPosition);
+    if (widget.routeType == "polygon" && _viewModel.polygonPoints.isNotEmpty) {
+      _animateMapMovement(_viewModel.polygonPoints.first);
+    } else {
+      _animateMapMovement(_viewModel.markerPosition);
+    }
   }
 
   Widget _buildToolButton(IconData icon, VoidCallback onPressed) {
@@ -212,8 +216,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               child: const Text('Ok', style: TextStyle(color: Colors.white)),
             ),
@@ -281,6 +284,81 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
     );
   }
 
+  /// Возвращает список точек для полигона, добавляя первую точку в конец (для замыкания), если это необходимо
+  List<LatLng> _getClosedPolygonPoints(List<LatLng> points) {
+    if (points.isNotEmpty && points.first != points.last) {
+      return List.from(points)..add(points.first);
+    }
+    return points;
+  }
+
+  /// Построение нижней кнопки сохранения для всех режимов
+  Widget _buildBottomButton() {
+    final localizations = AppLocalizations.of(context)!;
+    if (widget.routeType == "polygon") {
+      return ElevatedButton(
+        onPressed: () {
+          if (_viewModel.polygonPointsCount == null ||
+              _viewModel.polygonPoints.length != _viewModel.polygonPointsCount) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Не все точки выбраны")),
+            );
+            return;
+          }
+          Navigator.pop(context, {
+            'coordinates': _viewModel.polygonPoints,
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        child: Text(
+          localizations.mapSelectLocationView_save,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      );
+    } else if (widget.routeType == "circle") {
+      return ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context, {
+            'coordinates': _viewModel.markerPosition,
+            'radius': _viewModel.radius,
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        child: Text(
+          localizations.mapSelectLocationView_save,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      );
+    } else if (widget.routeType == "line") {
+      return ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context, {
+            'coordinates': _viewModel.linePoints,
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        child: Text(
+          localizations.mapSelectLocationView_save,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   Widget _buildRadiusInput() {
     final localizations = AppLocalizations.of(context)!;
 
@@ -317,84 +395,6 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
     );
   }
 
-  /// Возвращает список точек для полигона, добавляя первую точку в конец (для замыкания), если это необходимо
-  List<LatLng> _getClosedPolygonPoints(List<LatLng> points) {
-    if (points.isNotEmpty && points.first != points.last) {
-      return List.from(points)..add(points.first);
-    }
-    return points;
-  }
-
-  /// Построение нижней кнопки сохранения для всех режимов
-  Widget _buildBottomButton() {
-    final localizations = AppLocalizations.of(context)!;
-    if (widget.routeType == "polygon") {
-      return ElevatedButton(
-        onPressed: () {
-          if (_viewModel.polygonPointsCount == null ||
-              _viewModel.polygonPoints.length != _viewModel.polygonPointsCount) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Не все точки выбраны")),
-            );
-            return;
-          }
-          Navigator.pop(context, {
-            'coordinates': _viewModel.polygonPoints,
-          });
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30)),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-        ),
-        child: Text(
-          localizations.mapSelectLocationView_save,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      );
-    } else if (widget.routeType == "circle") {
-      return ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context, {
-            'coordinates': _viewModel.markerPosition,
-            'radius': _viewModel.radius,
-          });
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30)),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-        ),
-        child: Text(
-          localizations.mapSelectLocationView_save,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      );
-    } else if (widget.routeType == "line") {
-      return ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context, {
-            'coordinates': _viewModel.linePoints,
-          });
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30)),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-        ),
-        child: Text(
-          localizations.mapSelectLocationView_save,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -425,11 +425,9 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 subdomains: const ['a', 'b', 'c'],
-                tileProvider:
-                FMTC.instance('openstreetmap').getTileProvider(),
+                tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
               MarkerLayer(
                 markers: [
@@ -445,34 +443,50 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                         size: 40,
                       ),
                     ),
-                  // Для полигона: отображаем зафиксированные точки
+                  // Для полигона: формируем список эффективных точек (подтверждённых + временная)
                   if (widget.routeType == "polygon" && _viewModel.isPolygonDrawing)
-                    ..._viewModel.polygonPoints.map(
-                          (point) => Marker(
-                        width: 80.0,
-                        height: 80.0,
-                        point: point,
-                        builder: (ctx) => const Icon(
-                          Icons.location_on,
-                          color: Colors.black,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  // Отображаем временную метку при долгом нажатии (если есть)
-                  if (widget.routeType == "polygon" &&
-                      _viewModel.isPolygonDrawing &&
-                      _viewModel.tempPolygonPoint != null)
-                    Marker(
-                      width: 80.0,
-                      height: 80.0,
-                      point: _viewModel.tempPolygonPoint!,
-                      builder: (ctx) => const Icon(
-                        Icons.location_on,
-                        color: Colors.black,
-                        size: 40,
-                      ),
-                    ),
+                    ...(() {
+                      // Копируем подтверждённые точки
+                      List<LatLng> effectivePoints = List.from(_viewModel.polygonPoints);
+                      // Если установлена временная точка, добавляем её
+                      if (_viewModel.tempPolygonPoint != null) {
+                        effectivePoints.add(_viewModel.tempPolygonPoint!);
+                      }
+                      // Если число точек достигло лимита, считаем фигуру завершённой
+                      bool complete = _viewModel.polygonPointsCount != null &&
+                          effectivePoints.length == _viewModel.polygonPointsCount;
+                      // Размер кругов (настраиваемый)
+                      const double circleSize = 12.0;
+                      return List.generate(effectivePoints.length, (index) {
+                        final point = effectivePoints[index];
+                        // Если фигура не завершена и это последний элемент – показываем location_on
+                        if (!complete && index == effectivePoints.length - 1) {
+                          return Marker(
+                            width: 80.0,
+                            height: 80.0,
+                            point: point,
+                            builder: (ctx) => const Icon(
+                              Icons.location_on,
+                              color: Colors.black,
+                              size: 40,
+                            ),
+                          );
+                        } else {
+                          // Иначе отрисовываем круг
+                          return Marker(
+                            width: circleSize,
+                            height: circleSize,
+                            point: point,
+                            builder: (ctx) => Container(
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black,
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    }()),
                   // Для линии: отображаем добавленные точки
                   if (widget.routeType == "line")
                     ..._viewModel.linePoints.map(
@@ -490,8 +504,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                 ],
               ),
               // Отрисовка круга (для circle режима)
-              if (_viewModel.radius != null &&
-                  widget.routeType == "circle")
+              if (_viewModel.radius != null && widget.routeType == "circle")
                 CircleLayer(
                   circles: [
                     CircleMarker(
@@ -504,7 +517,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                     ),
                   ],
                 ),
-              // Если для полигона достигнут лимит точек – отрисовываем залитый многоугольник
+              // Если фигура завершена (все точки выбраны) – отрисовываем залитый многоугольник
               if (widget.routeType == "polygon" &&
                   _viewModel.isPolygonDrawing &&
                   _viewModel.polygonPointsCount != null &&
@@ -533,8 +546,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                 ),
             ],
           ),
-          if (_viewModel.showLatLngInputs &&
-              widget.routeType != "polygon")
+          if (_viewModel.showLatLngInputs && widget.routeType != "polygon")
             _buildCoordinateInput(),
           if (_viewModel.showRadiusInput && widget.routeType == "circle")
             _buildRadiusInput(),
@@ -581,7 +593,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
               ],
             ),
           ),
-          // Кнопка выравнивания метки
+          // Кнопка выравнивания метки: при нажатии перемещаемся к первой точке (если в режиме полигона)
           Positioned(
             right: 10,
             bottom: 90,

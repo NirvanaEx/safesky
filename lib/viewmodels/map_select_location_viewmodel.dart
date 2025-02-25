@@ -60,8 +60,7 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-          Text(localizations.mapSelectLocationView_invalidCoordinates),
+          content: Text(localizations.mapSelectLocationView_invalidCoordinates),
           backgroundColor: Colors.red,
         ),
       );
@@ -112,8 +111,7 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-          Text(localizations.mapSelectLocationView_invalidCoordinates),
+          content: Text(localizations.mapSelectLocationView_invalidCoordinates),
           backgroundColor: Colors.red,
         ),
       );
@@ -137,7 +135,6 @@ class MapSelectLocationViewModel extends ChangeNotifier {
   }
 
   void handleLineAction() {
-    // Для линии можно реализовать очистку нарисованного маршрута
     if (linePoints.isNotEmpty) {
       linePoints.clear();
       notifyListeners();
@@ -145,10 +142,8 @@ class MapSelectLocationViewModel extends ChangeNotifier {
   }
 
   // --- Методы для работы с полигоном ---
-
-  /// Запускает режим рисования полигона с заданным количеством точек
   void startPolygonDrawing(int pointsCount) {
-    if (pointsCount < 3) return; // минимальное значение – 3
+    if (pointsCount < 3) return;
     isPolygonDrawing = true;
     polygonPointsCount = pointsCount;
     polygonPoints.clear();
@@ -156,7 +151,6 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Фиксирует временную точку, добавляя её в список зафиксированных точек
   void confirmTempPolygonPoint() {
     if (tempPolygonPoint != null) {
       polygonPoints.add(tempPolygonPoint!);
@@ -165,7 +159,6 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     }
   }
 
-  /// Сбрасывает режим рисования полигона (для кнопки "Очистить")
   void cancelPolygonDrawing() {
     isPolygonDrawing = false;
     polygonPointsCount = null;
