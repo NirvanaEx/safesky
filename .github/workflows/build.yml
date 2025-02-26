@@ -31,21 +31,25 @@ jobs:
       - name: Extract App Info and Rename APK
         id: extract
         run: |
-          # Извлекаем название приложения и версию из pubspec.yaml
+          # Извлекаем название приложения из pubspec.yaml
           APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
+          # Извлекаем версию из pubspec.yaml (формат X.Y.Z+BUILD)
           VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
           # Разбиваем версию по символу '+'
           IFS='+' read -r VER BUILD_SUFFIX <<< "$VERSION"
           # Определяем текущую ветку
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
           if [ "$BRANCH" = "staging" ]; then
+              # Оставляем только числовую часть из BUILD_SUFFIX и добавляем "b"
+              CLEAN_BUILD=$(echo "$BUILD_SUFFIX" | sed 's/[^0-9]//g')
+              BUILD_SUFFIX=$CLEAN_BUILD
               SUFFIX="b"
           elif [ "$BRANCH" = "master" ]; then
               SUFFIX=""
           else
               SUFFIX=""
           fi
-          # Формируем имя файла: Например, "Safe_Sky_v2.7.4.117b.apk"
+          # Формируем имя файла: Например, "Safe_Sky_v2.7.4.119b.apk"
           FILE_NAME="${APP_NAME}_v${VER}.${BUILD_SUFFIX}${SUFFIX}.apk"
           # Заменяем пробелы на нижнее подчеркивание
           FILE_NAME=${FILE_NAME// /_}
