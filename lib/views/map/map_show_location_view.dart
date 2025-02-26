@@ -163,9 +163,10 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
             polygons: [
               Polygon(
                 points: points,
-                color: Colors.blueAccent.withOpacity(0.2),
-                borderColor: Colors.blueAccent,
+                color: Colors.blueAccent.withOpacity(0.3),
+                borderColor: Colors.green,
                 borderStrokeWidth: 2,
+                isFilled: true
               ),
             ],
           ),
@@ -183,7 +184,8 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
               Polyline(
                 points: points,
                 strokeWidth: 2.0,
-                color: Colors.blueAccent,
+                color: Colors.green,
+
               ),
             ],
           ),

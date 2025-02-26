@@ -476,6 +476,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                       color: Colors.blueAccent.withOpacity(0.2),
                       borderColor: Colors.blueAccent,
                       borderStrokeWidth: 2,
+                      isFilled: true
                     ),
                   ],
                 ),

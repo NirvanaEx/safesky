@@ -107,37 +107,70 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     final detail = widget.planDetailModel;
     if (detail == null) return const SizedBox();
 
-    // Если zoneTypeId = 1 -> круг (радиус от точки)
     if (detail.zoneTypeId == 1) {
+      // Круг
       if (detail.coordList != null && detail.coordList!.isNotEmpty) {
         final c = detail.coordList!.first;
         final lat = _parseCoordinate(c.latitude);
         final lng = _parseCoordinate(c.longitude);
-
-        return Stack(
-          children: [
-            // Отрисовка круга
-            flutter_map.CircleLayer(
-              circles: [
-                flutter_map.CircleMarker(
-                  point: LatLng(lat, lng),
-                  color: Colors.green.withOpacity(0.3),
-                  borderColor: Colors.green,
-                  borderStrokeWidth: 2.0,
-                  radius: (c.radius ?? 0).toDouble(),
-                  useRadiusInMeter: true,
-                ),
-              ],
+        return flutter_map.CircleLayer(
+          circles: [
+            flutter_map.CircleMarker(
+              point: LatLng(lat, lng),
+              color: Colors.green.withOpacity(0.3),
+              borderColor: Colors.green,
+              borderStrokeWidth: 2.0,
+              radius: (c.radius ?? 0).toDouble(),
+              useRadiusInMeter: true,
+            )
+          ],
+        );
+      }
+    } else if (detail.zoneTypeId == 2) {
+      // Полигон
+      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+        List<LatLng> points = detail.coordList!
+            .map((c) =>
+            LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude)))
+            .toList();
+        // Если полигон не замкнут, добавляем первую точку в конец
+        if (points.isNotEmpty) {
+          final first = points.first;
+          final last = points.last;
+          if (first.latitude != last.latitude || first.longitude != last.longitude) {
+            points.add(first);
+          }
+        }
+        return flutter_map.PolygonLayer(
+          polygons: [
+            flutter_map.Polygon(
+              points: points,
+              color: Colors.blueAccent.withOpacity(0.3),
+              borderColor: Colors.green,
+              borderStrokeWidth: 2.0,
+              isFilled: true,
+            ),
+          ],
+        );
+      }
+    } else if (detail.zoneTypeId == 3) {
+      // Линия
+      if (detail.coordList != null && detail.coordList!.isNotEmpty) {
+        List<LatLng> points = detail.coordList!
+            .map((c) =>
+            LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude)))
+            .toList();
+        return flutter_map.PolylineLayer(
+          polylines: [
+            flutter_map.Polyline(
+              points: points,
+              strokeWidth: 2.0,
+              color: Colors.green,
             ),
           ],
         );
       }
     }
-
-    // Если в будущем zoneTypeId == 2 — полигон
-    // можно будет добавить логику PolygonLayer и проход по всем точкам в coordList.
-
-    // Если данных нет, возвращаем пустой виджет
     return const SizedBox();
   }
 

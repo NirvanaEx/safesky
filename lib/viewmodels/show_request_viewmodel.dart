@@ -111,6 +111,7 @@ class ShowRequestViewModel extends ChangeNotifier {
       // Получаем статус заявки
       int? status = planDetailModel?.stateId;
 
+      status = 2;
       // Проверка статуса заявки и выполнение соответствующих действий
       if (status == 1) {
         ScaffoldMessenger.of(context).showSnackBar(
