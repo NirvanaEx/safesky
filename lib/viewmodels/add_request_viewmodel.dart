@@ -126,6 +126,7 @@ class AddRequestViewModel extends ChangeNotifier {
   void autoFillWithPlanDetail(PlanDetailModel planDetail, BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
+    updateStartDate(context, DateTime.now().add(Duration(days: 1)));
     // Заполнение текстовых полей
     requesterNameController.text = planDetail.applicant ?? '';
     emailController.text = planDetail.email ?? '';

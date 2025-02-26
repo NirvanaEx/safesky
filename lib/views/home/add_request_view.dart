@@ -50,6 +50,22 @@ class _AddRequestViewState extends State<AddRequestView> {
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
+      appBar: widget.planDetail != null
+          ? AppBar(
+              backgroundColor: Colors.white,
+              elevation: 1,
+              leading: Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: Icon(Icons.menu, color: Colors.black),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                  );
+                },
+              ),
+            )
+          : null,
       body: viewModel.isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
