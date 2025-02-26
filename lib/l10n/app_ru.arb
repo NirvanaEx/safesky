@@ -1,0 +1,325 @@
+{
+  "language" : "Язык",
+  "theme": "Тема",
+  "dark": "Темная",
+  "light": "Светлая",
+  "russian": "Русский",
+  "english": "Английский",
+  "uzbek": "Узбекский",
+
+  "version": "Версия",
+  "userAgreement": "Пользовательское соглашение",
+  "privacyPolicy": "Политика конфиденциальности",
+
+  "confirmed": "Подтверждён",
+  "pending": "На рассмотрении",
+  "rejected": "Отклонён",
+  "canceled": "Отменён",
+  "unknown": "Неизвестно",
+  "errorRetrievingStatus": "Ошибка получения статуса",
+
+  "m": "м",
+  "latitude": "Широта",
+  "longitude": "Долгота",
+
+  "notifications": "Уведомления",
+  "noNotifications": "Нет уведомлений",
+  "news": "Новости",
+  "noNews": "Нет новостей.",
+
+  "tokenPreExpirationTitle": "Внимание",
+  "tokenPreExpirationMessage": "Требуется перезаход в аккаунт через 5 минут",
+  "tokenFinalTitle": "Вы вышли",
+  "tokenFinalMessage": "Вы вышли с аккаунта",
+
+  "ok": "ОК",
+
+
+
+
+  "loginView_loginToAccount": "Войти в аккаунт",
+  "loginView_email": "Email",
+  "loginView_password": "Пароль",
+  "loginView_login": "Войти",
+  "loginView_register": "Зарегистрироваться",
+
+
+
+
+  "emailView_register": "Зарегистрироваться",
+  "emailView_email": "Email",
+  "emailView_continueLabel": "Продолжить",
+  "emailView_alreadyHaveAccount": "Уже есть аккаунт? Войти",
+  "emailView_invalidEmailFormat": "Неверный формат email",
+  "emailView_termsOfService": "Нажимая 'Продолжить', вы принимаете условия использования",
+
+
+
+
+  "infoView_register": "Зарегистрироваться",
+  "infoView_createPassword": "Создайте пароль",
+  "infoView_repeatPassword": "Повторите пароль",
+  "infoView_confirmationCode": "Код подтверждения",
+  "infoView_surname": "Фамилия",
+  "infoView_name": "Имя",
+  "infoView_phone": "Телефон",
+  "infoView_verificationSent": "Мы отправили код подтверждения на",
+  "infoView_acceptTerms": "Нажимая 'Продолжить', вы принимаете условия использования",
+
+
+
+
+  "mainView_requests": "Заявки",
+  "mainView_add": "Добавить",
+  "mainView_scan": "Сканировать",
+  "mainView_profile": "Профиль",
+  "mainView_hi": "Привет",
+  "mainView_support": "Тех. поддержка",
+  "mainView_settings": "Настройки",
+  "mainView_aboutApp": "О приложении",
+  "mainView_logout": "Выйти",
+  "mainView_available24": "Операторы доступны 24/7",
+
+
+
+
+  "profileView_profile": "Профиль",
+  "profileView_surname": "Фамилия",
+  "profileView_name": "Имя",
+  "profileView_phone": "Телефон",
+  "profileView_password": "Пароль",
+  "profileView_changePassword": "Изменить пароль",
+
+  "profileView_oldPassword": "Старый пароль",
+  "profileView_newPassword": "Новый пароль",
+  "profileView_confirmPassword": "Повторите пароль",
+  "profileView_successChangedPassword": "Пароль был успешно изменен",
+  "profileView_save": "Сохранить",
+  "profileView_change": "Изменить",
+  "profileView_submitRequest": "Отправить заявку",
+  "profileView_passwordChanged": "Ваш пароль был успешно изменен.",
+  "profileView_profileUpdated": "Профиль успешно обновлен.",
+
+
+
+
+  "requestListView_noDataFound": "Данных не найдено",
+  "requestListView_search": "Поиск",
+
+
+
+
+  "settingsView_save": "Сохранить",
+
+
+
+
+  "scanView_scanMessage": "Пожалуйста, отсканируйте QR-код",
+  "scanView_errorFetchingData": "Ошибка при получении данных",
+  "scanView_authTokenNotFound": "Токен авторизации не найден",
+  "scanView_back": "Назад",
+  "scanView_stopExistingLocationSharing": "Остановить существующую задачу обмена местоположением?",
+  "scanView_locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
+  "scanView_continue": "Продолжить",
+
+
+
+
+  "addRequestView_other": "Другое",
+  "addRequestView_operatorPhone": "Номер телефона оператора",
+  "addRequestView_additionalPhone": "Дополнительный номер телефона",
+  "addRequestView_addPhone": "Добавить номер телефона",
+  "addRequestView_flightPurpose": "Цель полёта",
+  "addRequestView_enterPurpose": "Введите цель полёта",
+  "addRequestView_flightPurposeHint": "Цель полёта",
+  "addRequestView_applicationNum": "Номер заявки",
+  "addRequestView_chooseOperator": "Выбор операторов",
+  "addRequestView_chooseOneOrMultiple": "Выберите одного или нескольких",
+  "addRequestView_selectOperator": "Выбрать оператора",
+  "addRequestView_selectBpla": "Выберите БПЛА",
+  "addRequestView_chooseBpla": "Выбрать БПЛА",
+  "addRequestView_flightStartDate": "Дата начала выполнения полета",
+  "addRequestView_requesterName": "Наименование заявителя",
+  "addRequestView_model": "Модель",
+  "addRequestView_flightSign": "Регистрационный опознавательный знак БПЛА",
+  "addRequestView_flightTimes": "Время начала и окончания полета (UTC)",
+  "addRequestView_region": "Регион выполнения полета",
+  "addRequestView_landmark": "Ориентир выполнения полета",
+  "addRequestView_flightOperationArea": "Область выполнения полетов",
+  "addRequestView_flightOperationDistrict": "Район выполнения полетов",
+  "addRequestView_routeType": "Выбор маршрута",
+  "addRequestView_routeCircle": "По кругу",
+  "addRequestView_routePolygon": "По полигону",
+  "addRequestView_routeLine": "По линии",
+  "addRequestView_coordinates": "Координаты",
+  "addRequestView_map": "Карта",
+  "addRequestView_height": "Высота полета (м)",
+  "addRequestView_radius": "Радиус полета (м)",
+  "addRequestView_operatorName": "Ф.И.О. оператора БПЛА",
+  "addRequestView_email": "Email",
+  "addRequestView_flightHeight": "Высота полета (м)",
+  "addRequestView_flightRadius": "Радиус полета (м)",
+  "addRequestView_specialPermit": "Спец. разрешение МО РУз",
+  "addRequestView_permitNumber": "№ Разрешения",
+  "addRequestView_contract": "Номер и дата договора",
+  "addRequestView_contractNumber": "№ Договора",
+  "addRequestView_optional": "Примечание (не обязательно)",
+  "addRequestView_note": "Примечание (не обязательно)",
+  "addRequestView_submit": "Отправить",
+  "addRequestView_cancel": "Отменить заявку",
+  "addRequestView_stopExistingLocationSharing": "Остановить существующую задачу обмена местоположением?",
+  "addRequestView_locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
+  "addRequestView_back": "Назад",
+  "addRequestView_delete": "Удалить",
+  "addRequestView_cancelRequest": "Отмена заявки",
+  "addRequestView_enterReason": "Введите причину отмены",
+  "addRequestView_exit": "Выход",
+  "addRequestView_planIdMissing": "ID плана отсутствует",
+  "addRequestView_requestDeletedSuccessfully": "Заявка успешно удалена",
+  "addRequestView_requestCanceledSuccessfully": "Заявка успешно отменена",
+  "addRequestView_errorMessage": "Ошибка: {errorMessage}",
+
+  "addRequestView_invalidRadius": "Некорректное значение радиуса",
+  "addRequestView_invalidFlightHeight": "Некорректное значение высоты полета",
+  "addRequestView_invalidPermitNumber": "Некорректное значение номера разрешения",
+  "addRequestView_invalidContractNumber": "Некорректное значение номера договора",
+  "addRequestView_invalidLatLngFormat": "Некорректный формат координат. Используйте формат 'широта долгота'",
+  "addRequestView_invalidLatitudeLongitude": "Некорректные значения для широты или долготы",
+  "addRequestView_invalidStartDate": "Некорректное значение даты начала",
+  "addRequestView_invalidFlightStartDateTime": "Некорректное значение времени начала полета",
+  "addRequestView_invalidFlightEndDateTime": "Некорректное значение времени окончания полета",
+  "addRequestView_invalidPermitDate": "Некорректное значение даты разрешения",
+  "addRequestView_invalidContractDate": "Некорректное значение даты договора",
+  "addRequestView_invalidRequesterName": "Наименование заявителя не может быть пустым",
+  "addRequestView_invalidModel": "Модель должна быть выбрана",
+  "addRequestView_invalidLandmark": "Ориентир полета не должен быть пустым",
+  "addRequestView_invalidPurpose": "Цель полета должна быть выбрана",
+  "addRequestView_invalidPhoneNumber": "Некорректный номер телефона",
+  "addRequestView_invalidEmail": "Некорректный формат email",
+  "addRequestView_invalidFlightSign": "Знак полета должен быть выбран",
+  "addRequestView_invalidOperatorName": "Имя оператора не может быть пустым",
+  "addRequestView_invalidBpla": "Пожалуйста, выберите хотя бы один БПЛА",
+  "addRequestView_invalidOperators": "Пожалуйста, выберите хотя бы одного оператора",
+  "addRequestView_invalidApplicationNumber": "Номер заявки не может быть пустым",
+  "addRequestView_invalidDistrict": "Пожалуйста, выберите район",
+  "addRequestView_requestSentSuccess": "Запрос успешно отправлен!",
+  "addRequestView_sendError": "Ошибка при отправке:",
+
+  "addRequestView_requestNum": "Номер заявки",
+  "addRequestView_viewRequest": "Просмотреть заявку",
+
+
+
+
+  "showRequestView_execState1": "выполнение...",
+  "showRequestView_execState2": "нет сигнала более минуты",
+  "showRequestView_execState3": "выполнение приостановлено",
+  "showRequestView_execState4": "выполнение завершено",
+  "showRequestView_execState5": "неизвестно",
+  "showRequestView_execState6": "выполнение без отслеживания",
+  "showRequestView_startLocationSharing": "Начать трансляцию",
+  "showRequestView_requestNum": "Номер заявки",
+  "showRequestView_chooseOperator": "Выбор операторов",
+  "showRequestView_chooseOneOrMultiple": "Выберите одного или нескольких",
+  "showRequestView_selectOperator": "Выбрать оператора",
+  "showRequestView_selectBpla": "Выберите БПЛА",
+  "showRequestView_chooseBpla": "Выбрать БПЛА",
+  "showRequestView_flightStartDate": "Дата начала выполнения полета",
+  "showRequestView_requesterName": "Наименование заявителя",
+  "showRequestView_model": "Модель",
+  "showRequestView_flightSign": "Регистрационный опознавательный знак БПЛА",
+  "showRequestView_flightTimes": "Время начала и окончания полета (UTC)",
+  "showRequestView_region": "Регион выполнения полета",
+  "showRequestView_landmark": "Ориентир выполнения полета",
+  "showRequestView_flightOperationArea": "Область выполнения полетов",
+  "showRequestView_flightOperationDistrict": "Район выполнения полетов",
+  "showRequestView_routeType": "Выбор маршрута",
+  "showRequestView_routeCircle": "По кругу",
+  "showRequestView_routePolygon": "По квадрату/полигону",
+  "showRequestView_routeLine": "По линии",
+  "showRequestView_coordinates": "Координаты",
+  "showRequestView_map": "Карта",
+  "showRequestView_height": "Высота полета (м)",
+  "showRequestView_radius": "Радиус полета (м)",
+  "showRequestView_flightPurpose": "Цель полета (вид работы)",
+  "showRequestView_operatorName": "Ф.И.О. оператора БПЛА",
+  "showRequestView_operatorPhone": "Номер оператора",
+  "showRequestView_email": "Email",
+  "showRequestView_flightHeight": "Высота полета (м)",
+  "showRequestView_flightRadius": "Радиус полета (м)",
+  "showRequestView_specialPermit": "Спец. разрешение МО РУз",
+  "showRequestView_permitNumber": "№ Разрешения",
+  "showRequestView_contract": "Номер и дата договора",
+  "showRequestView_contractNumber": "№ Договора",
+  "showRequestView_optional": "Примечание (не обязательно)",
+  "showRequestView_note": "Примечание (не обязательно)",
+  "showRequestView_submit": "Отправить",
+  "showRequestView_cancel": "Отменить заявку",
+  "showRequestView_stopExistingLocationSharing": "Остановить существующую задачу обмена местоположением?",
+  "showRequestView_locationSharingActive": "Задача обмена местоположением уже активна. Хотите остановить её и начать новую?",
+  "showRequestView_backDialog": "Назад",
+  "showRequestView_delete": "Удалить",
+  "showRequestView_cancelRequestDialog": "Отмена заявки",
+  "showRequestView_enterReasonDialog": "Введите причину отмены",
+  "showRequestView_exitDialog": "Выход",
+  "showRequestView_planIdMissing": "ID плана отсутствует",
+  "showRequestView_requestDeletedSuccessfully": "Заявка успешно удалена",
+  "showRequestView_requestCanceledSuccessfully": "Заявка успешно отменена",
+  "showRequestView_errorMessage": "Ошибка: {errorMessage}",
+  "showRequestView_deleteConfirmationTitleDialog": "Подтверждение удаления",
+  "showRequestView_deleteConfirmationMessageDialog": "Вы действительно хотите удалить заявку?",
+  "showRequestView_cancelDialog": "Отмена",
+  "showRequestView_deleteDialog": "Удалить",
+  "showRequestView_fieldEmptyError": "Поле не может быть пустым",
+  "addRequestView_invalidPolygonPoints": "Пожалуйста, укажите как минимум 3 точки для полигона",
+  "addRequestView_invalidLinePoints": "Пожалуйста, укажите как минимум 2 точки для линии",
+  "showRequestView_locationSharingTitle": "Передача местоположения",
+  "showRequestView_locationSharingMessage": "Передача данных уже запущена. Если нажмете на продолжить, предыдущая трансляция будет приостановлена.",
+  "showRequestView_locationSharingStarted": "Передача местоположения началась",
+  "showRequestView_continue": "Продолжить",
+
+
+
+
+  "mapSelectLocationView_appBarTitle": "Выбор местоположения",
+  "mapSelectLocationView_latitudeHint": "Широта",
+  "mapSelectLocationView_longitudeHint": "Долгота",
+  "mapSelectLocationView_ok": "ОК",
+  "mapSelectLocationView_radiusHint": "Радиус (м)",
+  "mapSelectLocationView_invalidCoordinates": "Введите корректные координаты (широта: -90 до 90, долгота: -180 до 180)",
+  "mapSelectLocationView_invalidRadius": "Введите корректное значение радиуса",
+  "mapSelectLocationView_save": "Сохранить",
+
+  "mapSelectLocationView_add": "Добавить",
+  "mapSelectLocationView_minimumPoints": "Минимум 3 точки",
+  "mapSelectLocationView_minimumLinePoints": "Введите минимум 2 точки",
+
+
+
+  "mapShareLocationView_startLocationSharing": "Начать трансляцию",
+  "mapShareLocationView_sharingLocation": "Идет трансляция",
+  "mapShareLocationView_stop": "Завершить",
+  "mapShareLocationView_pause": "Пауза",
+  "mapShareLocationView_resume": "Продолжить",
+  "mapShareLocationView_paused": "Пауза",
+  "mapShareLocationView_searchingYourLocation": "Поиск вашего местоположения",
+  "mapShareLocationView_profileUpdated": "Профиль обновлен",
+  "mapShareLocationView_confirmStopLocationSharingTitle": "Завершить трансляцию",
+  "mapShareLocationView_confirmStopLocationSharingMessage": "Действительно ли вы хотите окончательно завершить трансляцию?",
+  "mapShareLocationView_confirmStopLocationSharingYes": "Да",
+  "mapShareLocationView_confirmStopLocationSharingNo": "Нет",
+
+
+
+
+  "notification_channelName": "Трансляция местоположения",
+  "notification_channelDescription": "Уведомление о трансляции местоположения",
+  "notification_activeTitle": "Трансляция местоположения активна",
+  "notification_activeBody": "Ваше местоположение передается",
+  "notification_stopAction": "Остановить трансляцию",
+
+
+
+
+  "supportView_typeYourMessage": "Напишите сообщение..."
+}

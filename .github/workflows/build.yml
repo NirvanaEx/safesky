@@ -1,0 +1,63 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - master
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.9'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Generate Localization Files
+        run: flutter gen-l10n
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Extract App Info and Rename APK
+        id: extract
+        run: |
+          # Извлекаем название приложения и версию из pubspec.yaml
+          APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          # Разбиваем версию по символу '+'
+          IFS='+' read -r VER BUILD_SUFFIX <<< "$VERSION"
+          # Определяем текущую ветку
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          if [ "$BRANCH" = "staging" ]; then
+              SUFFIX="b"
+          elif [ "$BRANCH" = "master" ]; then
+              SUFFIX=""
+          else
+              SUFFIX=""
+          fi
+          # Формируем имя файла: Например, "Safe_Sky_v2.7.4.117b.apk"
+          FILE_NAME="${APP_NAME}_v${VER}.${BUILD_SUFFIX}${SUFFIX}.apk"
+          # Заменяем пробелы на нижнее подчеркивание
+          FILE_NAME=${FILE_NAME// /_}
+          echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
+          echo "FILE_NAME: $FILE_NAME"
+
+      - name: Rename APK File
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk "$FILE_NAME"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-build
+          path: ${{ env.FILE_NAME }}
