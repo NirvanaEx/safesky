@@ -215,11 +215,15 @@ class _AddRequestViewState extends State<AddRequestView> {
               ),
               TextButton(
                 onPressed: () async {
+                  final initialCoordinates = viewModel.getCurrentCoordinates(); // новый метод
+                  print("COORINATES: $initialCoordinates");
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => MapSelectLocationView(
                         routeType: viewModel.selectedRouteType,
+                        initialCoordinates: initialCoordinates, // передаём координаты
+
                       ),
                     ),
                   );

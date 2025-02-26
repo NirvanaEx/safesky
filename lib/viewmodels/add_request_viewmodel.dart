@@ -290,6 +290,44 @@ class AddRequestViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  dynamic getCurrentCoordinates() {
+    if (selectedRouteType == "circle") {
+      if (latLngController.text.trim().isEmpty || radiusController.text.trim().isEmpty) return null;
+      final parts = latLngController.text.trim().split(" ");
+      if (parts.length != 2) return null;
+      double? lat = double.tryParse(parts[0]);
+      double? lng = double.tryParse(parts[1]);
+      double? rad = double.tryParse(radiusController.text.trim());
+      if (lat != null && lng != null && rad != null) {
+        return {
+          'coordinates': LatLng(lat, lng),
+          'radius': rad,
+        };
+      }
+    } else if (selectedRouteType == "polygon" || selectedRouteType == "line") {
+      if (latLngController.text.trim().isEmpty) return null;
+      List<LatLng> points = [];
+      List<String> pointStrings = latLngController.text
+          .trim()
+          .split(";")
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+      for (String point in pointStrings) {
+        List<String> parts =
+        point.trim().split(" ").where((s) => s.trim().isNotEmpty).toList();
+        if (parts.length != 2) continue;
+        double? lat = double.tryParse(parts[0]);
+        double? lng = double.tryParse(parts[1]);
+        if (lat != null && lng != null) {
+          points.add(LatLng(lat, lng));
+        }
+      }
+      return points;
+    }
+    return null;
+  }
+
+
   // Метод загрузки списка регионов
   Future<void> loadRegions() async {
     try {

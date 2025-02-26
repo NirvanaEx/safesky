@@ -9,9 +9,13 @@ import '../../viewmodels/map_select_location_viewmodel.dart';
 
 class MapSelectLocationView extends StatefulWidget {
   final String routeType; // "circle", "polygon" или "line"
+  final dynamic initialCoordinates; // новый параметр
 
-  const MapSelectLocationView({Key? key, required this.routeType})
-      : super(key: key);
+  const MapSelectLocationView({
+    Key? key,
+    required this.routeType,
+    this.initialCoordinates,
+  }) : super(key: key);
 
   @override
   _MapSelectLocationViewState createState() => _MapSelectLocationViewState();
@@ -28,16 +32,36 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   void initState() {
     super.initState();
     _mapController = MapController();
-    _viewModel = MapSelectLocationViewModel(routeType: widget.routeType);
+    _viewModel = MapSelectLocationViewModel(
+      routeType: widget.routeType,
+      initialCoordinates: widget.initialCoordinates,
+    );
     _viewModel.addListener(() {
       setState(() {});
     });
     // Для полигона сразу включаем режим рисования
-    if (widget.routeType == "polygon") {
+    if (widget.routeType == "polygon" && widget.initialCoordinates == null) {
       _viewModel.startPolygonDrawing();
     }
-  }
 
+    // Если есть координаты, перемещаем карту к ним после первого кадра
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.routeType == "polygon" && _viewModel.polygonPoints.isNotEmpty) {
+        // Вычисляем центр полигона:
+        double sumLat = 0, sumLng = 0;
+        for (var point in _viewModel.polygonPoints) {
+          sumLat += point.latitude;
+          sumLng += point.longitude;
+        }
+        final center = LatLng(sumLat / _viewModel.polygonPoints.length, sumLng / _viewModel.polygonPoints.length);
+        _animateMapMovement(center);
+      } else if (widget.routeType == "line" && _viewModel.linePoints.isNotEmpty) {
+        _animateMapMovement(_viewModel.linePoints.first);
+      } else if (_viewModel.markerPosition != null) {
+        _animateMapMovement(_viewModel.markerPosition);
+      }
+    });
+  }
   /// Анимированное перемещение карты к целевой позиции
   void _animateMapMovement(LatLng targetPosition) {
     const duration = Duration(milliseconds: 500);
@@ -65,7 +89,14 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   void _moveToMarker() {
     _mapController.rotate(0);
     if (widget.routeType == "polygon" && _viewModel.polygonPoints.isNotEmpty) {
-      _animateMapMovement(_viewModel.polygonPoints.first);
+      // Вычисляем центр полигона:
+      double sumLat = 0, sumLng = 0;
+      for (var point in _viewModel.polygonPoints) {
+        sumLat += point.latitude;
+        sumLng += point.longitude;
+      }
+      final center = LatLng(sumLat / _viewModel.polygonPoints.length, sumLng / _viewModel.polygonPoints.length);
+      _animateMapMovement(center);
     } else if (widget.routeType == "line" && _viewModel.linePoints.isNotEmpty) {
       _animateMapMovement(_viewModel.linePoints.first);
     } else {
@@ -572,60 +603,60 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: widget.routeType == "polygon"
                   ? ElevatedButton(
-                onPressed: () {
-                  if (_viewModel.polygonPoints.length < 3) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(localizations.mapSelectLocationView_minimumPoints),
-                      ),
-                    );
-                    return;
-                  }
-                  Navigator.pop(context, {'coordinates': _viewModel.polygonPoints});
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(localizations.mapSelectLocationView_save,
-                    style: const TextStyle(color: Colors.white, fontSize: 18)),
-              )
+                    onPressed: () {
+                      if (_viewModel.polygonPoints.length < 3) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(localizations.mapSelectLocationView_minimumPoints),
+                          ),
+                        );
+                        return;
+                      }
+                      Navigator.pop(context, {'coordinates': _viewModel.polygonPoints});
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(localizations.mapSelectLocationView_save,
+                        style: const TextStyle(color: Colors.white, fontSize: 18)),
+                  )
                   : widget.routeType == "circle"
                   ? ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context, {
-                    'coordinates': _viewModel.markerPosition,
-                    'radius': _viewModel.radius,
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(localizations.mapSelectLocationView_save,
-                    style: const TextStyle(color: Colors.white, fontSize: 18)),
-              )
+                  onPressed: () {
+                    Navigator.pop(context, {
+                      'coordinates': _viewModel.markerPosition,
+                      'radius': _viewModel.radius,
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(localizations.mapSelectLocationView_save,
+                      style: const TextStyle(color: Colors.white, fontSize: 18)),
+                  )
                   : widget.routeType == "line"
                   ? ElevatedButton(
-                onPressed: () {
-                  if (_viewModel.linePoints.length < 2) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(localizations.mapSelectLocationView_minimumLinePoints)),
-                    );
-                    return;
-                  }
-                  Navigator.pop(context, {'coordinates': _viewModel.linePoints});
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(localizations.mapSelectLocationView_save,
-                    style: const TextStyle(color: Colors.white, fontSize: 18)),
-              )
+                  onPressed: () {
+                    if (_viewModel.linePoints.length < 2) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(localizations.mapSelectLocationView_minimumLinePoints)),
+                      );
+                      return;
+                    }
+                    Navigator.pop(context, {'coordinates': _viewModel.linePoints});
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(localizations.mapSelectLocationView_save,
+                      style: const TextStyle(color: Colors.white, fontSize: 18)),
+                  )
                   : Container(),
             ),
           ),

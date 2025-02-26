@@ -10,6 +10,7 @@ class MapSelectLocationViewModel extends ChangeNotifier {
   bool showLatLngInputs = false;
   bool showRadiusInput = false;
 
+
   // --- Поля для рисования полигона ---
   bool isPolygonDrawing = false;
   List<LatLng> polygonPoints = [];
@@ -29,8 +30,27 @@ class MapSelectLocationViewModel extends ChangeNotifier {
   final TextEditingController lngController = TextEditingController();
   final TextEditingController radiusController = TextEditingController();
 
-  MapSelectLocationViewModel({required this.routeType})
-      : markerPosition = LatLng(41.311081, 69.240562);
+
+  MapSelectLocationViewModel({
+    required this.routeType,
+    dynamic initialCoordinates,
+  }) : markerPosition = (routeType == "circle" && initialCoordinates is Map && initialCoordinates['coordinates'] is LatLng)
+      ? initialCoordinates['coordinates']
+      : (initialCoordinates is LatLng)
+      ? initialCoordinates
+      : LatLng(41.311081, 69.240562) {
+    if (routeType == "polygon" && initialCoordinates is List<LatLng>) {
+      polygonPoints = List.from(initialCoordinates);
+      isPolygonDrawing = true; // Устанавливаем флаг, чтобы полигон сразу отображался
+    } else if (routeType == "line" && initialCoordinates is List<LatLng>) {
+      linePoints = List.from(initialCoordinates);
+    } else if (routeType == "circle" && initialCoordinates is Map) {
+      // Для круга ожидаем Map с 'coordinates' и 'radius'
+      markerPosition = initialCoordinates['coordinates'];
+      radius = initialCoordinates['radius'];
+    }
+  }
+
 
   void toggleLatLngInputs() {
     showLatLngInputs = !showLatLngInputs;
