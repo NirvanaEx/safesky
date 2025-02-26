@@ -713,12 +713,15 @@ class AddRequestViewModel extends ChangeNotifier {
       if (response['status'] == 200) {
         final jsonData = response['data'];
         int appNum = jsonData['applicationNum'];
+        int planId = jsonData['planId']; // извлекаем planId
         print("BPLA Plan submitted successfully: ${jsonEncode(requestBody)}");
         clearFields();
+        print("PLAN ID SHOW REQUEST: $planId");
         return {
           'status': 'success',
           'message': localizations!.addRequestView_requestSentSuccess,
           'applicationNum': appNum.toString(),  // добавляем номер заявки в результат
+          'planId': planId.toString(),           // добавляем planId
         };
       } else {
         return {'status': 'error', 'message': response['message']};

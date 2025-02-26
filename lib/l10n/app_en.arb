@@ -32,6 +32,7 @@
   "tokenFinalTitle": "Logged Out",
   "tokenFinalMessage": "You have been logged out of your account",
 
+  "ok": "OK",
 
 
 
@@ -203,6 +204,9 @@
   "addRequestView_invalidLinePoints": "Please provide at least 2 points for line",
   "addRequestView_requestSentSuccess": "Request sent successfully!",
   "addRequestView_sendError": "Error while sending:",
+
+  "addRequestView_requestNum": "Request Number",
+  "addRequestView_viewRequest": "View Request",
 
 
 

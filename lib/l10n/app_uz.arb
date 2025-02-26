@@ -32,6 +32,8 @@
   "tokenFinalTitle": "Chiqib ketdingiz",
   "tokenFinalMessage": "Siz akkauntingizdan chiqib ketdingiz",
 
+  "ok": "OK",
+
 
 
 
@@ -205,6 +207,9 @@
   "addRequestView_requestSentSuccess": "So'rov muvaffaqiyatli yuborildi!",
   "addRequestView_sendError": "Yuborishda xatolik:",
 
+  "addRequestView_requestNum": "So‘rov raqami",
+  "addRequestView_viewRequest": "So‘rovni ko‘rish",
+
 
 
 
@@ -268,7 +273,6 @@
   "showRequestView_cancelDialog": "Bekor qilish",
   "showRequestView_deleteDialog": "O'chirish",
   "showRequestView_fieldEmptyError": "Maydon bo‘sh bo‘lmasligi kerak",
-
 
   "showRequestView_locationSharingTitle": "Joylashuvni ulashish",
   "showRequestView_locationSharingMessage": "Ma'lumot ulashish allaqachon boshlangan. Agar davom ettirsangiz, oldingi efir to'xtatiladi.",

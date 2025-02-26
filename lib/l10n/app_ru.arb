@@ -32,6 +32,8 @@
   "tokenFinalTitle": "Вы вышли",
   "tokenFinalMessage": "Вы вышли с аккаунта",
 
+  "ok": "ОК",
+
 
 
 
@@ -200,9 +202,11 @@
   "addRequestView_invalidOperators": "Пожалуйста, выберите хотя бы одного оператора",
   "addRequestView_invalidApplicationNumber": "Номер заявки не может быть пустым",
   "addRequestView_invalidDistrict": "Пожалуйста, выберите район",
-
   "addRequestView_requestSentSuccess": "Запрос успешно отправлен!",
   "addRequestView_sendError": "Ошибка при отправке:",
+
+  "addRequestView_requestNum": "Номер заявки",
+  "addRequestView_viewRequest": "Просмотреть заявку",
 
 
 

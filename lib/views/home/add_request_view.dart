@@ -315,16 +315,22 @@ class _AddRequestViewState extends State<AddRequestView> {
         Center(
           child: ElevatedButton(
             onPressed: () async {
-              Map<String, String>? result = await viewModel.submitRequest(context);
+              Map<String, dynamic>? result = await viewModel.submitRequest(context);
 
               if (result != null) {
-                String status = result['status']!;
-                String message = result['message']!;
+                String status = result['status'];
+                String message = result['message'];
 
                 if (status == 'success') {
-                  // Получаем applicationNum из результата
+                  // Получаем applicationNum и planId из результата
                   String applicationNum = result['applicationNum'] ?? 'Unknown';
-                  await MyCustomDialog.showApplicationNumberDialog(context, localizations.showRequestView_requestNum, applicationNum);
+                  int planId = int.tryParse(result['planId']) ?? 0;
+                  await MyCustomDialog.showApplicationNumberDialog(
+                    context,
+                    localizations.addRequestView_requestNum,
+                    applicationNum,
+                    planId,
+                  );
                   context.read<RequestListViewModel>().refreshRequests();
                   print("Запрос успешно отправлен!");
                   // Дополнительные действия при успешном запросе

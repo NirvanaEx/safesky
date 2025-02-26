@@ -219,12 +219,10 @@ class ShowRequestViewModel extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request deleted successfully')),
         );
-        // Можно обновить состояние модели после удаления
-        planDetailModel = null; // или обновить статус, если есть механизм
-        notifyListeners();
         Provider.of<RequestListViewModel>(context, listen: false).refreshRequests();
-        Navigator.of(context).pop();
-      } else {
+        Navigator.of(context).pop(); // Закрываем экран деталей
+        return;
+      }else {
         var errorMessage = 'Failed to delete request';
         try {
           final responseBody = jsonDecode(response.body);

@@ -12,8 +12,9 @@ import 'package:collection/collection.dart';
 
 class ShowRequestView extends StatefulWidget {
   final int? requestId;
+  final bool isViewed; // новый параметр
 
-  ShowRequestView({required this.requestId});
+  ShowRequestView({required this.requestId, this.isViewed = false});
 
   @override
   _ShowRequestViewState createState() => _ShowRequestViewState();
@@ -66,6 +67,23 @@ class _ShowRequestViewState extends State<ShowRequestView> {
       );
     }
 
+    // Если заявка отсутствует, выводим сообщение и кнопку возврата
+    if (viewModel.planDetailModel == null) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: Center(
+          child: Text("DELETED"),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -101,17 +119,18 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                               "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
                               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddRequestView(planDetail: viewModel.planDetailModel),
-                                  ),
-                                );
-                              },
-                            ),
+                            if (!widget.isViewed) // показываем иконку редактирования только если isViewed false
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddRequestView(planDetail: viewModel.planDetailModel),
+                                    ),
+                                  );
+                                },
+                              ),
                           ],
                         ),
                         Container(

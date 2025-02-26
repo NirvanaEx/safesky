@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../show_request_view.dart';
+
 class MyCustomDialog {
   /// Отображает диалоговое окно с заголовком, сообщением и кнопками "OK" и "Отмена"
   /// [okText] и [cancelText] можно передать для кастомизации текста кнопок.
@@ -51,7 +53,8 @@ class MyCustomDialog {
   }
 
   static Future<void> showApplicationNumberDialog(
-      BuildContext context, String dialogTitle, String applicationNum) {
+      BuildContext context, String dialogTitle, String applicationNum, int planId) {
+    final localizations = AppLocalizations.of(context)!;
     return showDialog<void>(
       context: context,
       builder: (context) {
@@ -76,20 +79,44 @@ class MyCustomDialog {
             ),
           ),
           actions: [
-            Center(
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "OK",
-                  style: TextStyle(fontSize: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Локализованная кнопка "View Request"
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowRequestView(
+                          requestId: planId,
+                          isViewed: true,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    localizations.addRequestView_viewRequest, // локализованная строка для "View Request"
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
-              ),
+                // Локализованная кнопка OK
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    localizations.ok, // локализованная строка для "OK"
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
             ),
           ],
         );
       },
     );
   }
+
 
   /// Пример простого диалога с кнопкой "OK"
   static Future<void> showNotificationDialog(BuildContext context, String title, String message) {
