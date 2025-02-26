@@ -8,6 +8,7 @@ import 'home/add_request_view.dart';
 import 'map/map_show_location_view.dart';
 import 'package:provider/provider.dart';
 import 'my_custom_views/my_custom_dialog.dart';
+import 'package:collection/collection.dart';
 
 class ShowRequestView extends StatefulWidget {
   final int? requestId;
@@ -238,36 +239,14 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                             : '-'} ${localizations?.m}'),
                     _buildRequestInfo(localizations.showRequestView_flightPurpose,
                         viewModel.planDetailModel?.purpose ?? '-'),
+
                     _buildRequestInfo(
                       localizations.showRequestView_operatorName,
-                      viewModel.planDetailModel?.operatorList.isNotEmpty ?? false
-                          ? viewModel.planDetailModel!.operatorList
-                          .asMap()
-                          .entries
-                          .map((entry) => "${entry.key + 1}. ${entry.value.surname ?? '-'} ${entry.value.name ?? '-'} ${entry.value.patronymic ?? ''}")
-                          .join('\n')
-                          : '-',
+                      buildOperatorNames(viewModel.planDetailModel!, localizations),
                     ),
-
                     _buildRequestInfo(
                       localizations.showRequestView_operatorPhone,
-                          () {
-                        final operatorPhones = viewModel.planDetailModel?.operatorPhones;
-                        if (operatorPhones == null || operatorPhones.isEmpty) return '-';
-
-                        final phonesList = operatorPhones
-                            .split(',')
-                            .map((phone) => phone.trim())
-                            .toList()
-                            .reversed
-                            .toList();
-
-                        return phonesList
-                            .asMap()
-                            .entries
-                            .map((entry) => "${entry.key + 1}. ${entry.value}")
-                            .join("\n");
-                      }(),
+                      buildOperatorPhones(viewModel.planDetailModel!),
                     ),
 
                     _buildRequestInfo(localizations.showRequestView_email,
@@ -366,6 +345,101 @@ class _ShowRequestViewState extends State<ShowRequestView> {
         ],
       ),
     );
+  }
+
+  String buildOperatorPhones(PlanDetailModel planDetailModel) {
+    final operatorPhonesStr = planDetailModel.operatorPhones;
+    if (operatorPhonesStr == null || operatorPhonesStr.isEmpty) return '-';
+
+    // Сохраняем порядок телефонов из исходной строки
+    List<String> originalPhones = operatorPhonesStr
+        .split(',')
+        .map((phone) => phone.trim())
+        .toList();
+
+    final operatorList = planDetailModel.operatorList;
+    final creatorId = planDetailModel.creatorId;
+
+    // Находим телефон создателя, если он есть и присутствует в оригинальном списке
+    String? creatorPhone;
+    List<OperatorModel> otherOperators = [];
+    for (var op in operatorList) {
+      if (creatorId != null && op.id == creatorId) {
+        if (op.phone != null && originalPhones.contains(op.phone!)) {
+          creatorPhone = op.phone!;
+        }
+      } else {
+        otherOperators.add(op);
+      }
+    }
+
+    // Для остальных операторов: оставляем их в том же порядке, что и для ФИО.
+    // Если оператор имеет телефон, который присутствует в originalPhones, запоминаем его по позиции оператора (начиная с 1).
+    Map<int, String> operatorPhoneMapping = {};
+    for (int i = 0; i < otherOperators.length; i++) {
+      var op = otherOperators[i];
+      if (op.phone != null && originalPhones.contains(op.phone!)) {
+        // Номер телефона оператора будет иметь номер, равный (индексу + 1) в списке ФИО
+        operatorPhoneMapping[i + 1] = op.phone!;
+      }
+    }
+
+    // Отмечаем использованные номера (для создателя и операторов)
+    Set<String> usedPhones = {};
+    if (creatorPhone != null) usedPhones.add(creatorPhone);
+    usedPhones.addAll(operatorPhoneMapping.values);
+
+    // Неизвестные номера – те, что есть в оригинальном списке, но не сопоставлены ни с одним оператором
+    List<String> unknownPhones = [];
+    for (var phone in originalPhones) {
+      if (!usedPhones.contains(phone)) {
+        unknownPhones.add(phone);
+      }
+    }
+
+    // Формируем итоговую строку
+    String result = '';
+    if (creatorPhone != null) {
+      result += creatorPhone + "\n\n";
+    }
+    // Для каждого оператора (по тому же порядку, что и ФИО) выводим номер телефона, если он найден.
+    for (int i = 0; i < otherOperators.length; i++) {
+      int number = i + 1;
+      if (operatorPhoneMapping.containsKey(number)) {
+        result += "$number. ${operatorPhoneMapping[number]}\n";
+      }
+    }
+    result += '\n';
+    // Добавляем неизвестные номера с префиксом "*"
+    for (var phone in unknownPhones) {
+      result += "*. $phone\n";
+    }
+    return result.trim();
+  }
+
+  String buildOperatorNames(PlanDetailModel planDetailModel, AppLocalizations localizations) {
+    final operatorList = planDetailModel.operatorList;
+    final creatorId = planDetailModel.creatorId;
+    String creatorInfo = '';
+    List<String> otherOperators = [];
+    for (var op in operatorList) {
+      String info = "${op.surname ?? '-'} ${op.name ?? '-'} ${op.patronymic ?? ''}";
+      if (creatorId != null && op.id == creatorId) {
+        // Создатель выводится без нумерации
+        creatorInfo = info;
+      } else {
+        otherOperators.add(info);
+      }
+    }
+    String result = '';
+    if (creatorInfo.isNotEmpty) {
+      result += creatorInfo + "\n\n";
+    }
+    // Нумеруем остальных операторов согласно порядку в списке
+    for (var i = 0; i < otherOperators.length; i++) {
+      result += "${i + 1}. ${otherOperators[i]}\n";
+    }
+    return result.trim();
   }
 
   Widget _buildExecStateText(int? execStateId, AppLocalizations localizations) {

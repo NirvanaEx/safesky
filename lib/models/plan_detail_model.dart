@@ -31,8 +31,10 @@ class PlanDetailModel {
   final int? execStateId;
   final String? execState;
   final int? activity;
-  final int? mAltitude;   // высота, скорее всего в метрах
-  final double? fAltitude; // высота в футах (к примеру)
+  final int? creatorId;
+  final String? creator;
+  final int? mAltitude;
+  final double? fAltitude;
 
   PlanDetailModel({
     required this.planId,
@@ -67,6 +69,8 @@ class PlanDetailModel {
     this.execStateId,
     this.execState,
     this.activity,
+    this.creatorId,
+    this.creator,
     this.mAltitude,
     this.fAltitude,
   });
@@ -120,6 +124,8 @@ class PlanDetailModel {
         execStateId: json['execStateId'] as int?,
         execState: json['execState'] as String?,
         activity: json['activity'] as int?,
+        creatorId: json['creatorId'] as int?,
+        creator: json['creator'] as String?,
         mAltitude: json['mAltitude'] as int?,
         fAltitude: (json['fAltitude'] as num?)?.toDouble(),
       );
