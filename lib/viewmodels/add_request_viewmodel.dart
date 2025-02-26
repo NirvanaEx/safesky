@@ -123,10 +123,12 @@ class AddRequestViewModel extends ChangeNotifier {
     return decimal;
   }
 
-  void autoFillWithPlanDetail(PlanDetailModel planDetail, BuildContext context) {
+  Future<void> autoFillWithPlanDetail(PlanDetailModel planDetail, BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;
 
+    // Обновляем дату начала
     updateStartDate(context, DateTime.now().add(Duration(days: 1)));
+
     // Заполнение текстовых полей
     requesterNameController.text = planDetail.applicant ?? '';
     emailController.text = planDetail.email ?? '';
@@ -159,31 +161,75 @@ class AddRequestViewModel extends ChangeNotifier {
       } catch (_) {}
     }
 
-    // Заполнение координат и радиуса (для типа "circle")
-    if (planDetail.coordList.isNotEmpty) {
-      final coord = planDetail.coordList.first;
-      if (coord.latitude != null && coord.longitude != null) {
-        final latStr = coord.latitude!;
-        final lngStr = coord.longitude!;
-        double latitude;
-        double longitude;
-
-        if (latStr.endsWith('N') || latStr.endsWith('S')) {
-          latitude = dmsToDecimal(latStr);
-        } else {
-          latitude = double.tryParse(latStr) ?? 0.0;
-        }
-        if (lngStr.endsWith('E') || lngStr.endsWith('W')) {
-          longitude = dmsToDecimal(lngStr);
-        } else {
-          longitude = double.tryParse(lngStr) ?? 0.0;
-        }
-
-        latLngController.text =
-        "${latitude.toStringAsFixed(5)} ${longitude.toStringAsFixed(5)}";
+    // Установка выбранного региона и загрузка списка районов
+    if (planDetail.regionCode != null && regionList.isNotEmpty) {
+      try {
+        final region = regionList.firstWhere((region) => region.code == planDetail.regionCode);
+        selectedRegion = region;
+        notifyListeners();
+        // Ждём загрузки списка районов для выбранной области
+        await loadDistricts(region.code);
+      } catch (e) {
+        // Если регион не найден, сбрасываем регион и район
+        selectedRegion = null;
+        districtList = [];
+        selectedDistrict = null;
       }
-      if (planDetail.zoneTypeId == 1 && coord.radius != null) {
-        radiusController.text = coord.radius.toString();
+    } else {
+      // Если regionCode отсутствует или список регионов пуст
+      selectedRegion = null;
+      districtList = [];
+      selectedDistrict = null;
+    }
+
+    // Установка выбранного района после загрузки списка районов
+    if (planDetail.districtCode != null && districtList.isNotEmpty) {
+      try {
+        selectedDistrict = districtList.firstWhere((district) => district.code == planDetail.districtCode);
+      } catch (e) {
+        selectedDistrict = null;
+      }
+    } else {
+      selectedDistrict = null;
+    }
+
+    // Заполнение координат и радиуса с учетом типа маршрута
+    if (planDetail.coordList.isNotEmpty) {
+      if (planDetail.zoneTypeId == 1) {
+        // Для круга
+        selectedRouteType = "circle";
+        final coord = planDetail.coordList.first;
+        if (coord.latitude != null && coord.longitude != null) {
+          final latStr = coord.latitude!;
+          final lngStr = coord.longitude!;
+          double latitude = (latStr.endsWith('N') || latStr.endsWith('S'))
+              ? dmsToDecimal(latStr)
+              : double.tryParse(latStr) ?? 0.0;
+          double longitude = (lngStr.endsWith('E') || lngStr.endsWith('W'))
+              ? dmsToDecimal(lngStr)
+              : double.tryParse(lngStr) ?? 0.0;
+          latLngController.text = "${latitude.toStringAsFixed(5)} ${longitude.toStringAsFixed(5)}";
+        }
+        if (coord.radius != null) {
+          radiusController.text = coord.radius.toString();
+        }
+      } else if (planDetail.zoneTypeId == 2 || planDetail.zoneTypeId == 3) {
+        // Для полигона (zoneTypeId == 2) или линии (zoneTypeId == 3)
+        selectedRouteType = planDetail.zoneTypeId == 2 ? "polygon" : "line";
+        String formatted = planDetail.coordList.map((coord) {
+          double latitude = (coord.latitude != null &&
+              (coord.latitude!.endsWith('N') || coord.latitude!.endsWith('S')))
+              ? dmsToDecimal(coord.latitude!)
+              : double.tryParse(coord.latitude ?? '') ?? 0.0;
+          double longitude = (coord.longitude != null &&
+              (coord.longitude!.endsWith('E') || coord.longitude!.endsWith('W')))
+              ? dmsToDecimal(coord.longitude!)
+              : double.tryParse(coord.longitude ?? '') ?? 0.0;
+          return '${latitude.toStringAsFixed(5)} ${longitude.toStringAsFixed(5)}';
+        }).join(";\n");
+        latLngController.text = formatted;
+        // Для полигона и линии поле радиуса не используется
+        radiusController.clear();
       }
     }
 
@@ -192,28 +238,35 @@ class AddRequestViewModel extends ChangeNotifier {
       flightHeightController.text = planDetail.mAltitude.toString();
     }
 
-    // Автовыбор БПЛА и операторов (если id совпадают с теми, что в списках)
-    selectedBplas = bplaList.where((bpla) => planDetail.bplaList.any((b) => b.id == bpla.id)).toList();
-    selectedOperators = operatorList.where((op) => planDetail.operatorList.any((pOp) => pOp.id == op.id)).toList();
-    operatorPhoneControllers.clear();
-    for (var op in selectedOperators) {
-      operatorPhoneControllers.add(TextEditingController(text: op.phone));
-    }
+    // Автовыбор БПЛА
+    selectedBplas = bplaList.where((bpla) =>
+        planDetail.bplaList.any((b) => b.id == bpla.id)
+    ).toList();
+    setBpla(selectedBplas);
+
+    // Автовыбор операторов
+    selectedOperators = operatorList.where((op) =>
+        planDetail.operatorList.any((pOp) => pOp.id == op.id)
+    ).toList();
+    setOperators(selectedOperators);
 
     // Заполнение цели полёта с проверкой наличия в списке
     if (purposeList.contains(planDetail.purpose)) {
       selectedPurpose = planDetail.purpose;
       customPurposeController.clear();
     } else {
-      // Если цели нет в списке, выбираем "Другое" и подставляем наше значение
-      selectedPurpose = localizations.addRequestView_other; // Или localizations.addRequestView_other, если используете локализацию
-      customPurposeController.text = planDetail.purpose!;
+      selectedPurpose = localizations.addRequestView_other;
+      customPurposeController.text = planDetail.purpose ?? '';
       if (!purposeList.contains(localizations.addRequestView_other)) {
         purposeList.add(localizations.addRequestView_other);
       }
     }
+
     notifyListeners();
   }
+
+
+
 
   Future<void> initializeData(BuildContext context, String planDate) async {
     final localizations = AppLocalizations.of(context)!;

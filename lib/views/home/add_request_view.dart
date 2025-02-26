@@ -29,21 +29,18 @@ class _AddRequestViewState extends State<AddRequestView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final viewModel = Provider.of<AddRequestViewModel>(context, listen: false);
-      // Если план передан и содержит дату, используем её; иначе — устанавливаем завтрашнюю дату.
       if (widget.planDetail != null && widget.planDetail!.planDate != null) {
-        viewModel.updateStartDate(context, widget.planDetail!.planDate!);
+        await viewModel.updateStartDate(context, widget.planDetail!.planDate!);
       } else if (viewModel.startDate == null) {
-        viewModel.updateStartDate(context, DateTime.now().add(Duration(days: 1)));
+        await viewModel.updateStartDate(context, DateTime.now().add(Duration(days: 1)));
       }
-      // Если план передан, автозаполнение полей
       if (widget.planDetail != null) {
-        viewModel.autoFillWithPlanDetail(widget.planDetail!, context);
+        await viewModel.autoFillWithPlanDetail(widget.planDetail!, context);
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

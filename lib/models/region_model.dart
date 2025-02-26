@@ -13,4 +13,14 @@ class RegionModel {
       name: json['name'] as String,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is RegionModel &&
+              runtimeType == other.runtimeType &&
+              code == other.code;
+
+  @override
+  int get hashCode => code.hashCode;
 }

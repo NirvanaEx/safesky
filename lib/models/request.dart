@@ -168,6 +168,17 @@ class Operator {
       'phone': phone,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Operator &&
+              runtimeType == other.runtimeType &&
+              id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
 }
 
 class Bpla {
@@ -200,6 +211,17 @@ class Bpla {
       'regnum': regnum,
     };
   }
+
+  // Переопределяем оператор равенства по id
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Bpla &&
+              runtimeType == other.runtimeType &&
+              id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class Coordinate {

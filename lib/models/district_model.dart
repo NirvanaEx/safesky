@@ -13,4 +13,14 @@ class DistrictModel {
       name: json['name'] as String,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is DistrictModel &&
+              runtimeType == other.runtimeType &&
+              code == other.code;
+
+  @override
+  int get hashCode => code.hashCode;
 }
