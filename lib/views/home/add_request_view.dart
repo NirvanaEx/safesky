@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_sky/models/district_model.dart';
 import 'package:safe_sky/models/region_model.dart';
+import 'package:safe_sky/viewmodels/request_list_viewmodel.dart';
 import '../../models/plan_detail_model.dart';
 import '../../models/request.dart';
 import '../../viewmodels/add_request_viewmodel.dart';
@@ -324,7 +325,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                   // Получаем applicationNum из результата
                   String applicationNum = result['applicationNum'] ?? 'Unknown';
                   await MyCustomDialog.showApplicationNumberDialog(context, localizations.showRequestView_requestNum, applicationNum);
-
+                  context.read<RequestListViewModel>().refreshRequests();
                   print("Запрос успешно отправлен!");
                   // Дополнительные действия при успешном запросе
                 } else {

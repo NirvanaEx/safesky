@@ -147,7 +147,7 @@
   "addRequestView_flightOperationDistrict": "Parvozlarni amalga oshirish tumani",
   "addRequestView_routeType": "Marshrut turi",
   "addRequestView_routeCircle": "Aylana bo‘yicha",
-  "addRequestView_routePolygon": "Kvadrat/Poligon bo‘yicha",
+  "addRequestView_routePolygon": "Poligon bo‘yicha",
   "addRequestView_routeLine": "Chiziq bo‘yicha",
   "addRequestView_coordinates": "Koordinatalar",
   "addRequestView_map": "Xarita",

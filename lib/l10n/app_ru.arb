@@ -147,7 +147,7 @@
   "addRequestView_flightOperationDistrict": "Район выполнения полетов",
   "addRequestView_routeType": "Выбор маршрута",
   "addRequestView_routeCircle": "По кругу",
-  "addRequestView_routePolygon": "По квадрату/полигону",
+  "addRequestView_routePolygon": "По полигону",
   "addRequestView_routeLine": "По линии",
   "addRequestView_coordinates": "Координаты",
   "addRequestView_map": "Карта",
