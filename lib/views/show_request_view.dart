@@ -127,7 +127,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       ],
                     ),
                     SizedBox(height: 10),
-                    if (true)
+                    if (viewModel.planDetailModel?.activity == 1)
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(

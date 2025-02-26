@@ -72,6 +72,42 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     return result;
   }
 
+  LatLng? _getPlanCenter() {
+    final detail = widget.planDetailModel;
+    if (detail == null || detail.coordList == null || detail.coordList!.isEmpty) return null;
+    if (detail.zoneTypeId == 2) {
+      // Для полигона — усредняем все точки
+      double sumLat = 0, sumLng = 0;
+      for (var c in detail.coordList!) {
+        sumLat += _parseCoordinate(c.latitude);
+        sumLng += _parseCoordinate(c.longitude);
+      }
+      int count = detail.coordList!.length;
+      return LatLng(sumLat / count, sumLng / count);
+    } else {
+      // Для круга или линии — берем первую точку
+      final c = detail.coordList!.first;
+      return LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude));
+    }
+  }
+
+  Future<void> _animateToPlanCenter(LatLng targetLocation) async {
+    LatLng startLocation = _mapController.center;
+    double startZoom = _mapController.zoom;
+    double targetZoom = 13.0; // или другое значение, которое вам нужно
+    const int steps = 30;
+    const int delayMilliseconds = 16;
+    for (int i = 0; i <= steps; i++) {
+      final double lat = startLocation.latitude +
+          (targetLocation.latitude - startLocation.latitude) * (i / steps);
+      final double lng = startLocation.longitude +
+          (targetLocation.longitude - startLocation.longitude) * (i / steps);
+      final double zoom = startZoom + (targetZoom - startZoom) * (i / steps);
+      _mapController.moveAndRotate(LatLng(lat, lng), zoom, 0.0);
+      await Future.delayed(Duration(milliseconds: delayMilliseconds));
+    }
+  }
+
   /// Плавная анимация карты к текущей локации пользователя.
   Future<void> _animateToUserLocation() async {
     final locationVM =
@@ -262,6 +298,22 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
             child: locationVM.isSharingLocation
                 ? _buildSharingMenu(localizations, locationVM)
                 : _buildSlideToStart(localizations, locationVM),
+          ),
+
+          Positioned(
+            bottom: locationVM.isSharingLocation ? 180 : 120,
+            left: 20,
+            child: FloatingActionButton(
+              mini: true,
+              onPressed: () {
+                final planCenter = _getPlanCenter();
+                if (planCenter != null) {
+                  _animateToPlanCenter(planCenter);
+                }
+              },
+              backgroundColor: Colors.white,
+              child: const Icon(Icons.map, color: Colors.black),
+            ),
           ),
         ],
       ),
