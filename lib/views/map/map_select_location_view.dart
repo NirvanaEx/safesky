@@ -24,9 +24,10 @@ class MapSelectLocationView extends StatefulWidget {
 class _MapSelectLocationViewState extends State<MapSelectLocationView> {
   late final MapController _mapController;
   late final MapSelectLocationViewModel _viewModel;
+  bool _actionsExpanded = false; // Новая переменная для сворачивания/разворачивания
 
   // Константа для размера кругов-маркеров
-  static const double markerCircleSize = 12.0;
+  static const double markerCircleSize = 10.0;
 
   @override
   void initState() {
@@ -540,12 +541,30 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
             _buildManualPolygonInput(),
           if (widget.routeType == "line" && _viewModel.showManualLineInput)
             _buildManualLineInput(),
-          // Кнопка удаления для полигона появляется только после добавления первой точки
+
+
+          // Кнопка удаления всех точек (корзина) для полигона
           if (widget.routeType == "polygon" &&
-              _viewModel.polygonPoints.isNotEmpty)
+              _viewModel.polygonPoints.isNotEmpty &&
+              _actionsExpanded)
             Positioned(
               right: 10,
-              bottom: 150,
+              bottom: 270,
+              child: FloatingActionButton(
+                backgroundColor: Colors.black,
+                onPressed: () {
+                  _viewModel.removeLastPolygonPoint();
+                },
+                child: const Icon(Icons.remove, color: Colors.white),
+              ),
+            ),
+
+          if (widget.routeType == "polygon" &&
+              _viewModel.polygonPoints.isNotEmpty &&
+              _actionsExpanded)
+            Positioned(
+              right: 10,
+              bottom: 210,
               child: FloatingActionButton(
                 backgroundColor: Colors.black,
                 onPressed: () {
@@ -554,10 +573,31 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
             ),
-          if (widget.routeType == "line" && _viewModel.linePoints.isNotEmpty)
+          // Кнопка удаления последней точки для полигона (иконка "-")
+
+          // Для линии аналогично:
+
+          if (widget.routeType == "line" &&
+              _viewModel.linePoints.isNotEmpty &&
+              _actionsExpanded)
             Positioned(
               right: 10,
-              bottom: 150,
+              bottom: 270,
+              child: FloatingActionButton(
+                backgroundColor: Colors.black,
+                onPressed: () {
+                  _viewModel.removeLastLinePoint();
+                },
+                child: const Icon(Icons.remove, color: Colors.white),
+              ),
+            ),
+
+          if (widget.routeType == "line" &&
+              _viewModel.linePoints.isNotEmpty &&
+              _actionsExpanded)
+            Positioned(
+              right: 10,
+              bottom: 210,
               child: FloatingActionButton(
                 backgroundColor: Colors.black,
                 onPressed: () {
@@ -566,6 +606,35 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
             ),
+
+          if (_actionsExpanded)
+            Positioned(
+              right: 10,
+              bottom: 150,
+              child: FloatingActionButton(
+                onPressed: _moveToMarker,
+                backgroundColor: Colors.black,
+                child: const Icon(Icons.my_location, color: Colors.white),
+              ),
+            ),
+
+          Positioned(
+            right: 10,
+            bottom: 90,
+            child: FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  _actionsExpanded = !_actionsExpanded;
+                });
+              },
+              backgroundColor: Colors.black,
+              child: Icon(
+                _actionsExpanded ? Icons.expand_less : Icons.expand_more,
+                color: Colors.white,
+              ),
+            ),
+          ),
+
           Positioned(
             left: 10,
             bottom: 90,
@@ -586,15 +655,7 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
               ],
             ),
           ),
-          Positioned(
-            right: 10,
-            bottom: 90,
-            child: FloatingActionButton(
-              onPressed: _moveToMarker,
-              backgroundColor: Colors.black,
-              child: const Icon(Icons.my_location, color: Colors.white),
-            ),
-          ),
+
           Positioned(
             bottom: 20,
             left: 0,

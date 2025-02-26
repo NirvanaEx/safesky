@@ -41,6 +41,12 @@ class MapSelectLocationViewModel extends ChangeNotifier {
       : LatLng(41.311081, 69.240562) {
     if (routeType == "polygon" && initialCoordinates is List<LatLng>) {
       polygonPoints = List.from(initialCoordinates);
+      // Если первый и последний элемент совпадают, удаляем последний, чтобы не было дублирования
+      if (polygonPoints.length > 1 &&
+          (polygonPoints.first.latitude - polygonPoints.last.latitude).abs() < 1e-6 &&
+          (polygonPoints.first.longitude - polygonPoints.last.longitude).abs() < 1e-6) {
+        polygonPoints.removeLast();
+      }
       isPolygonDrawing = true; // Устанавливаем флаг, чтобы полигон сразу отображался
     } else if (routeType == "line" && initialCoordinates is List<LatLng>) {
       linePoints = List.from(initialCoordinates);
@@ -208,4 +214,19 @@ class MapSelectLocationViewModel extends ChangeNotifier {
     tempPolygonPoint = null;
     notifyListeners();
   }
+
+  void removeLastPolygonPoint() {
+    if (polygonPoints.isNotEmpty) {
+      polygonPoints.removeLast();
+      notifyListeners();
+    }
+  }
+
+  void removeLastLinePoint() {
+    if (linePoints.isNotEmpty) {
+      linePoints.removeLast();
+      notifyListeners();
+    }
+  }
+
 }
