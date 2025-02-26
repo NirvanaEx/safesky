@@ -53,32 +53,36 @@ class _AddRequestViewState extends State<AddRequestView> {
     return Scaffold(
       appBar: widget.planDetail != null
           ? AppBar(
-              backgroundColor: Colors.white,
-              elevation: 1,
-            )
+        backgroundColor: Colors.white,
+        elevation: 1,
+      )
           : null,
       body: viewModel.isLoading
           ? const SkeletonForm()
-          : SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16),
-            _buildLabel(localizations.addRequestView_flightStartDate),
-            _buildDateOnlyPickerField(
-              date: viewModel.startDate,
-              hintText: "dd.mm.yyyy",
-              onDateSelected: (date) {
-                if (date != null) {
-                  viewModel.updateStartDate(context, date);
-                }
-              },
-            ),
-            // Если дата задана и форма не загружается, показываем оставшуюся форму.
-            if (viewModel.startDate != null && !viewModel.isLoading)
-              _formAfterGetStartDate(),
-          ],
+          : RefreshIndicator(
+        onRefresh: () async {
+          viewModel.clearFields();
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 16),
+              _buildLabel(localizations.addRequestView_flightStartDate),
+              _buildDateOnlyPickerField(
+                date: viewModel.startDate,
+                hintText: "dd.mm.yyyy",
+                onDateSelected: (date) {
+                  if (date != null) {
+                    viewModel.updateStartDate(context, date);
+                  }
+                },
+              ),
+              if (viewModel.startDate != null && !viewModel.isLoading)
+                _formAfterGetStartDate(),
+            ],
+          ),
         ),
       ),
     );

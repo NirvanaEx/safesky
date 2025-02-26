@@ -668,7 +668,6 @@ class AddRequestViewModel extends ChangeNotifier {
   }
 
   void clearFields() {
-
     updateStartDate(_buildContext, startDate!);
 
     operatorPhoneController.clear();
@@ -682,6 +681,15 @@ class AddRequestViewModel extends ChangeNotifier {
     flightEndDateTimeController.clear();
     landmarkController.clear();
 
+    // Очистка контроллеров телефонов
+    for (var controller in operatorPhoneControllers) {
+      controller.clear();
+    }
+    for (var controller in manualPhoneControllers) {
+      controller.clear();
+    }
+    operatorPhoneControllers.clear();
+    manualPhoneControllers.clear();
 
     endDate = null;
     flightStartDateTime = null;
@@ -694,9 +702,9 @@ class AddRequestViewModel extends ChangeNotifier {
     selectedDistrict = null;
     selectedPurpose = null;
 
-
     notifyListeners();
   }
+
 
   @override
   void dispose() {
