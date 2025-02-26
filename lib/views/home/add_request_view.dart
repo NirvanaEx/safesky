@@ -14,6 +14,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../my_custom_views/multi_select_dropdown.dart';
 import '../my_custom_views/my_custom_dialog.dart';
+import '../my_custom_views/skeleton_form.dart';
 
 class AddRequestView extends StatefulWidget {
   final PlanDetailModel? planDetail;
@@ -54,20 +55,10 @@ class _AddRequestViewState extends State<AddRequestView> {
           ? AppBar(
               backgroundColor: Colors.white,
               elevation: 1,
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return IconButton(
-                    icon: Icon(Icons.menu, color: Colors.black),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                  );
-                },
-              ),
             )
           : null,
       body: viewModel.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const SkeletonForm()
           : SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
