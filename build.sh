@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Ловушка для обработки ошибок: вывод сообщения и ожидание нажатия клавиши.
+trap 'echo -e "\nОшибка произошла. Нажмите любую клавишу для выхода..."; read -n 1 -s -r; exit 1' ERR
+
 # Универсальный скрипт build.sh
 # Использование:
 #  В develop:
@@ -110,20 +113,20 @@ elif [ "$BRANCH" = "staging" ]; then
     usage
   fi
 
-  echo "Промоушен в staging (из develop в staging) с BUILD_SUFFIX=$SUFFIX"
+  echo "Обновление ветки staging (копирование из develop) с BUILD_SUFFIX=$SUFFIX"
   # 1. Обновляем develop и переключаемся на неё
   git checkout develop
   git pull origin develop
 
-  # 2. Переключаемся (или создаём) ветку staging и вливаем develop
+  # 2. Переключаемся (или создаём) ветку staging и копируем код из develop
   if git show-ref --verify --quiet refs/heads/staging; then
     git checkout staging
-    git merge develop --no-edit
+    git reset --hard develop
   else
     git checkout -b staging develop
   fi
 
-  # 3. Извлекаем версию из pubspec.yaml и формируем тег (с буквой "b")
+  # 3. Фиксируем состояние в staging: делаем коммит и создаём тег
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   VERSION=$(echo "$FULL_VERSION" | cut -d'+' -f1)
   BUILD_PART=$(echo "$FULL_VERSION" | cut -d'+' -f2)
@@ -131,14 +134,18 @@ elif [ "$BRANCH" = "staging" ]; then
   TAG="v${VERSION}+${CLEAN_BUILD}b"
   echo "Сформирован тег для staging: $TAG"
 
-  # 4. Фиксируем состояние: коммит и тег
   git add .
   git commit -m "Staging release $TAG" || echo "Нет изменений для коммита"
-  git tag "$TAG"
+  # Если тег уже существует, выводим сообщение и пропускаем создание тега.
+  if git rev-parse "$TAG" >/dev/null 2>&1; then
+    echo "Тег $TAG уже существует, пропускаем создание."
+  else
+    git tag "$TAG"
+  fi
   git push origin staging
-  git push origin "$TAG"
+  git push origin "$TAG" || echo "Не удалось запушить тег, возможно, он уже существует."
 
-  # 5. Собираем APK из ветки staging
+  # 4. Собираем APK из ветки staging
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
   send_telegram "build/app/outputs/flutter-apk/app-release.apk"
 
@@ -169,14 +176,13 @@ elif [ "$BRANCH" = "master" ]; then
   TAG="v${VERSION}+${CLEAN_BUILD}"
   echo "Сформирован финальный тег для master: $TAG"
 
-  # 4. Фиксируем состояние: коммит и тег
   git add .
   git commit -m "Master release $TAG" || echo "Нет изменений для коммита"
   git tag "$TAG"
   git push origin master
   git push origin "$TAG"
 
-  # 5. Собираем финальный APK (production, без суффикса)
+  # 4. Собираем финальный APK (production, без суффикса)
   flutter build apk --release --dart-define API_URL=http://195.158.18.149:8085/bpla_mobile_service/api/v1/ --dart-define BUILD_SUFFIX=""
   send_telegram "build/app/outputs/flutter-apk/app-release.apk"
 
@@ -184,3 +190,7 @@ else
   echo "Скрипт поддерживает сборку только в ветках develop, staging и master"
   exit 1
 fi
+
+# Ожидание ввода, чтобы консоль не закрывалась сразу
+read -n 1 -s -r -p "Press any key to exit..."
+echo
