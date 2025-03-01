@@ -5,6 +5,15 @@ on:
     branches:
       - master
       - staging
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Команда: run (локальный запуск) или build (серверная сборка)"
+        required: true
+        default: build
+      flag:
+        description: "Флаг: -t (тест) или -p (production). Необязателен для master."
+        required: false
 
 jobs:
   build:
@@ -25,50 +34,7 @@ jobs:
       - name: Generate Localization Files
         run: flutter gen-l10n
 
-      - name: Build Release APK
-        run: flutter build apk --release
-
-      - name: Extract App Info and Rename APK
-        id: extract
+      - name: Run build script
         run: |
-          # Извлекаем название приложения из pubspec.yaml
-          APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
-          # Извлекаем версию из pubspec.yaml (формат X.Y.Z+BUILD)
-          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          # Разбиваем версию по символу '+'
-          IFS='+' read -r VER BUILD_SUFFIX <<< "$VERSION"
-          # Определяем текущую ветку
-          BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$BRANCH" = "staging" ]; then
-              # Оставляем только числовую часть из BUILD_SUFFIX и добавляем "b"
-              CLEAN_BUILD=$(echo "$BUILD_SUFFIX" | sed 's/[^0-9]//g')
-              BUILD_SUFFIX=$CLEAN_BUILD
-              SUFFIX="b"
-          elif [ "$BRANCH" = "master" ]; then
-              SUFFIX=""
-          else
-              SUFFIX=""
-          fi
-          # Формируем имя файла: Например, "Safe_Sky_v2.7.4.119b.apk"
-          FILE_NAME="${APP_NAME}_v${VER}.${BUILD_SUFFIX}${SUFFIX}.apk"
-          # Заменяем пробелы на нижнее подчеркивание
-          FILE_NAME=${FILE_NAME// /_}
-          echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
-          echo "FILE_NAME: $FILE_NAME"
-
-      - name: Rename APK File
-        run: |
-          mv build/app/outputs/flutter-apk/app-release.apk "$FILE_NAME"
-
-      - name: Send APK to Telegram
-        run: |
-          curl -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-               -F caption="Сборка APK завершена" \
-               -F document=@"$FILE_NAME" \
-               "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument"
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk-build
-          path: ${{ env.FILE_NAME }}
+          chmod +x ./build.sh
+          ./build.sh "${{ github.event.inputs.command }}" "${{ github.event.inputs.flag }}"
