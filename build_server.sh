@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Ловушка для обработки ошибок
+# Ловушка для ошибок (в CI не ждём ввода)
 trap 'echo -e "\nОшибка произошла. Завершаем работу..."; exit 1' ERR
 
 usage() {
@@ -14,18 +14,15 @@ usage() {
   exit 1
 }
 
-# Получаем аргументы (если они заданы)
 COMMAND=${1:-build}
 FLAG=${2:-}
 
-# Определяем текущую ветку
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Текущая ветка: $BRANCH"
 
 # Подтягиваем теги, чтобы они были доступны в CI
 git fetch --tags
 
-# Если флаг не задан, пробуем извлечь его из последнего тега
 if [ -z "$FLAG" ]; then
   LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
   echo "Последний тег: $LAST_TAG"
@@ -39,23 +36,13 @@ if [ -z "$FLAG" ]; then
     fi
     echo "Установленный флаг: $FLAG"
   else
-    echo "Тег не содержит суффикс (флаг не определён)."
+    echo "Тег не содержит SUFFIX (флаг не определён)."
     if [[ "$BRANCH" == "develop" || "$BRANCH" == "staging" ]]; then
       FLAG="-t"
       echo "Используем значение по умолчанию: $FLAG"
     fi
   fi
 fi
-
-# Функция отправки APK в Telegram
-send_telegram() {
-  APK_PATH=$1
-  echo "Отправка APK в Telegram..."
-  curl -F chat_id=${TELEGRAM_CHAT_ID} \
-       -F caption="Сборка APK завершена" \
-       -F document=@"${APK_PATH}" \
-       "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument"
-}
 
 if [ "$BRANCH" = "develop" ]; then
   if [ "$COMMAND" != "build" ]; then
@@ -74,7 +61,6 @@ if [ "$BRANCH" = "develop" ]; then
   fi
   echo "Серверная сборка в develop с BUILD_SUFFIX=$SUFFIX"
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
-
 elif [ "$BRANCH" = "staging" ]; then
   if [ "$COMMAND" != "build" ]; then
     echo "В staging используйте команду 'build'"
@@ -92,7 +78,6 @@ elif [ "$BRANCH" = "staging" ]; then
   fi
   echo "Серверная сборка в staging с BUILD_SUFFIX=$SUFFIX"
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
-
 elif [ "$BRANCH" = "master" ]; then
   if [ "$COMMAND" != "build" ]; then
     echo "В master используйте команду 'build'"
@@ -106,8 +91,8 @@ else
   exit 1
 fi
 
-# Переименовываем APK перед отправкой в Telegram
-# Извлекаем версию из pubspec.yaml (без части после +)
+# Переименование APK:
+# Извлекаем версию из pubspec.yaml (до знака '+')
 PACKAGE_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
 if [ "$BRANCH" = "master" ]; then
   NEW_FILENAME="atm_safesky_v.${PACKAGE_VERSION}.apk"
@@ -116,8 +101,6 @@ else
 fi
 APK_SOURCE="build/app/outputs/flutter-apk/app-release.apk"
 APK_TARGET="build/app/outputs/flutter-apk/${NEW_FILENAME}"
-
-# Переименовываем, если файл существует
 if [ -f "$APK_SOURCE" ]; then
   mv "$APK_SOURCE" "$APK_TARGET"
   echo "APK переименован в: $NEW_FILENAME"
@@ -125,7 +108,24 @@ else
   echo "Файл APK не найден по пути: $APK_SOURCE"
 fi
 
-# Отправляем APK в Telegram
-send_telegram "$APK_TARGET"
+# Определяем подпись для Telegram: используем последний тег для develop/staging, для master – версию из pubspec
+LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+if [ "$BRANCH" = "master" ]; then
+  FINAL_CAPTION="v${PACKAGE_VERSION}"
+else
+  FINAL_CAPTION="$LAST_TAG"
+fi
+
+send_telegram() {
+  APK_PATH=$1
+  CAPTION=$2
+  echo "Отправка APK в Telegram с подписью: $CAPTION"
+  curl -F chat_id=${TELEGRAM_CHAT_ID} \
+       -F caption="$CAPTION" \
+       -F document=@"${APK_PATH}" \
+       "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument"
+}
+
+send_telegram "$APK_TARGET" "$FINAL_CAPTION"
 
 echo "Сборка завершена успешно."
