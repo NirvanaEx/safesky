@@ -74,7 +74,6 @@ if [ "$BRANCH" = "develop" ]; then
   fi
   echo "Серверная сборка в develop с BUILD_SUFFIX=$SUFFIX"
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
-  send_telegram "build/app/outputs/flutter-apk/app-release.apk"
 
 elif [ "$BRANCH" = "staging" ]; then
   if [ "$COMMAND" != "build" ]; then
@@ -93,7 +92,6 @@ elif [ "$BRANCH" = "staging" ]; then
   fi
   echo "Серверная сборка в staging с BUILD_SUFFIX=$SUFFIX"
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
-  send_telegram "build/app/outputs/flutter-apk/app-release.apk"
 
 elif [ "$BRANCH" = "master" ]; then
   if [ "$COMMAND" != "build" ]; then
@@ -102,11 +100,32 @@ elif [ "$BRANCH" = "master" ]; then
   fi
   echo "Серверная сборка в master (финальная сборка)"
   flutter build apk --release --dart-define API_URL=http://195.158.18.149:8085/bpla_mobile_service/api/v1/ --dart-define BUILD_SUFFIX=""
-  send_telegram "build/app/outputs/flutter-apk/app-release.apk"
+  SUFFIX=""
 else
   echo "Скрипт поддерживает сборку только в ветках develop, staging и master"
   exit 1
 fi
 
-# Убираем ожидание ввода, так как в CI оно не требуется
+# Переименовываем APK перед отправкой в Telegram
+# Извлекаем версию из pubspec.yaml (без части после +)
+PACKAGE_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+if [ "$BRANCH" = "master" ]; then
+  NEW_FILENAME="atm_safesky_v.${PACKAGE_VERSION}.apk"
+else
+  NEW_FILENAME="atm_safesky_v.${PACKAGE_VERSION}${SUFFIX}.apk"
+fi
+APK_SOURCE="build/app/outputs/flutter-apk/app-release.apk"
+APK_TARGET="build/app/outputs/flutter-apk/${NEW_FILENAME}"
+
+# Переименовываем, если файл существует
+if [ -f "$APK_SOURCE" ]; then
+  mv "$APK_SOURCE" "$APK_TARGET"
+  echo "APK переименован в: $NEW_FILENAME"
+else
+  echo "Файл APK не найден по пути: $APK_SOURCE"
+fi
+
+# Отправляем APK в Telegram
+send_telegram "$APK_TARGET"
+
 echo "Сборка завершена успешно."

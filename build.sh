@@ -8,14 +8,14 @@ usage() {
   echo "Usage:"
   echo "  В develop:"
   echo "    run -t        # Локальный запуск тестовой версии (BUILD_SUFFIX = at)"
-  echo "    build -p      # Локальная сборка с автоматическим коммитом и тегом (например, v2.7.18.131ap)"
+  echo "    build -p      # Локальная сборка с автоматическим коммитом и тегом (например, Develop release v2.7.18.131ap)"
   echo ""
   echo "  В staging:"
-  echo "    build -t      # Сборка с тегом (например, v2.7.18.131bt)"
-  echo "    build -p      # Сборка с тегом (например, v2.7.18.131bp)"
+  echo "    build -t      # Сборка с тегом (например, Staging release v2.7.18.131bt)"
+  echo "    build -p      # Сборка с тегом (например, Staging release v2.7.18.131bp)"
   echo ""
   echo "  В master:"
-  echo "    build         # Промоушен из staging в master, сборка с финальным тегом (без суффикса)"
+  echo "    build         # Промоушен из staging в master, сборка с финальным тегом (без SUFFIX)"
   exit 1
 }
 
@@ -67,7 +67,7 @@ if [ "$BRANCH" = "develop" ]; then
     echo "Автоматический коммит с тегом: $TAG"
 
     git add .
-    git commit -m "$TAG" || echo "Нет изменений для коммита"
+    git commit -m "Develop release $TAG" || echo "Нет изменений для коммита"
     # Создаем тег, если он не существует
     if git rev-parse "$TAG" >/dev/null 2>&1; then
       echo "Тег $TAG уже существует, пропускаем создание."
