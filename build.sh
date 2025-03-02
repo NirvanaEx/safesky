@@ -8,11 +8,11 @@ usage() {
   echo "Usage:"
   echo "  В develop:"
   echo "    run -t        # Локальный запуск тестовой версии (BUILD_SUFFIX = at)"
-  echo "    build -p      # Коммит с тегом (например, v2.7.11.127ap) и пуш в develop"
+  echo "    build -p      # Коммит с тегом (например, v2.7.15.129t) и пуш в develop"
   echo ""
   echo "  В staging:"
-  echo "    build -t      # Коммит с тегом (например, v2.7.11.127bt) и пуш в staging"
-  echo "    build -p      # Коммит с тегом (например, v2.7.11.127bp) и пуш в staging"
+  echo "    build -t      # Коммит с тегом (например, v2.7.15.129bt) и пуш в staging"
+  echo "    build -p      # Коммит с тегом (например, v2.7.15.129bp) и пуш в staging"
   echo ""
   echo "  В master:"
   echo "    build         # Промоушен из staging в master, коммит и пуш (финальный тег, без суффикса)"
@@ -58,11 +58,11 @@ if [ "$BRANCH" = "develop" ]; then
     fi
     echo "Локальная сборка в develop с BUILD_SUFFIX=$SUFFIX"
 
-    # Формирование версии и тега для коммита
+    # Получаем версию из pubspec.yaml
     FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-    # Преобразуем формат: заменяем '+' на '.' (например, 2.7.11+127a → 2.7.11.127a)
+    # Преобразуем формат: заменяем '+' на '.' (например, 2.7.15+129a → 2.7.15.129a)
     PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
-    # Если версия уже заканчивается на "a", то не дублируем букву:
+    # Если версия уже заканчивается на "a", добавляем только вторую букву (например, из "a" добавляем "t")
     if [[ "$PROCESSED_VERSION" =~ a$ ]]; then
         TAG="v${PROCESSED_VERSION%?}${SUFFIX:1}"
     else
@@ -72,7 +72,14 @@ if [ "$BRANCH" = "develop" ]; then
 
     git add .
     git commit -m "$TAG" || echo "Нет изменений для коммита"
+    # Создаём и пушим тег
+    if git rev-parse "$TAG" >/dev/null 2>&1; then
+      echo "Тег $TAG уже существует, пропускаем создание."
+    else
+      git tag "$TAG"
+    fi
     git push origin develop
+    git push origin "$TAG" || echo "Не удалось запушить тег."
 
     echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
   else

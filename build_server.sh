@@ -22,6 +22,9 @@ FLAG=${2:-}
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Текущая ветка: $BRANCH"
 
+# Подтягиваем теги, чтобы они были доступны в CI
+git fetch --tags
+
 # Если флаг не задан, пробуем извлечь его из последнего тега
 if [ -z "$FLAG" ]; then
   LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -36,7 +39,11 @@ if [ -z "$FLAG" ]; then
     fi
     echo "Установленный флаг: $FLAG"
   else
-    echo "Тег не содержит суффикс (флаг не определён). Используем значение по умолчанию."
+    echo "Тег не содержит суффикс (флаг не определён)."
+    if [[ "$BRANCH" == "develop" || "$BRANCH" == "staging" ]]; then
+      FLAG="-t"
+      echo "Используем значение по умолчанию: $FLAG"
+    fi
   fi
 fi
 
@@ -96,7 +103,6 @@ elif [ "$BRANCH" = "master" ]; then
   echo "Серверная сборка в master (финальная сборка)"
   flutter build apk --release --dart-define API_URL=http://195.158.18.149:8085/bpla_mobile_service/api/v1/ --dart-define BUILD_SUFFIX=""
   send_telegram "build/app/outputs/flutter-apk/app-release.apk"
-
 else
   echo "Скрипт поддерживает сборку только в ветках develop, staging и master"
   exit 1
