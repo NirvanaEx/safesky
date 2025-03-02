@@ -1,54 +1,25 @@
 #!/bin/bash
 set -e
 
-# Ловушка для обработки ошибок: вывод сообщения и ожидание нажатия клавиши.
+# Ловушка для обработки ошибок
 trap 'echo -e "\nОшибка произошла. Нажмите любую клавишу для выхода..."; read -n 1 -s -r; exit 1' ERR
-
-# Универсальный скрипт build.sh
-# Использование:
-#  В develop:
-#    Локально:         ./build.sh run -t    # тестовая сборка (BUILD_SUFFIX = at)
-#                      ./build.sh run -p    # production сборка (BUILD_SUFFIX = ap)
-#    Серверная сборка:  ./build.sh build -t  # тестовая сборка (BUILD_SUFFIX = at)
-#                      ./build.sh build -p  # production сборка (BUILD_SUFFIX = ap)
-#
-#  В staging:
-#                      ./build.sh build -t  # тестовая сборка (BUILD_SUFFIX = bt)
-#                      ./build.sh build -p  # production сборка (BUILD_SUFFIX = bp)
-#
-#  В master:
-#                      ./build.sh build     # финальная сборка (без суффикса)
-#
-# Функция отправки APK (пример – необходимо, чтобы переменные TELEGRAM_TOKEN и TELEGRAM_CHAT_ID были установлены)
-send_telegram() {
-  APK_PATH=$1
-  echo "Отправка APK в Telegram..."
-  curl -F chat_id=${TELEGRAM_CHAT_ID} \
-       -F caption="Сборка APK завершена" \
-       -F document=@"${APK_PATH}" \
-       "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument"
-}
 
 usage() {
   echo "Usage:"
-  echo "  In develop:"
-  echo "    Local run:      ./build.sh run -t   # BUILD_SUFFIX = at"
-  echo "                    ./build.sh run -p   # BUILD_SUFFIX = ap"
-  echo "    Server build:   ./build.sh build -t # BUILD_SUFFIX = at"
-  echo "                    ./build.sh build -p # BUILD_SUFFIX = ap"
+  echo "  В develop:"
+  echo "    run -t        # Локальный запуск тестовой версии (BUILD_SUFFIX = at)"
+  echo "    build -p      # Коммит с тегом (например, v2.3.5.123ap) и пуш в develop"
   echo ""
-  echo "  In staging:"
-  echo "    ./build.sh build -t   # BUILD_SUFFIX = bt"
-  echo "    ./build.sh build -p   # BUILD_SUFFIX = bp"
+  echo "  В staging:"
+  echo "    build -t      # Коммит с тегом (например, v2.3.5.123bt) и пуш в staging"
+  echo "    build -p      # Коммит с тегом (например, v2.3.5.123bp) и пуш в staging"
   echo ""
-  echo "  In master:"
-  echo "    ./build.sh build    # финальная сборка (без суффикса)"
+  echo "  В master:"
+  echo "    build         # Промоушен из staging в master, коммит и пуш (финальный тег, без суффикса)"
   exit 1
 }
 
-# Первый параметр: команда (run или build)
 COMMAND=$1
-# Второй параметр: флаг (-t или -p) (для develop и staging; в master не нужен)
 FLAG=$2
 
 if [ -z "$COMMAND" ]; then
@@ -60,9 +31,7 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Текущая ветка: $BRANCH"
 
 if [ "$BRANCH" = "develop" ]; then
-  # В develop доступны команды run и build
   if [ "$COMMAND" = "run" ]; then
-    # Локальный запуск через flutter run
     if [ "$FLAG" = "-t" ]; then
       SUFFIX="at"
       API_URL="http://91.213.31.234:8898/bpla_mobile_service/api/v1/"
@@ -77,7 +46,6 @@ if [ "$BRANCH" = "develop" ]; then
     flutter run --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 
   elif [ "$COMMAND" = "build" ]; then
-    # Серверная сборка в develop (с отправкой в Telegram)
     if [ "$FLAG" = "-t" ]; then
       SUFFIX="at"
       API_URL="http://91.213.31.234:8898/bpla_mobile_service/api/v1/"
@@ -88,16 +56,23 @@ if [ "$BRANCH" = "develop" ]; then
       echo "Укажите флаг -t или -p для команды build в develop"
       usage
     fi
-    echo "Серверная сборка в develop с BUILD_SUFFIX=$SUFFIX"
-    flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
-    send_telegram "build/app/outputs/flutter-apk/app-release.apk"
+    echo "Локальная сборка в develop с BUILD_SUFFIX=$SUFFIX"
+
+    # Формирование версии и тега (например, v2.3.5.123ap)
+    FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+    TAG=$(echo "v${FULL_VERSION}${SUFFIX}" | sed 's/+/./')
+    echo "Автоматический коммит с тегом: $TAG"
+
+    git add .
+    git commit -m "$TAG" || echo "Нет изменений для коммита"
+    git push origin develop
+    echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
   else
-    echo "В develop используйте команду 'run' или 'build'"
+    echo "В develop используйте команды 'run' или 'build'"
     usage
   fi
 
 elif [ "$BRANCH" = "staging" ]; then
-  # В staging доступна только команда build с флагом
   if [ "$COMMAND" != "build" ]; then
     echo "В staging используйте команду 'build'"
     usage
@@ -112,85 +87,57 @@ elif [ "$BRANCH" = "staging" ]; then
     echo "Укажите флаг -t или -p для сборки в staging"
     usage
   fi
-
   echo "Обновление ветки staging (копирование из develop) с BUILD_SUFFIX=$SUFFIX"
-  # 1. Обновляем develop и переключаемся на неё
   git checkout develop
   git pull origin develop
-
-  # 2. Переключаемся (или создаём) ветку staging и копируем код из develop
   if git show-ref --verify --quiet refs/heads/staging; then
     git checkout staging
     git reset --hard develop
   else
     git checkout -b staging develop
   fi
-
-  # 3. Фиксируем состояние в staging: делаем коммит и создаём тег
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-  VERSION=$(echo "$FULL_VERSION" | cut -d'+' -f1)
-  BUILD_PART=$(echo "$FULL_VERSION" | cut -d'+' -f2)
-  CLEAN_BUILD=$(echo "$BUILD_PART" | sed 's/[^0-9]//g')
-  TAG="v${VERSION}+${CLEAN_BUILD}b"
+  TAG=$(echo "v${FULL_VERSION}${SUFFIX}" | sed 's/+/./')
   echo "Сформирован тег для staging: $TAG"
-
   git add .
   git commit -m "Staging release $TAG" || echo "Нет изменений для коммита"
-  # Если тег уже существует, выводим сообщение и пропускаем создание тега.
   if git rev-parse "$TAG" >/dev/null 2>&1; then
     echo "Тег $TAG уже существует, пропускаем создание."
   else
     git tag "$TAG"
   fi
   git push origin staging
-  git push origin "$TAG" || echo "Не удалось запушить тег, возможно, он уже существует."
-
-  # 4. Собираем APK из ветки staging
-  flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
-  send_telegram "build/app/outputs/flutter-apk/app-release.apk"
+  git push origin "$TAG" || echo "Не удалось запушить тег."
+  echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
 
 elif [ "$BRANCH" = "master" ]; then
-  # В master доступна только команда build (без флага)
   if [ "$COMMAND" != "build" ]; then
     echo "В master используйте команду 'build'"
     usage
   fi
   echo "Промоушен в master (из staging в master)"
-  # 1. Обновляем staging и переключаемся на неё
   git checkout staging
   git pull origin staging
-
-  # 2. Переключаемся (или создаём) ветку master и вливаем staging
   if git show-ref --verify --quiet refs/heads/master; then
     git checkout master
     git merge staging --no-edit
   else
     git checkout -b master staging
   fi
-
-  # 3. Извлекаем версию и формируем финальный тег (без суффикса)
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-  VERSION=$(echo "$FULL_VERSION" | cut -d'+' -f1)
-  BUILD_PART=$(echo "$FULL_VERSION" | cut -d'+' -f2)
-  CLEAN_BUILD=$(echo "$BUILD_PART" | sed 's/[^0-9]//g')
-  TAG="v${VERSION}+${CLEAN_BUILD}"
+  TAG=$(echo "v${FULL_VERSION}" | sed 's/+/./')
   echo "Сформирован финальный тег для master: $TAG"
-
   git add .
   git commit -m "Master release $TAG" || echo "Нет изменений для коммита"
   git tag "$TAG"
   git push origin master
   git push origin "$TAG"
-
-  # 4. Собираем финальный APK (production, без суффикса)
-  flutter build apk --release --dart-define API_URL=http://195.158.18.149:8085/bpla_mobile_service/api/v1/ --dart-define BUILD_SUFFIX=""
-  send_telegram "build/app/outputs/flutter-apk/app-release.apk"
+  echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
 
 else
   echo "Скрипт поддерживает сборку только в ветках develop, staging и master"
   exit 1
 fi
 
-# Ожидание ввода, чтобы консоль не закрывалась сразу
-read -n 1 -s -r -p "Press any key to exit..."
+read -n 1 -s -r -p "Нажмите любую клавишу для выхода..."
 echo

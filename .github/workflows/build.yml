@@ -3,8 +3,9 @@ name: Build APK
 on:
   push:
     branches:
-      - master
+      - develop
       - staging
+      - master
   workflow_dispatch:
     inputs:
       command:
@@ -34,7 +35,10 @@ jobs:
       - name: Generate Localization Files
         run: flutter gen-l10n
 
-      - name: Run build script
+      - name: Run server build script
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          chmod +x ./build.sh
-          ./build.sh "${{ github.event.inputs.command }}" "${{ github.event.inputs.flag }}"
+          chmod +x ./build_server.sh
+          ./build_server.sh "${{ github.event.inputs.command }}" "${{ github.event.inputs.flag }}"
