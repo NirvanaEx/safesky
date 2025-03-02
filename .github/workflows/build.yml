@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop
-      - staging
-      - master
   workflow_dispatch:
     inputs:
       command:
@@ -13,8 +11,8 @@ on:
         required: true
         default: build
       flag:
-        description: "Флаг: -t (тест) или -p (production). Необязателен для master."
-        required: false
+        description: "Флаг: -at, -ap, -bt, -bp, p"
+        required: true
 
 jobs:
   build:
