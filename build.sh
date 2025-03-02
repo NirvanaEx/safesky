@@ -14,7 +14,8 @@ usage() {
   echo "  -ap  : Develop release с суффиксом ap (production URL)"
   echo "  -bt  : Testing release с суффиксом bt (тестовый URL)"
   echo "  -bp  : Testing release с суффиксом bp (production URL)"
-  echo "  p    : Production release (без суффикса, production URL)"
+  echo "  -t   : Testing release с суффиксом t (тестовый URL)"
+  echo "  -p   : Production release (без суффикса, production URL)"
   exit 1
 }
 
@@ -56,7 +57,12 @@ case "$FLAG" in
     SUFFIX="bp"
     API_URL="http://195.158.18.149:8085/bpla_mobile_service/api/v1/"
     ;;
-  p)
+  -t)
+    PREFIX="Testing release"
+    SUFFIX="t"
+    API_URL="http://91.213.31.234:8898/bpla_mobile_service/api/v1/"
+    ;;
+  -p)
     PREFIX="Production release"
     SUFFIX=""
     API_URL="http://195.158.18.149:8085/bpla_mobile_service/api/v1/"

@@ -8,7 +8,7 @@ usage() {
   echo "Usage:"
   echo "  ./build_server.sh build <flag>"
   echo "Флаги:"
-  echo "  -at, -ap, -bt, -bp, p"
+  echo "  -at, -ap, -bt, -bp, -t, -p"
   exit 1
 }
 
@@ -19,12 +19,12 @@ if [ -z "$FLAG" ]; then
   # Если флаг не указан, пытаемся извлечь SUFFIX из последнего тега
   LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
   echo "Последний тег: $LAST_TAG"
-  if [[ "$LAST_TAG" =~ (at|ap|bt|bp)$ ]]; then
+  if [[ "$LAST_TAG" =~ (at|ap|bt|bp|t)$ ]]; then
     SUFFIX_FROM_TAG=${BASH_REMATCH[1]}
     FLAG="-$SUFFIX_FROM_TAG"
     echo "Установленный флаг: $FLAG"
   else
-    echo "Флаг не определён. Используйте один из: -at, -ap, -bt, -bp, p"
+    echo "Флаг не определён. Используйте один из: -at, -ap, -bt, -bp, -t, -p"
     usage
   fi
 fi
@@ -54,7 +54,11 @@ case "$FLAG" in
     SUFFIX="bp"
     API_URL="http://195.158.18.149:8085/bpla_mobile_service/api/v1/"
     ;;
-  p)
+  -t)
+    SUFFIX="t"
+    API_URL="http://91.213.31.234:8898/bpla_mobile_service/api/v1/"
+    ;;
+  -p)
     SUFFIX=""
     API_URL="http://195.158.18.149:8085/bpla_mobile_service/api/v1/"
     ;;
