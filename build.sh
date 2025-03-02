@@ -8,14 +8,14 @@ usage() {
   echo "Usage:"
   echo "  В develop:"
   echo "    run -t        # Локальный запуск тестовой версии (BUILD_SUFFIX = at)"
-  echo "    build -p      # Коммит с тегом (например, v2.7.15.129t) и пуш в develop"
+  echo "    build -p      # Локальная сборка с автоматическим коммитом и тегом (например, v2.7.18.131ap)"
   echo ""
   echo "  В staging:"
-  echo "    build -t      # Коммит с тегом (например, v2.7.15.129bt) и пуш в staging"
-  echo "    build -p      # Коммит с тегом (например, v2.7.15.129bp) и пуш в staging"
+  echo "    build -t      # Сборка с тегом (например, v2.7.18.131bt)"
+  echo "    build -p      # Сборка с тегом (например, v2.7.18.131bp)"
   echo ""
   echo "  В master:"
-  echo "    build         # Промоушен из staging в master, коммит и пуш (финальный тег, без суффикса)"
+  echo "    build         # Промоушен из staging в master, сборка с финальным тегом (без суффикса)"
   exit 1
 }
 
@@ -58,21 +58,17 @@ if [ "$BRANCH" = "develop" ]; then
     fi
     echo "Локальная сборка в develop с BUILD_SUFFIX=$SUFFIX"
 
-    # Получаем версию из pubspec.yaml
+    # Получаем версию из pubspec.yaml (например, 2.7.18+131)
     FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-    # Преобразуем формат: заменяем '+' на '.' (например, 2.7.15+129a → 2.7.15.129a)
+    # Преобразуем формат: заменяем '+' на '.' (результат: 2.7.18.131)
     PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
-    # Если версия уже заканчивается на "a", добавляем только вторую букву (например, из "a" добавляем "t")
-    if [[ "$PROCESSED_VERSION" =~ a$ ]]; then
-        TAG="v${PROCESSED_VERSION%?}${SUFFIX:1}"
-    else
-        TAG="v${PROCESSED_VERSION}${SUFFIX}"
-    fi
+    # Формируем тег: добавляем SUFFIX к числовой версии
+    TAG="v${PROCESSED_VERSION}${SUFFIX}"
     echo "Автоматический коммит с тегом: $TAG"
 
     git add .
     git commit -m "$TAG" || echo "Нет изменений для коммита"
-    # Создаём и пушим тег
+    # Создаем тег, если он не существует
     if git rev-parse "$TAG" >/dev/null 2>&1; then
       echo "Тег $TAG уже существует, пропускаем создание."
     else
@@ -113,11 +109,7 @@ elif [ "$BRANCH" = "staging" ]; then
   fi
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
-  if [[ "$PROCESSED_VERSION" =~ b$ ]]; then
-      TAG="v${PROCESSED_VERSION%?}${SUFFIX:1}"
-  else
-      TAG="v${PROCESSED_VERSION}${SUFFIX}"
-  fi
+  TAG="v${PROCESSED_VERSION}${SUFFIX}"
   echo "Сформирован тег для staging: $TAG"
   git add .
   git commit -m "Staging release $TAG" || echo "Нет изменений для коммита"
