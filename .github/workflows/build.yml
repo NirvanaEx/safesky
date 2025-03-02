@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+<<<<<<< HEAD
     tags-ignore:
       - '*'
   workflow_dispatch:
@@ -19,6 +20,19 @@ on:
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
+=======
+      - staging
+      - master
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Команда: run (локальный запуск) или build (серверная сборка)"
+        required: true
+        default: build
+      flag:
+        description: "Флаг: -t (тест) или -p (production). Необязателен для master."
+        required: false
+>>>>>>> b97b7cb (Сборка)
 
 jobs:
   build:
@@ -27,8 +41,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+<<<<<<< HEAD
         with:
           fetch-depth: 0
+=======
+>>>>>>> b97b7cb (Сборка)
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -47,6 +64,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           chmod +x ./build_server.sh
+<<<<<<< HEAD
           # Для push-события не передаём флаг – он извлекается из commit message
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
@@ -56,3 +74,6 @@ jobs:
             FLAG=""
           fi
           ./build_server.sh "$COMMAND" "$FLAG"
+=======
+          ./build_server.sh "${{ github.event.inputs.command }}" "${{ github.event.inputs.flag }}"
+>>>>>>> b97b7cb (Сборка)
