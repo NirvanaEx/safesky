@@ -61,6 +61,7 @@ if [ "$BRANCH" = "develop" ]; then
   fi
   echo "Серверная сборка в develop с BUILD_SUFFIX=$SUFFIX"
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
+
 elif [ "$BRANCH" = "staging" ]; then
   if [ "$COMMAND" != "build" ]; then
     echo "В staging используйте команду 'build'"
@@ -78,6 +79,7 @@ elif [ "$BRANCH" = "staging" ]; then
   fi
   echo "Серверная сборка в staging с BUILD_SUFFIX=$SUFFIX"
   flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
+
 elif [ "$BRANCH" = "master" ]; then
   if [ "$COMMAND" != "build" ]; then
     echo "В master используйте команду 'build'"
@@ -108,7 +110,7 @@ else
   echo "Файл APK не найден по пути: $APK_SOURCE"
 fi
 
-# Определяем подпись для Telegram: используем последний тег для develop/staging, для master – версию из pubspec
+# Определяем подпись для Telegram: для develop/staging используем последний тег, для master – версию из pubspec
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 if [ "$BRANCH" = "master" ]; then
   FINAL_CAPTION="v${PACKAGE_VERSION}"

@@ -8,14 +8,14 @@ usage() {
   echo "Usage:"
   echo "  В develop:"
   echo "    run -t        # Локальный запуск тестовой версии (BUILD_SUFFIX = at)"
-  echo "    build -p      # Локальная сборка с коммитом и тегом (например, Develop release v2.7.19.131at)"
+  echo "    build -p      # Локальная сборка с коммитом и тегом (например, Develop release v2.7.23.133at)"
   echo ""
   echo "  В staging:"
-  echo "    build -t      # (например, Staging release v2.7.19.131bt)"
-  echo "    build -p      # (например, Staging release v2.7.19.131bp)"
+  echo "    build -t      # (например, Staging release v2.7.23.133bt)"
+  echo "    build -p      # (например, Staging release v2.7.23.133bp)"
   echo ""
   echo "  В master:"
-  echo "    build         # (например, Master release v2.7.19.131)"
+  echo "    build         # (например, Master release v2.7.23.133)"
   exit 1
 }
 
@@ -58,17 +58,18 @@ if [ "$BRANCH" = "develop" ]; then
     fi
     echo "Локальная сборка в develop с BUILD_SUFFIX=$SUFFIX"
 
-    # Извлекаем версию из pubspec.yaml (например, 2.7.19+131)
+    # Извлекаем версию из pubspec.yaml (например, 2.7.23+133)
     FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-    # Преобразуем: заменяем '+' на '.' → 2.7.19.131
+    # Преобразуем: заменяем '+' на '.' → 2.7.23.133
     PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
-    # Формируем тег, добавляя суффикс
+    # Формируем тег, добавляя SUFFIX
     TAG="v${PROCESSED_VERSION}${SUFFIX}"
     echo "Автоматический коммит с тегом: $TAG"
 
     git add .
     COMMIT_MESSAGE="Develop release $TAG"
-    git commit -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
+    # Используем --allow-empty, чтобы создать коммит даже при отсутствии изменений
+    git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
     if git rev-parse "$TAG" >/dev/null 2>&1; then
       echo "Тег $TAG уже существует, пропускаем создание."
     else
@@ -113,7 +114,7 @@ elif [ "$BRANCH" = "staging" ]; then
   echo "Сформирован тег для staging: $TAG"
   git add .
   COMMIT_MESSAGE="Staging release $TAG"
-  git commit -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
+  git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
   if git rev-parse "$TAG" >/dev/null 2>&1; then
     echo "Тег $TAG уже существует, пропускаем создание."
   else
@@ -144,7 +145,7 @@ elif [ "$BRANCH" = "master" ]; then
   echo "Сформирован финальный тег для master: $TAG"
   git add .
   COMMIT_MESSAGE="Master release $TAG"
-  git commit -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
+  git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
   git tag "$TAG"
   git push origin master
   git push origin "$TAG"
