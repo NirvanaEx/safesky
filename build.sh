@@ -66,6 +66,9 @@ if [ "$BRANCH" = "develop" ]; then
     TAG="v${PROCESSED_VERSION}${SUFFIX}"
     echo "Автоматический коммит с тегом: $TAG"
 
+    # Устанавливаем переменную, чтобы pre-commit hook пропустил обновление версии
+    export SKIP_VERSION_INCREMENT=true
+
     git add .
     COMMIT_MESSAGE="Develop release $TAG"
     # Используем --allow-empty, чтобы создать коммит даже при отсутствии изменений
@@ -112,6 +115,9 @@ elif [ "$BRANCH" = "staging" ]; then
   PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
   TAG="v${PROCESSED_VERSION}${SUFFIX}"
   echo "Сформирован тег для staging: $TAG"
+
+  export SKIP_VERSION_INCREMENT=true
+
   git add .
   COMMIT_MESSAGE="Staging release $TAG"
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
@@ -143,12 +149,15 @@ elif [ "$BRANCH" = "master" ]; then
   PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
   TAG="v${PROCESSED_VERSION}"
   echo "Сформирован финальный тег для master: $TAG"
+
+  export SKIP_VERSION_INCREMENT=true
+
   git add .
   COMMIT_MESSAGE="Master release $TAG"
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
   git tag "$TAG"
   git push origin master
-  git push origin "$TAG"
+  git push origin "$TAG" || echo "Не удалось запушить тег."
 
   echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
 
