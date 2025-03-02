@@ -88,12 +88,11 @@ else
   echo "Файл APK не найден по пути: $APK_SOURCE"
 fi
 
-# Определяем подпись для Telegram: для Production используем версию без суффикса
-LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+# Формирование подписи для Telegram на основе версии и переданного SUFFIX
 if [ -z "$SUFFIX" ]; then
   FINAL_CAPTION="v${PACKAGE_VERSION}"
 else
-  FINAL_CAPTION="$LAST_TAG"
+  FINAL_CAPTION="v${PACKAGE_VERSION}${SUFFIX}"
 fi
 
 send_telegram() {
