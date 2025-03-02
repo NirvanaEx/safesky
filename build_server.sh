@@ -14,18 +14,33 @@ usage() {
   exit 1
 }
 
-COMMAND=$1
-FLAG=$2
-
-if [ -z "$COMMAND" ]; then
-  usage
-fi
+# Получаем аргументы (если они заданы)
+COMMAND=${1:-build}
+FLAG=${2:-}
 
 # Определяем текущую ветку
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Текущая ветка: $BRANCH"
 
-# Функция отправки APK в Telegram (для серверной сборки)
+# Если флаг не задан, пробуем извлечь его из последнего тега
+if [ -z "$FLAG" ]; then
+  LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+  echo "Последний тег: $LAST_TAG"
+  if [[ "$LAST_TAG" =~ (at|ap|bt|bp)$ ]]; then
+    SUFFIX_FROM_TAG=${BASH_REMATCH[1]}
+    echo "SUFFIX из тега: $SUFFIX_FROM_TAG"
+    if [[ "$SUFFIX_FROM_TAG" == "at" || "$SUFFIX_FROM_TAG" == "bt" ]]; then
+      FLAG="-t"
+    elif [[ "$SUFFIX_FROM_TAG" == "ap" || "$SUFFIX_FROM_TAG" == "bp" ]]; then
+      FLAG="-p"
+    fi
+    echo "Установленный флаг: $FLAG"
+  else
+    echo "Тег не содержит суффикс (флаг не определён). Используем значение по умолчанию."
+  fi
+fi
+
+# Функция отправки APK в Telegram
 send_telegram() {
   APK_PATH=$1
   echo "Отправка APK в Telegram..."
