@@ -7,7 +7,7 @@ trap 'echo -e "\nОшибка произошла. Нажмите любую кл
 usage() {
   echo "Usage:"
   echo "  run <flag>   # Локальный запуск"
-  echo "  build <flag> # Автоматический коммит, сборка и пуш (без создания тэга)"
+  echo "  build <flag> # Автоматический коммит, сборка и push (без создания тэга)"
   echo ""
   echo "Флаги:"
   echo "  -at  : Develop release с суффиксом at (тестовый URL)"
@@ -35,7 +35,7 @@ if [ "$BRANCH" != "develop" ]; then
   exit 1
 fi
 
-# Определяем префикс для commit-message, SUFFIX и API_URL в зависимости от флага
+# Определяем префикс для commit message, SUFFIX и API_URL в зависимости от флага
 case "$FLAG" in
   -at)
     PREFIX="Develop release"
@@ -77,13 +77,13 @@ if [ "$COMMAND" = "run" ]; then
   echo "Локальный запуск с BUILD_SUFFIX=$SUFFIX"
   flutter run --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 elif [ "$COMMAND" = "build" ]; then
-  # Извлекаем версию из pubspec.yaml (например, 2.7.45+175) и оставляем только числовую часть
+  # Извлекаем версию из pubspec.yaml (например, 2.12.123+123) и заменяем '+' на '.'
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
   PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')
 
   # Формируем commit message с версией и маркером с флагом
-  COMMIT_MESSAGE="$PREFIX v${PROCESSED_VERSION} [BUILD_FLAG:$FLAG]"
+  COMMIT_MESSAGE="$PREFIX v${PROCESSED_VERSION}${SUFFIX} [BUILD_FLAG:$FLAG]"
   echo "Автоматический коммит: $COMMIT_MESSAGE"
 
   # Экспортируем переменную, чтобы pre-commit hook пропустил обновление версии
@@ -93,7 +93,7 @@ elif [ "$COMMAND" = "build" ]; then
   git add .
   # Создаём пустой коммит, если нет изменений
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
-  # Пушим изменения (без создания тэга)
+  # Выполняем один push (без тэга)
   git push origin develop
 
   echo "Коммит отправлен. Серверная сборка (CI) должна запуститься автоматически."

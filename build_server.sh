@@ -15,7 +15,7 @@ usage() {
 COMMAND=${1:-build}
 FLAG=$2
 
-# Если флаг не указан, пробуем извлечь его из последнего commit message
+# Если флаг не указан, извлекаем его из последнего commit message
 if [ -z "$FLAG" ]; then
   LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
   EXTRACTED_FLAG=$(echo "$LAST_COMMIT_MSG" | grep -oP '\[BUILD_FLAG:\K[^]]+')
@@ -26,7 +26,7 @@ if [ -z "$FLAG" ]; then
   fi
 fi
 
-# Определяем SUFFIX и API_URL на основе полученного флага
+# Определяем SUFFIX и API_URL по флагу
 case "$FLAG" in
   -at)
     SUFFIX="at"
@@ -61,7 +61,7 @@ esac
 echo "Серверная сборка с BUILD_SUFFIX=$SUFFIX"
 flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 
-# Извлекаем версию из pubspec.yaml и оставляем только числовую часть
+# Извлекаем версию из pubspec.yaml и форматируем (заменяем '+' на '.')
 FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
 NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
 PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')
@@ -80,7 +80,7 @@ else
   echo "Файл APK не найден по пути: $APK_SOURCE"
 fi
 
-# Формирование подписи для Telegram на основе версии и SUFFIX
+# Формирование подписи для Telegram
 if [ -z "$SUFFIX" ]; then
   FINAL_CAPTION="v${PROCESSED_VERSION}"
 else

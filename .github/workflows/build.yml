@@ -5,11 +5,11 @@ on:
     branches:
       - develop
     tags-ignore:
-      - 'v*'
+      - '*'
   workflow_dispatch:
     inputs:
       command:
-        description: "Команда: run (локальный запуск) или build (серверная сборка)"
+        description: "Команда: run или build (серверная сборка)"
         required: true
         default: build
       flag:
@@ -17,12 +17,11 @@ on:
         required: true
 
 concurrency:
-  group: build-develop
+  group: ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    if: (github.event_name == 'push' && github.event.head_commit.id == github.sha) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -48,6 +47,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           chmod +x ./build_server.sh
+          # Для push-события не передаём флаг – он извлекается из commit message
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"
