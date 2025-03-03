@@ -17,11 +17,14 @@ on:
         required: true
 
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
   build:
+    # Запускаем workflow только если для push событие SHA последнего коммита совпадает с github.sha,
+    # или если это workflow_dispatch
+    if: (github.event_name == 'push' && github.event.head_commit.id == github.sha) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -47,8 +50,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           chmod +x ./build_server.sh
-          # Для push-события не передаём флаг – он извлекается из commit message
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"
           else
