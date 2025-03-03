@@ -19,7 +19,7 @@ FLAG=$2
 if [ -z "$FLAG" ]; then
   EXISTING_TAG=$(git tag --points-at HEAD | grep '^v' | head -n 1)
   if [ -n "$EXISTING_TAG" ]; then
-    # Извлекаем суффикс: если тег вида v<версия><суффикс> (например, v2.7.41.165ap),
+    # Извлекаем суффикс: если тег вида v<версия><суффикс> (например, v2.7.43.170bt),
     # то извлекается часть из букв (если отсутствует – пустая)
     EXTRACTED_SUFFIX=$(echo "$EXISTING_TAG" | sed -E 's/^v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+([a-z]+)?$/\1/')
     if [ -n "$EXTRACTED_SUFFIX" ]; then
