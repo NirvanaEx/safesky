@@ -7,7 +7,7 @@ trap 'echo -e "\nОшибка произошла. Нажмите любую кл
 usage() {
   echo "Usage:"
   echo "  run <flag>   # Локальный запуск"
-  echo "  build <flag> # Автоматический коммит, сборка и push (без создания тэга)"
+  echo "  build <flag> # Автоматический коммит, сборка, push и запуск workflow"
   echo ""
   echo "Флаги:"
   echo "  -at  : Develop release с суффиксом at (тестовый URL)"
@@ -29,7 +29,6 @@ fi
 # Работаем только в ветке develop
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Текущая ветка: $BRANCH"
-
 if [ "$BRANCH" != "develop" ]; then
   echo "Скрипт поддерживает сборку только из ветки develop"
   exit 1
@@ -77,12 +76,12 @@ if [ "$COMMAND" = "run" ]; then
   echo "Локальный запуск с BUILD_SUFFIX=$SUFFIX"
   flutter run --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 elif [ "$COMMAND" = "build" ]; then
-  # Извлекаем версию из pubspec.yaml (например, 2.12.123+123) и заменяем '+' на '.'
+  # Извлекаем версию из pubspec.yaml (например, 2.7.2+122) и заменяем '+' на '.'
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
   PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')
 
-  # Формируем commit message с версией и маркером с флагом
+  # Формируем commit message с маркером [BUILD_FLAG:<flag>]
   COMMIT_MESSAGE="$PREFIX v${PROCESSED_VERSION}${SUFFIX} [BUILD_FLAG:$FLAG]"
   echo "Автоматический коммит: $COMMIT_MESSAGE"
 
@@ -90,13 +89,22 @@ elif [ "$COMMAND" = "build" ]; then
   export SKIP_VERSION_INCREMENT=true
   echo "SKIP_VERSION_INCREMENT is set to: $SKIP_VERSION_INCREMENT"
 
+  # Добавляем изменения, коммитим и пушим
   git add .
-  # Создаём пустой коммит, если нет изменений
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
-  # Выполняем один push (без тэга)
   git push origin develop
 
-  echo "Коммит отправлен. Серверная сборка (CI) должна запуститься автоматически."
+  echo "Коммит отправлен. Запуск workflow через API..."
+
+  # Запуск workflow через API GitHub
+  # Замените ВАШ_ТОКЕН на ваш реальный токен, если хотите захардкодить его
+  curl -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer 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" \
+    https://api.github.com/repos/NirvanaEx/safesky/actions/workflows/build.yml/dispatches \
+    -d "{\"ref\": \"develop\", \"inputs\": {\"command\": \"build\", \"flag\": \"${FLAG}\", \"workflow_name\": \"${COMMIT_MESSAGE}\"}}"
+
+  echo "Workflow запущен."
 else
   echo "Используйте команды 'run' или 'build'"
   usage

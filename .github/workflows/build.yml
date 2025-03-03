@@ -1,11 +1,6 @@
 name: Build APK
 
 on:
-  push:
-    branches:
-      - develop
-    tags-ignore:
-      - '*'
   workflow_dispatch:
     inputs:
       command:
@@ -15,6 +10,10 @@ on:
       flag:
         description: "Флаг: -at, -ap, -bt, -bp, -t, -p"
         required: true
+      workflow_name:
+        description: "Имя для отображения в job"
+        required: false
+        default: "Build APK"
 
 concurrency:
   group: ${{ github.ref }}
@@ -22,8 +21,8 @@ concurrency:
 
 jobs:
   build:
+    name: ${{ github.event.inputs.workflow_name }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -46,13 +45,8 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          echo "Commit message: ${{ github.event.head_commit.message }}"  # отладочный вывод
           chmod +x ./build_server.sh
-          # Для push-события не передаём флаг – он извлекается из commit message
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            FLAG="${{ github.event.inputs.flag }}"
-            COMMAND="${{ github.event.inputs.command }}"
-          else
-            COMMAND="build"
-            FLAG=""
-          fi
+          FLAG="${{ github.event.inputs.flag }}"
+          COMMAND="${{ github.event.inputs.command }}"
           ./build_server.sh "$COMMAND" "$FLAG"
