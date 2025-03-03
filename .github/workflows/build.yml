@@ -18,6 +18,7 @@ on:
 
 jobs:
   build:
+    if: startsWith(github.ref, 'refs/heads/')
     runs-on: ubuntu-latest
 
     steps:
@@ -44,7 +45,7 @@ jobs:
         run: |
           chmod +x ./build_server.sh
           # При событии workflow_dispatch используем входные параметры,
-          # иначе для push-события оставляем FLAG пустым (тогда build_server.sh извлечёт его из тега)
+          # иначе для push-события оставляем FLAG пустым (build_server.sh извлечёт его из тега)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"
