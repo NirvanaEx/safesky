@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       command:
@@ -41,7 +39,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           chmod +x ./build_server.sh
-          # Если событие workflow_dispatch, используем входные параметры, иначе можно задать дефолтный флаг (например, -at)
+          # Если событие workflow_dispatch, используем входные параметры, иначе задаём дефолтный флаг (например, -at)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"

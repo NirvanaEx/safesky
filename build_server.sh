@@ -62,9 +62,10 @@ esac
 echo "Серверная сборка с BUILD_SUFFIX=$SUFFIX"
 flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 
-# Извлекаем полную версию из pubspec.yaml, заменяя '+' на '.'
+# Извлекаем версию из pubspec.yaml и убираем лишний суффикс из версии
 FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
+NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
+PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')
 
 if [ -z "$SUFFIX" ]; then
   NEW_FILENAME="atm_safesky_v.${PROCESSED_VERSION}.apk"
