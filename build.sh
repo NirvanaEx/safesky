@@ -7,7 +7,7 @@ trap 'echo -e "\nОшибка произошла. Нажмите любую кл
 usage() {
   echo "Usage:"
   echo "  run <flag>   # Локальный запуск"
-  echo "  build <flag> # Автоматический коммит, сборка и push (без создания тэга)"
+  echo "  build <flag> # Автоматический коммит, создание тэга, сборка и push"
   echo ""
   echo "Флаги:"
   echo "  -at  : Develop release с суффиксом at (тестовый URL)"
@@ -35,7 +35,7 @@ if [ "$BRANCH" != "develop" ]; then
   exit 1
 fi
 
-# Определяем префикс для commit message, SUFFIX и API_URL в зависимости от флага
+# Определяем префикс для commit-message, SUFFIX и API_URL в зависимости от флага
 case "$FLAG" in
   -at)
     PREFIX="Develop release"
@@ -77,26 +77,36 @@ if [ "$COMMAND" = "run" ]; then
   echo "Локальный запуск с BUILD_SUFFIX=$SUFFIX"
   flutter run --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 elif [ "$COMMAND" = "build" ]; then
-  # Извлекаем версию из pubspec.yaml (например, 2.12.123+123) и заменяем '+' на '.'
+  # Извлекаем версию из pubspec.yaml (например, 2.12.123+123) и оставляем только числовую часть,
+  # заменяя '+' на '.'
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
   PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')
-
-  # Формируем commit message с версией и маркером с флагом
-  COMMIT_MESSAGE="$PREFIX v${PROCESSED_VERSION}${SUFFIX} [BUILD_FLAG:$FLAG]"
-  echo "Автоматический коммит: $COMMIT_MESSAGE"
+  if [ -z "$SUFFIX" ]; then
+    TAG="v${PROCESSED_VERSION}"
+  else
+    TAG="v${PROCESSED_VERSION}${SUFFIX}"
+  fi
+  echo "Автоматический коммит с тегом: $TAG"
 
   # Экспортируем переменную, чтобы pre-commit hook пропустил обновление версии
   export SKIP_VERSION_INCREMENT=true
   echo "SKIP_VERSION_INCREMENT is set to: $SKIP_VERSION_INCREMENT"
 
   git add .
+  COMMIT_MESSAGE="$PREFIX $TAG"
   # Создаём пустой коммит, если нет изменений
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
-  # Выполняем один push (без тэга)
+  # Создаём тег, если он ещё не существует, и пушим коммит с тегом
+  if git rev-parse "$TAG" >/dev/null 2>&1; then
+    echo "Тег $TAG уже существует, пропускаем создание."
+  else
+    git tag "$TAG"
+  fi
   git push origin develop
+  git push origin "$TAG" || echo "Не удалось запушить тег."
 
-  echo "Коммит отправлен. Серверная сборка (CI) должна запуститься автоматически."
+  echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
 else
   echo "Используйте команды 'run' или 'build'"
   usage
