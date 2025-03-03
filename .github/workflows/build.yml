@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-    # Не запускаем по push-тегам
     tags-ignore:
       - 'v*'
   workflow_dispatch:
@@ -23,7 +22,8 @@ concurrency:
 
 jobs:
   build:
-    if: startsWith(github.ref, 'refs/heads/')
+    # Запускаем только если событие – push в ветку, а также чтобы запускался только последний commit
+    if: startsWith(github.ref, 'refs/heads/') && (github.event.after == github.sha)
     runs-on: ubuntu-latest
 
     steps:
