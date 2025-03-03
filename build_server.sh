@@ -71,13 +71,14 @@ esac
 echo "Серверная сборка с BUILD_SUFFIX=$SUFFIX"
 flutter build apk --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 
-# Переименование APK:
-# Извлекаем версию из pubspec.yaml (до знака '+')
-PACKAGE_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+# Извлекаем полную версию из pubspec.yaml, заменяя '+' на '.'
+FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+PROCESSED_VERSION=$(echo "$FULL_VERSION" | sed 's/+/./')
+
 if [ -z "$SUFFIX" ]; then
-  NEW_FILENAME="atm_safesky_v.${PACKAGE_VERSION}.apk"
+  NEW_FILENAME="atm_safesky_v.${PROCESSED_VERSION}.apk"
 else
-  NEW_FILENAME="atm_safesky_v.${PACKAGE_VERSION}${SUFFIX}.apk"
+  NEW_FILENAME="atm_safesky_v.${PROCESSED_VERSION}${SUFFIX}.apk"
 fi
 APK_SOURCE="build/app/outputs/flutter-apk/app-release.apk"
 APK_TARGET="build/app/outputs/flutter-apk/${NEW_FILENAME}"
@@ -90,9 +91,9 @@ fi
 
 # Формирование подписи для Telegram на основе версии и переданного SUFFIX
 if [ -z "$SUFFIX" ]; then
-  FINAL_CAPTION="v${PACKAGE_VERSION}"
+  FINAL_CAPTION="v${PROCESSED_VERSION}"
 else
-  FINAL_CAPTION="v${PACKAGE_VERSION}${SUFFIX}"
+  FINAL_CAPTION="v${PROCESSED_VERSION}${SUFFIX}"
 fi
 
 send_telegram() {
