@@ -13,20 +13,11 @@ usage() {
 }
 
 COMMAND=${1:-build}
-FLAG=${2:--at}
+FLAG=$2
 
 if [ -z "$FLAG" ]; then
-  # Если флаг не указан, пытаемся извлечь SUFFIX из последнего тега
-  LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-  echo "Последний тег: $LAST_TAG"
-  if [[ "$LAST_TAG" =~ (at|ap|bt|bp|t)$ ]]; then
-    SUFFIX_FROM_TAG=${BASH_REMATCH[1]}
-    FLAG="-$SUFFIX_FROM_TAG"
-    echo "Установленный флаг: $FLAG"
-  else
-    echo "Флаг не определён. Используйте один из: -at, -ap, -bt, -bp, -t, -p"
-    usage
-  fi
+  echo "Флаг не указан. Отмена сборки."
+  usage
 fi
 
 # Работаем только в ветке develop

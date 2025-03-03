@@ -11,8 +11,9 @@ on:
         required: true
         default: build
       flag:
-        description: "Флаг: -at, -ap, -bt, -bp, p"
+        description: "Флаг: -at, -ap, -bt, -bp, -t, -p"
         required: true
+
 
 jobs:
   build:

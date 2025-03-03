@@ -20,9 +20,9 @@ usage() {
 }
 
 COMMAND=$1
-FLAG=${2:--at}
+FLAG=$2
 
-if [ -z "$COMMAND" ]; then
+if [ -z "$COMMAND" ] || [ -z "$FLAG" ]; then
   usage
 fi
 
