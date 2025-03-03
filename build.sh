@@ -77,7 +77,7 @@ if [ "$COMMAND" = "run" ]; then
   echo "Локальный запуск с BUILD_SUFFIX=$SUFFIX"
   flutter run --release --dart-define API_URL=${API_URL} --dart-define BUILD_SUFFIX=${SUFFIX}
 elif [ "$COMMAND" = "build" ]; then
-  # Извлекаем версию из pubspec.yaml (например, 2.7.40+163) и оставляем только числовую часть
+  # Извлекаем версию из pubspec.yaml (например, 2.7.41+163) и оставляем только числовую часть
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
   PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')

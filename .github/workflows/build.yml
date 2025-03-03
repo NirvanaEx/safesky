@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+    tags-ignore:
+      - 'v*'
   workflow_dispatch:
     inputs:
       command:
@@ -21,6 +23,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -39,12 +43,13 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           chmod +x ./build_server.sh
-          # Если событие workflow_dispatch, используем входные параметры, иначе задаём дефолтный флаг (например, -at)
+          # При событии workflow_dispatch используем входные параметры,
+          # иначе для push-события оставляем FLAG пустым (тогда build_server.sh извлечёт его из тега)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"
           else
-            FLAG="-at"
             COMMAND="build"
+            FLAG=""
           fi
           ./build_server.sh "$COMMAND" "$FLAG"
