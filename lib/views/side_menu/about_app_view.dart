@@ -4,10 +4,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:safe_sky/views/pdf_page_view.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+// Получаем значение суффикса из переменной среды
+const String buildSuffix = String.fromEnvironment('BUILD_SUFFIX', defaultValue: '');
+
 class AboutAppView extends StatelessWidget {
   Future<String> _getAppVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    return '${packageInfo.version}.${packageInfo.buildNumber}';
+    return '${packageInfo.version}.${packageInfo.buildNumber}$buildSuffix';
   }
 
   @override
