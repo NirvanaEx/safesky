@@ -80,7 +80,6 @@ else
   echo "Файл APK не найден по пути: $APK_SOURCE"
 fi
 
-# Формирование подписи для Telegram
 if [ -z "$SUFFIX" ]; then
   FINAL_CAPTION="v${PROCESSED_VERSION}"
 else

@@ -1,19 +1,11 @@
 name: Build APK
 
 on:
-  workflow_dispatch:
-    inputs:
-      command:
-        description: "Команда: run или build (серверная сборка)"
-        required: true
-        default: build
-      flag:
-        description: "Флаг: -at, -ap, -bt, -bp, -t, -p"
-        required: true
-      workflow_name:
-        description: "Имя для отображения в job"
-        required: false
-        default: "Build APK"
+  push:
+    branches:
+      - develop
+    tags-ignore:
+      - '*'
 
 concurrency:
   group: ${{ github.ref }}
@@ -21,7 +13,7 @@ concurrency:
 
 jobs:
   build:
-    name: ${{ github.event.inputs.workflow_name }}
+    name: ${{ github.event.head_commit.message }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -47,6 +39,9 @@ jobs:
         run: |
           echo "Commit message: ${{ github.event.head_commit.message }}"  # отладочный вывод
           chmod +x ./build_server.sh
-          FLAG="${{ github.event.inputs.flag }}"
-          COMMAND="${{ github.event.inputs.command }}"
+          FLAG=$(echo "${{ github.event.head_commit.message }}" | grep -oP '\[BUILD_FLAG:\K[^]]+')
+          if [ -z "$FLAG" ]; then
+            FLAG="-at"
+          fi
+          COMMAND="build"
           ./build_server.sh "$COMMAND" "$FLAG"

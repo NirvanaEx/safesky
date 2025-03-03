@@ -7,7 +7,7 @@ trap 'echo -e "\nОшибка произошла. Нажмите любую кл
 usage() {
   echo "Usage:"
   echo "  run <flag>   # Локальный запуск"
-  echo "  build <flag> # Автоматический коммит, сборка, push и запуск workflow"
+  echo "  build <flag> # Автоматический коммит, сборка, push и запуск workflow (через push)"
   echo ""
   echo "Флаги:"
   echo "  -at  : Develop release с суффиксом at (тестовый URL)"
@@ -89,22 +89,11 @@ elif [ "$COMMAND" = "build" ]; then
   export SKIP_VERSION_INCREMENT=true
   echo "SKIP_VERSION_INCREMENT is set to: $SKIP_VERSION_INCREMENT"
 
-  # Добавляем изменения, коммитим и пушим
   git add .
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
   git push origin develop
 
-  echo "Коммит отправлен. Запуск workflow через API..."
-
-  # Запуск workflow через API GitHub
-  # Замените ВАШ_ТОКЕН на ваш реальный токен, если хотите захардкодить его
-  curl -X POST \
-    -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer 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" \
-    https://api.github.com/repos/NirvanaEx/safesky/actions/workflows/build.yml/dispatches \
-    -d "{\"ref\": \"develop\", \"inputs\": {\"command\": \"build\", \"flag\": \"${FLAG}\", \"workflow_name\": \"${COMMIT_MESSAGE}\"}}"
-
-  echo "Workflow запущен."
+  echo "Коммит отправлен. Workflow запустится автоматически при push."
 else
   echo "Используйте команды 'run' или 'build'"
   usage
