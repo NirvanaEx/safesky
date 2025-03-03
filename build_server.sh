@@ -15,31 +15,18 @@ usage() {
 COMMAND=${1:-build}
 FLAG=$2
 
-# Если флаг не указан (например, при push-событии), пытаемся извлечь его из тега на HEAD
+# Если флаг не указан, пробуем извлечь его из последнего commit message
 if [ -z "$FLAG" ]; then
-  EXISTING_TAG=$(git tag --points-at HEAD | grep '^v' | head -n 1)
-  if [ -n "$EXISTING_TAG" ]; then
-    # Извлекаем суффикс: если тег вида v<версия><суффикс> (например, v2.7.43.170bt),
-    # то извлекается часть из букв (если отсутствует – пустая)
-    EXTRACTED_SUFFIX=$(echo "$EXISTING_TAG" | sed -E 's/^v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+([a-z]+)?$/\1/')
-    if [ -n "$EXTRACTED_SUFFIX" ]; then
-      FLAG="-$EXTRACTED_SUFFIX"
-    else
-      FLAG="-p"
-    fi
+  LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+  EXTRACTED_FLAG=$(echo "$LAST_COMMIT_MSG" | grep -oP '\[BUILD_FLAG:\K[^]]+')
+  if [ -n "$EXTRACTED_FLAG" ]; then
+    FLAG="$EXTRACTED_FLAG"
   else
     FLAG="-at"
   fi
 fi
 
-# Работаем только в ветке develop
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-echo "Текущая ветка: $BRANCH"
-if [ "$BRANCH" != "develop" ]; then
-  echo "Скрипт поддерживает сборку только из ветки develop"
-  exit 1
-fi
-
+# Определяем SUFFIX и API_URL на основе полученного флага
 case "$FLAG" in
   -at)
     SUFFIX="at"
@@ -93,7 +80,7 @@ else
   echo "Файл APK не найден по пути: $APK_SOURCE"
 fi
 
-# Формирование подписи для Telegram на основе версии и переданного SUFFIX
+# Формирование подписи для Telegram на основе версии и SUFFIX
 if [ -z "$SUFFIX" ]; then
   FINAL_CAPTION="v${PROCESSED_VERSION}"
 else

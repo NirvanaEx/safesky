@@ -7,7 +7,7 @@ trap 'echo -e "\nОшибка произошла. Нажмите любую кл
 usage() {
   echo "Usage:"
   echo "  run <flag>   # Локальный запуск"
-  echo "  build <flag> # Автоматический коммит и тег, сборка и пуш"
+  echo "  build <flag> # Автоматический коммит, сборка и пуш (без создания тэга)"
   echo ""
   echo "Флаги:"
   echo "  -at  : Develop release с суффиксом at (тестовый URL)"
@@ -81,30 +81,22 @@ elif [ "$COMMAND" = "build" ]; then
   FULL_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
   NUMERIC_VERSION=$(echo "$FULL_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+\+[0-9]+).*/\1/')
   PROCESSED_VERSION=$(echo "$NUMERIC_VERSION" | sed 's/+/./')
-  if [ -z "$SUFFIX" ]; then
-    TAG="v${PROCESSED_VERSION}"
-  else
-    TAG="v${PROCESSED_VERSION}${SUFFIX}"
-  fi
-  echo "Автоматический коммит с тегом: $TAG"
+
+  # Формируем commit message с версией и маркером с флагом
+  COMMIT_MESSAGE="$PREFIX v${PROCESSED_VERSION} [BUILD_FLAG:$FLAG]"
+  echo "Автоматический коммит: $COMMIT_MESSAGE"
 
   # Экспортируем переменную, чтобы pre-commit hook пропустил обновление версии
   export SKIP_VERSION_INCREMENT=true
   echo "SKIP_VERSION_INCREMENT is set to: $SKIP_VERSION_INCREMENT"
 
   git add .
-  COMMIT_MESSAGE="$PREFIX $TAG"
   # Создаём пустой коммит, если нет изменений
   git commit --allow-empty -m "$COMMIT_MESSAGE" || echo "Нет изменений для коммита"
-  if git rev-parse "$TAG" >/dev/null 2>&1; then
-    echo "Тег $TAG уже существует, пропускаем создание."
-  else
-    git tag "$TAG"
-  fi
-  # Один пуш для коммита и тега
-  git push origin develop --follow-tags
+  # Пушим изменения (без создания тэга)
+  git push origin develop
 
-  echo "Коммит и тег отправлены. Серверная сборка (CI) должна запуститься автоматически."
+  echo "Коммит отправлен. Серверная сборка (CI) должна запуститься автоматически."
 else
   echo "Используйте команды 'run' или 'build'"
   usage

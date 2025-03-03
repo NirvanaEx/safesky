@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+    # Не запускаем по push-тегам
     tags-ignore:
       - 'v*'
   workflow_dispatch:
@@ -15,6 +16,10 @@ on:
       flag:
         description: "Флаг: -at, -ap, -bt, -bp, -t, -p"
         required: true
+
+concurrency:
+  group: build-develop
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -45,7 +50,7 @@ jobs:
         run: |
           chmod +x ./build_server.sh
           # При событии workflow_dispatch используем входные параметры,
-          # иначе для push-события оставляем FLAG пустым (build_server.sh извлечёт его из тега)
+          # иначе для push-события оставляем FLAG пустым (build_server.sh извлечёт его из commit message)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"
