@@ -22,8 +22,7 @@ concurrency:
 
 jobs:
   build:
-    # Запускаем только если событие – push в ветку, а также чтобы запускался только последний commit
-    if: startsWith(github.ref, 'refs/heads/') && (github.event.after == github.sha)
+    if: (github.event_name == 'push' && github.event.head_commit.id == github.sha) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -49,8 +48,6 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           chmod +x ./build_server.sh
-          # При событии workflow_dispatch используем входные параметры,
-          # иначе для push-события оставляем FLAG пустым (build_server.sh извлечёт его из commit message)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAG="${{ github.event.inputs.flag }}"
             COMMAND="${{ github.event.inputs.command }}"
