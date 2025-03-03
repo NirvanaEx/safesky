@@ -3,7 +3,7 @@ description: Safe Sky
 
 publish_to: 'none'
 
-version: 2.7.34+151
+version: 2.7.35+153
 
 environment:
   sdk: '>=3.1.5 <4.0.0'

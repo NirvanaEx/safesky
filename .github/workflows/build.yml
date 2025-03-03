@@ -1,9 +1,6 @@
 name: Build APK
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
       command:
@@ -13,7 +10,6 @@ on:
       flag:
         description: "Флаг: -at, -ap, -bt, -bp, -t, -p"
         required: true
-
 
 jobs:
   build:
