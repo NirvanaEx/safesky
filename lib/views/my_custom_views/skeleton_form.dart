@@ -19,6 +19,14 @@ class SkeletonForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Определяем яркость текущей темы
+    final brightness = Theme.of(context).brightness;
+    // Выбираем базовый и выделяющий цвета в зависимости от темы
+    final baseColor =
+    brightness == Brightness.dark ? Colors.grey[700]! : Colors.grey.shade300;
+    final highlightColor =
+    brightness == Brightness.dark ? Colors.grey[600]! : Colors.grey.shade100;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Высота экрана
@@ -27,18 +35,18 @@ class SkeletonForm extends StatelessWidget {
         final int count = (availableHeight / skeletonItemTotalHeight).ceil();
 
         return Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
+          baseColor: baseColor,
+          highlightColor: highlightColor,
           child: SingleChildScrollView(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15),
                 ...List.generate(
                   count,
-                      (index) => _buildSkeletonField(),
+                      (index) =>
+                      _buildSkeletonField(baseColor, highlightColor, brightness),
                 ),
               ],
             ),
@@ -48,7 +56,8 @@ class SkeletonForm extends StatelessWidget {
     );
   }
 
-  Widget _buildSkeletonField() {
+  Widget _buildSkeletonField(
+      Color baseColor, Color highlightColor, Brightness brightness) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,7 +66,7 @@ class SkeletonForm extends StatelessWidget {
           width: _labelWidth,
           height: _labelHeight,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: baseColor,
             borderRadius: BorderRadius.circular(30),
           ),
         ),
@@ -68,16 +77,16 @@ class SkeletonForm extends StatelessWidget {
           height: _fieldHeight,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.grey.shade300, Colors.grey.shade200],
+              colors: [baseColor, highlightColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withOpacity(brightness == Brightness.dark ? 0.2 : 0.1),
                 blurRadius: 4,
-                offset: Offset(2, 2),
+                offset: const Offset(2, 2),
               ),
             ],
           ),

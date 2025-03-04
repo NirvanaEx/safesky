@@ -266,7 +266,7 @@ class AuthService {
   }
 
   /// Изменение данных профиля с автоматическим обновлением токена при необходимости.
-  Future<void> changeProfileData(String name, String surname, String phone) async {
+  Future<void> changeProfileData(String name, String surname, String patronymic, String phone) async {
     final response = await _makeAuthorizedRequest((token) async {
       final defaultHeaders = await getDefaultHeaders();
       final headers = {...defaultHeaders, 'Authorization': 'Bearer $token'};
@@ -276,6 +276,7 @@ class AuthService {
         body: jsonEncode({
           'surname': surname,
           'name': name,
+          'patronymic': patronymic, // Новое поле
           'phone': phone,
         }),
       );
@@ -285,6 +286,7 @@ class AuthService {
       final errorData = jsonDecode(utf8.decode(response.bodyBytes));
       throw Exception(errorData['message'] ?? 'Failed to update profile data');
     }
+
   }
 
   /// Изменение пароля с автоматическим обновлением токена при необходимости.

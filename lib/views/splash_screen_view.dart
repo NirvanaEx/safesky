@@ -8,6 +8,8 @@ import 'auth/login_view.dart';
 import 'home/main_view.dart';
 
 class SplashScreenView extends StatefulWidget {
+  const SplashScreenView({Key? key}) : super(key: key);
+
   @override
   _SplashScreenViewState createState() => _SplashScreenViewState();
 }
@@ -18,88 +20,88 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   @override
   void initState() {
     super.initState();
+    _initializeAuth();
+  }
+
+  Future<void> _initializeAuth() async {
+    // Искусственная задержка для проигрывания анимации (2 секунды)
+    await Future.delayed(const Duration(seconds: 2));
     _checkAuth();
     _startAuthCheckTimer();
   }
 
-  void _checkAuth() async {
+  Future<void> _checkAuth() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-
-    // Искусственная задержка на 2 секунды для проигрывания анимации
-    await Future.delayed(Duration(seconds: 2));
-
-    // Проверяем авторизацию
     bool isAuthenticated = await authViewModel.isAuthenticated();
 
-    // Переход на нужный экран
     if (isAuthenticated) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainView()),
-      );
+      _navigateTo(MainView());
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginView()),
-      );
+      _navigateTo(LoginView());
     }
   }
 
   void _startAuthCheckTimer() {
-    _authCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
+    _authCheckTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-
-      // Проверка токена
       bool isAuthenticated = await authViewModel.isAuthenticated();
 
-      // Если токен недействителен, переходим на экран логина
+      // Если токен недействителен, переходим на экран логина и отменяем таймер
       if (!isAuthenticated) {
-        _authCheckTimer?.cancel(); // Останавливаем таймер перед переходом
+        _authCheckTimer?.cancel();
         if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginView()),
-          );
+          _navigateTo(LoginView());
         }
       }
     });
   }
 
+  void _navigateTo(Widget destination) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
+  }
+
   @override
   void dispose() {
-    _authCheckTimer?.cancel(); // Очищаем таймер при уничтожении виджета
+    _authCheckTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    // Размер контейнера с анимацией адаптивен к ширине экрана
+    final double containerSize = MediaQuery.of(context).size.width * 0.7;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 400,
-              height: 400,
-              child: Lottie.asset(
-                'assets/json/drone_loading.json',
-                fit: BoxFit.contain,
-              ),
-            ),
-            Positioned(
-              bottom: 70,
-              child: Text(
-                'Loading...',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Center(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 400,
+                height: 400,
+                child: Lottie.asset(
+                  'assets/json/drone_loading.json',
+                  fit: BoxFit.contain,
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                bottom: containerSize * 0.15,
+                child: Text(
+                  'Loading...',
+                  style: theme.textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -8,9 +8,10 @@ class MultiSelectDropdown<T> extends StatelessWidget {
   final String title;
   final String hint;
   final String buttonText;
-  final String Function(T) itemLabel;  // Функция для получения названия элемента
+  final String Function(T) itemLabel;
 
-  MultiSelectDropdown({
+  const MultiSelectDropdown({
+    Key? key,
     required this.items,
     required this.selectedValues,
     required this.onChanged,
@@ -18,28 +19,59 @@ class MultiSelectDropdown<T> extends StatelessWidget {
     this.title = 'Select Items',
     this.hint = 'Select one or more items',
     this.buttonText = 'Choose Items',
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiSelectDialogField<T>(
-      items: items.map((item) => MultiSelectItem<T>(item, itemLabel(item))).toList(),
+      items: items
+          .map((item) => MultiSelectItem<T>(item, itemLabel(item)))
+          .toList(),
       initialValue: selectedValues,
       title: Text(
         title,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      cancelText: Text(
+        'Cancel',
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      confirmText: Text(
+        'OK',
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
       buttonText: Text(
         '   $buttonText',
-        style: TextStyle(fontSize: 16),
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).inputDecorationTheme.fillColor,
         borderRadius: BorderRadius.circular(30),
+      ),
+      itemsTextStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+      ),
+      checkColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.white,
+      selectedColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.blue
+          : Colors.blue,
+      selectedItemsTextStyle: TextStyle(
+        color: Colors.blue,
+        fontSize: 16,
       ),
       onConfirm: onChanged,
       chipDisplay: MultiSelectChipDisplay(
-        textStyle: TextStyle(fontSize: 16),
+        chipColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.blue.shade100
+            : Colors.blueAccent.shade100,
+        textStyle: Theme.of(context).textTheme.bodyLarge,
         onTap: (item) {
           selectedValues.remove(item);
           onChanged(List.from(selectedValues));

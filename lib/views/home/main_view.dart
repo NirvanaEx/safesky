@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart'; // Импорт Provider
+import 'package:provider/provider.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
@@ -20,9 +20,7 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   int _currentIndex = 0;
-
   List<Widget?> _screens = List.filled(4, null, growable: false);
-
 
   Widget _buildScreen(int index) {
     switch (index) {
@@ -59,12 +57,12 @@ class _MainViewState extends State<MainView> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 1,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu, color: Colors.black),
+              icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -75,36 +73,23 @@ class _MainViewState extends State<MainView> {
           child: SvgPicture.asset(
             'assets/svg/logo.svg',
             height: 40,
-            color: Color(0xFF323955),
+            color: Theme.of(context).iconTheme.color,
           ),
         ),
         actions: [
-          // Если уведомления временно скрыты, добавляем заглушку:
-          Container(
-            width: 48, // ширину можно подогнать под размер иконки уведомлений
-          ),
-
-          // Если понадобится вернуть уведомления, можно использовать следующий код:
-          // IconButton(
-          //   icon: Icon(Icons.notifications, color: Colors.black),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => NotificationView()),
-          //     );
-          //   },
-          // ),
+          Container(width: 48),
         ],
       ),
       drawer: _buildDrawer(localizations),
       body: _screens[_currentIndex] ?? _buildScreen(_currentIndex),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor:
+        Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor:
+        Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
@@ -139,7 +124,7 @@ class _MainViewState extends State<MainView> {
               Align(
                 alignment: Alignment.topLeft,
                 child: IconButton(
-                  icon: Icon(Icons.close),
+                  icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -152,24 +137,22 @@ class _MainViewState extends State<MainView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${localizations.mainView_hi}, ${authViewModel.user?.surname ?? 'John'} ${authViewModel.user?.name ?? 'Doe'}',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        // Замените этот участок в _buildDrawer:
+                        Consumer<AuthViewModel>(
+                          builder: (context, authViewModel, child) {
+                            return Text(
+                              '${localizations.mainView_hi}, ${authViewModel.user?.surname ?? 'John'} '
+                                  '${authViewModel.user?.name ?? 'Doe'} '
+                                  '${authViewModel.user?.patronymic ?? ''}',
+                              style: Theme.of(context).textTheme.headline6,
+                            );
+                          },
                         ),
                         Divider(),
-                        // ListTile(
-                        //   leading: Icon(Icons.support_agent, color: Colors.black),
-                        //   title: Text(localizations.support),
-                        //   onTap: () {
-                        //     Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(builder: (context) => SupportView()),
-                        //     );
-                        //   },
-                        // ),
                         ListTile(
-                          leading: Icon(Icons.settings, color: Colors.black),
-                          title: Text(localizations.mainView_settings),
+                          leading: Icon(Icons.settings, color: Theme.of(context).iconTheme.color),
+                          title: Text(localizations.mainView_settings,
+                              style: Theme.of(context).textTheme.bodyText1),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -178,8 +161,9 @@ class _MainViewState extends State<MainView> {
                           },
                         ),
                         ListTile(
-                          leading: Icon(Icons.info_outline, color: Colors.black),
-                          title: Text(localizations.mainView_aboutApp),
+                          leading: Icon(Icons.info_outline, color: Theme.of(context).iconTheme.color),
+                          title: Text(localizations.mainView_aboutApp,
+                              style: Theme.of(context).textTheme.bodyText1),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -188,8 +172,9 @@ class _MainViewState extends State<MainView> {
                           },
                         ),
                         ListTile(
-                          leading: Icon(Icons.logout, color: Colors.black),
-                          title: Text(localizations.mainView_logout),
+                          leading: Icon(Icons.logout, color: Theme.of(context).iconTheme.color),
+                          title: Text(localizations.mainView_logout,
+                              style: Theme.of(context).textTheme.bodyText1),
                           onTap: () async {
                             final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
                             await authViewModel.logout();
@@ -209,43 +194,67 @@ class _MainViewState extends State<MainView> {
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: Theme.of(context).inputDecorationTheme.fillColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // Первый номер
                       Row(
                         children: [
-                          Icon(Icons.phone, color: Colors.black),
-                          SizedBox(width: 8),
+                          Icon(Icons.phone, color: Theme.of(context).iconTheme.color),
+                          const SizedBox(width: 8),
                           Text(
                             '(78) 140-27-78',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.bodyText1?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 8),
+                      // Второй номер
+                      Row(
+                        children: [
+                          Icon(Icons.phone, color: Theme.of(context).iconTheme.color),
+                          const SizedBox(width: 8),
+                          Text(
+                            '(78) 140-38-41',
+                            style: Theme.of(context).textTheme.bodyText1?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Третий номер
+                      Row(
+                        children: [
+                          Icon(Icons.phone, color: Theme.of(context).iconTheme.color),
+                          const SizedBox(width: 8),
+                          Text(
+                            '(78) 140-38-42',
+                            style: Theme.of(context).textTheme.bodyText1?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // Под номерами отображается один текст
                       Text(
                         localizations.mainView_available24,
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: Theme.of(context).textTheme.caption,
                       ),
                     ],
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),
       ),
     );
   }
-
 }
 
-// Пустой виджет для третьей вкладки
 class EmptyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

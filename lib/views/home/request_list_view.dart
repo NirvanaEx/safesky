@@ -51,12 +51,12 @@ class _RequestListViewState extends State<RequestListView> {
                   onChanged: viewModel.onSearchChanged,
                   decoration: InputDecoration(
                     hintText: localizations.requestListView_search,
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide: BorderSide.none,
                     ),
-                    fillColor: Colors.grey[200],
+                    fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                     filled: true,
                   ),
                 ),
@@ -64,7 +64,17 @@ class _RequestListViewState extends State<RequestListView> {
               if (viewModel.isFirstLoad)
                 Expanded(child: _buildSkeletonList())
               else if (viewModel.requests.isEmpty && !viewModel.isLoadingMore)
-                _buildNoDataContainer(localizations)
+                Expanded(
+                  child: SmartRefresher(
+                    controller: _refreshController,
+                    onRefresh: () {
+                      viewModel.refreshRequests();
+                      _refreshController.refreshCompleted();
+                    },
+                    enablePullDown: true,
+                    child: _buildNoDataContainer(localizations),
+                  ),
+                )
               else
                 Expanded(
                   child: SmartRefresher(
@@ -83,7 +93,7 @@ class _RequestListViewState extends State<RequestListView> {
                         }
                         final request = viewModel.requests[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Card(
@@ -93,17 +103,24 @@ class _RequestListViewState extends State<RequestListView> {
                               ),
                               clipBehavior: Clip.antiAlias,
                               child: ListTile(
-                                title: Text("№ ${request.applicationNum}"),
-                                subtitle: Text(  DateFormat('dd.MM.yyyy').format(DateTime.parse(request.planDate))),
+                                title: Text("№ ${request.applicationNum}",
+                                    style: Theme.of(context).textTheme.bodyLarge),
+                                subtitle: Text(
+                                  DateFormat('dd.MM.yyyy').format(DateTime.parse(request.planDate)),
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
                                 trailing: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: viewModel.getStatusColor(request.stateId),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
                                     _getLocalizedStatus(request.stateId, localizations),
-                                    style: TextStyle(color: Colors.white),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: Colors.white),
                                   ),
                                 ),
                                 onTap: () {
@@ -139,7 +156,7 @@ class _RequestListViewState extends State<RequestListView> {
         child: Container(
           height: 70,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Theme.of(context).inputDecorationTheme.fillColor,
             borderRadius: BorderRadius.circular(10),
           ),
         ),
@@ -148,8 +165,8 @@ class _RequestListViewState extends State<RequestListView> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
       child: Center(
         child: CircularProgressIndicator(),
       ),
@@ -161,26 +178,26 @@ class _RequestListViewState extends State<RequestListView> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: Theme.of(context).inputDecorationTheme.fillColor,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
-              offset: Offset(0, 5),
+              offset: const Offset(0, 5),
             ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search_off, size: 50, color: Colors.grey),
-            SizedBox(height: 10),
+            Icon(Icons.search_off, size: 50, color: Theme.of(context).iconTheme.color?.withOpacity(0.7)),
+            const SizedBox(height: 10),
             Text(
               localizations.requestListView_noDataFound,
-              style: TextStyle(fontSize: 18, color: Colors.black54),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color),
               textAlign: TextAlign.center,
             ),
           ],

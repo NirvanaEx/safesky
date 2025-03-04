@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +25,6 @@ class AddRequestView extends StatefulWidget {
 }
 
 class _AddRequestViewState extends State<AddRequestView> {
-
   @override
   void initState() {
     super.initState();
@@ -51,7 +49,7 @@ class _AddRequestViewState extends State<AddRequestView> {
     return Scaffold(
       appBar: widget.planDetail != null
           ? AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 1,
       )
           : null,
@@ -66,7 +64,7 @@ class _AddRequestViewState extends State<AddRequestView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildLabel(localizations.addRequestView_flightStartDate),
               _buildDateOnlyPickerField(
                 date: viewModel.startDate,
@@ -77,8 +75,7 @@ class _AddRequestViewState extends State<AddRequestView> {
                   }
                 },
               ),
-              if (viewModel.startDate != null && !viewModel.isLoading)
-                _formAfterGetStartDate(),
+              if (viewModel.startDate != null && !viewModel.isLoading) _formAfterGetStartDate(),
             ],
           ),
         ),
@@ -86,23 +83,18 @@ class _AddRequestViewState extends State<AddRequestView> {
     );
   }
 
-  Widget _formAfterGetStartDate(){
+  Widget _formAfterGetStartDate() {
     final localizations = AppLocalizations.of(context)!;
     final viewModel = Provider.of<AddRequestViewModel>(context, listen: true);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: [
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_requesterName),
         _buildTextField(viewModel.requesterNameController, hintText: localizations.addRequestView_requesterName, readOnly: true),
-        // SizedBox(height: 16),
-        // _buildLabel(localizations.addRequestView_applicationNum),
-        // _buildTextField(viewModel.applicationNumController, hintText: localizations.addRequestView_applicationNum, readOnly: true),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_model),
-
         MultiSelectDropdown<Bpla>(
           items: viewModel.bplaList,
           selectedValues: viewModel.selectedBplas,
@@ -113,8 +105,7 @@ class _AddRequestViewState extends State<AddRequestView> {
           title: localizations.addRequestView_selectBpla,
           buttonText: localizations.addRequestView_chooseBpla,
         ),
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_flightTimes),
         Column(
           children: [
@@ -123,7 +114,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               hintText: "HH:mm",
               onTimeSelected: (date) => viewModel.updateFlightStartDateTime(date!),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTimePickerField(
               time: viewModel.flightEndDateTime,
               hintText: "HH:mm",
@@ -131,17 +122,16 @@ class _AddRequestViewState extends State<AddRequestView> {
             ),
           ],
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_flightOperationArea),
         _buildDropdown<RegionModel>(
           items: viewModel.regionList,
           selectedValue: viewModel.selectedRegion,
           onChanged: (value) => viewModel.setSelectedRegion(value!),
           hint: localizations.addRequestView_flightOperationArea,
-          getItemName: (region) => region.name ,
+          getItemName: (region) => region.name,
         ),
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_flightOperationDistrict),
         _buildDropdown<DistrictModel>(
           items: viewModel.districtList,
@@ -150,12 +140,10 @@ class _AddRequestViewState extends State<AddRequestView> {
           hint: localizations.addRequestView_flightOperationDistrict,
           getItemName: (district) => district.name,
         ),
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_landmark),
         _buildTextField(viewModel.landmarkController, hintText: localizations.addRequestView_landmark, isText: true),
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_routeType),
         _buildDropdown<String>(
           items: viewModel.routeTypeOptions,
@@ -165,17 +153,17 @@ class _AddRequestViewState extends State<AddRequestView> {
           getItemName: (value) {
             switch (value) {
               case "circle":
-                return localizations.addRequestView_routeCircle; // например: "По кругу"
+                return localizations.addRequestView_routeCircle;
               case "polygon":
-                return localizations.addRequestView_routePolygon; // например: "По Квадрату/Полигону"
+                return localizations.addRequestView_routePolygon;
               case "line":
-                return localizations.addRequestView_routeLine; // например: "По линии"
+                return localizations.addRequestView_routeLine;
               default:
                 return value;
             }
           },
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         if (viewModel.selectedRouteType != null) ...[
           _buildLabel(localizations.addRequestView_coordinates),
           Row(
@@ -191,14 +179,14 @@ class _AddRequestViewState extends State<AddRequestView> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Theme.of(context).inputDecorationTheme.fillColor,
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Text(
                       viewModel.latLngController.text,
                       maxLines: viewModel.coordinatesExpanded ? null : 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ),
@@ -206,7 +194,7 @@ class _AddRequestViewState extends State<AddRequestView> {
               IconButton(
                 icon: Icon(
                   viewModel.coordinatesExpanded ? Icons.expand_less : Icons.expand_more,
-                  color: Colors.black,
+                  color: Theme.of(context).iconTheme.color,
                 ),
                 onPressed: () {
                   setState(() {
@@ -216,29 +204,30 @@ class _AddRequestViewState extends State<AddRequestView> {
               ),
               TextButton(
                 onPressed: () async {
-                  final initialCoordinates = viewModel.getCurrentCoordinates(); // новый метод
-                  print("COORINATES: $initialCoordinates");
+                  final initialCoordinates = viewModel.getCurrentCoordinates();
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => MapSelectLocationView(
                         routeType: viewModel.selectedRouteType,
-                        initialCoordinates: initialCoordinates, // передаём координаты
-
+                        initialCoordinates: initialCoordinates,
                       ),
                     ),
                   );
                   if (result != null && result is Map<String, dynamic>) {
-                    // Для "polygon" и "line" ожидается массив точек,
-                    // а для "circle" – одиночная точка.
                     viewModel.updateCoordinatesAndRadius(result['coordinates'], result['radius']);
                   }
                 },
-                child: Text(localizations.addRequestView_map),
+                child: Text(
+                  localizations.addRequestView_map,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -250,9 +239,8 @@ class _AddRequestViewState extends State<AddRequestView> {
                   ],
                 ),
               ),
-              // Показываем поле радиуса только если выбран тип "По кругу"
               if (viewModel.selectedRouteType == "circle") ...[
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +254,7 @@ class _AddRequestViewState extends State<AddRequestView> {
             ],
           ),
         ],
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_flightPurpose),
         _buildDropdown<String>(
           items: viewModel.purposeList,
@@ -276,12 +264,11 @@ class _AddRequestViewState extends State<AddRequestView> {
           getItemName: (purpose) => purpose,
         ),
         if (viewModel.selectedPurpose == localizations.addRequestView_other) ...[
-          SizedBox(height: 16),
-          _buildLabel(localizations.addRequestView_enterPurpose), // Локализация
+          const SizedBox(height: 16),
+          _buildLabel(localizations.addRequestView_enterPurpose),
           _buildTextField(viewModel.customPurposeController, hintText: localizations.addRequestView_flightPurposeHint, isText: true),
         ],
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_operatorName),
         MultiSelectDropdown<Operator>(
           items: viewModel.operatorList,
@@ -294,24 +281,22 @@ class _AddRequestViewState extends State<AddRequestView> {
           buttonText: localizations.addRequestView_selectOperator,
           itemLabel: (operator) => "${operator.surname} ${operator.name} ${operator.patronymic ?? ''}",
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_operatorPhone),
         _buildPhoneList(viewModel),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_email),
         _buildTextField(viewModel.emailController, hintText: 'my@mail.com', isText: true),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_specialPermit),
         _buildTextField(viewModel.permitNumberController, hintText: '-', isText: true, readOnly: true),
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_contract),
         _buildTextField(viewModel.contractNumberController, hintText: '-', isText: true, readOnly: true),
-
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildLabel(localizations.addRequestView_note),
         _buildTextField(viewModel.noteController, hintText: localizations.addRequestView_optional, isText: true),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Center(
           child: ElevatedButton(
             onPressed: () async {
@@ -322,7 +307,6 @@ class _AddRequestViewState extends State<AddRequestView> {
                 String message = result['message'];
 
                 if (status == 'success') {
-                  // Получаем applicationNum и planId из результата
                   String applicationNum = result['applicationNum'] ?? 'Unknown';
                   int planId = int.tryParse(result['planId']) ?? 0;
                   await MyCustomDialog.showApplicationNumberDialog(
@@ -333,11 +317,10 @@ class _AddRequestViewState extends State<AddRequestView> {
                   );
                   context.read<RequestListViewModel>().refreshRequests();
                   print("Запрос успешно отправлен!");
-                  // Дополнительные действия при успешном запросе
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(message),
+                      content: Text(message, style: Theme.of(context).textTheme.bodyLarge),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -345,13 +328,21 @@ class _AddRequestViewState extends State<AddRequestView> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
+              backgroundColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black  // черный фон для светлой темы
+                  : Theme.of(context).buttonTheme.colorScheme?.primary ?? Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-              padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
-              minimumSize: Size(double.infinity, 48),
+              padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+              minimumSize: const Size(double.infinity, 48),
             ),
-            child: Text(localizations.addRequestView_submit, style: TextStyle(fontSize: 16)),
+            child: Text(
+              localizations.addRequestView_submit,
+              style: Theme.of(context).brightness == Brightness.light
+                  ? Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16, color: Colors.white) // белый текст для светлой темы
+                  : Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
+            ),
           ),
+
         ),
       ],
     );
@@ -359,26 +350,23 @@ class _AddRequestViewState extends State<AddRequestView> {
 
   Widget _buildPhoneList(AddRequestViewModel viewModel) {
     final localizations = AppLocalizations.of(context)!;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Отображение номеров телефонов от выбранных операторов
         ...viewModel.operatorPhoneControllers.map((controller) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: TextField(
             controller: controller,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              hintText: localizations.addRequestView_operatorPhone, // Локализация
+              hintText: localizations.addRequestView_operatorPhone,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             ),
           ),
         )),
-        // Отображение вручную добавленных номеров
         ...viewModel.manualPhoneControllers.map((controller) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Row(
@@ -388,16 +376,16 @@ class _AddRequestViewState extends State<AddRequestView> {
                   controller: controller,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: localizations.addRequestView_additionalPhone, // Локализация
+                    hintText: localizations.addRequestView_additionalPhone,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   ),
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.remove_circle, color: Colors.red),
+                icon: const Icon(Icons.remove_circle, color: Colors.red),
                 onPressed: () {
                   setState(() {
                     viewModel.manualPhoneControllers.remove(controller);
@@ -407,7 +395,6 @@ class _AddRequestViewState extends State<AddRequestView> {
             ],
           ),
         )),
-        // Кнопка для добавления нового номера телефона
         Align(
           alignment: Alignment.centerRight,
           child: TextButton.icon(
@@ -416,29 +403,32 @@ class _AddRequestViewState extends State<AddRequestView> {
                 viewModel.manualPhoneControllers.add(TextEditingController());
               });
             },
-            icon: Icon(Icons.add),
-            label: Text(localizations.addRequestView_addPhone), // Локализация
+            icon: const Icon(Icons.add),
+            label: Text(
+                localizations.addRequestView_addPhone,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                )
+            ),
           ),
         ),
       ],
     );
   }
 
-
   Widget _buildLabel(String label) {
     return Text(
       label,
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
   Widget _buildTextField(
-
       TextEditingController controller, {
         required String hintText,
         bool readOnly = false,
-        bool isDecimal = false, // Параметр для выбора типа чисел
-        bool isText = false, // Новый параметр для текста
+        bool isDecimal = false,
+        bool isText = false,
       }) {
     return TextField(
       controller: controller,
@@ -447,28 +437,26 @@ class _AddRequestViewState extends State<AddRequestView> {
           ? TextInputType.text
           : (isDecimal ? TextInputType.numberWithOptions(decimal: true) : TextInputType.number),
       inputFormatters: isText
-          ? [] // Для текста не требуется ограничений
+          ? []
           : [
         FilteringTextInputFormatter.allow(
-          isDecimal ? RegExp(r'^\d*\.?\d*') : RegExp(r'^\d*'), // Разрешает ввод с десятичными или без
+          isDecimal ? RegExp(r'^\d*\.?\d*') : RegExp(r'^\d*'),
         ),
       ],
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide.none,
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       ),
+      style: Theme.of(context).textTheme.bodyLarge,
     );
   }
 
-
-
-  // Обновленный метод для выпадающих списков моделей
   Widget _buildDropdown<T>({
     required List<T> items,
     required T? selectedValue,
@@ -477,20 +465,23 @@ class _AddRequestViewState extends State<AddRequestView> {
     required String Function(T) getItemName,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).inputDecorationTheme.fillColor,
         borderRadius: BorderRadius.circular(30),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: selectedValue,
           isExpanded: true,
-          hint: Text(hint, style: TextStyle(fontSize: 16)),
+          hint: Text(
+            hint,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
           items: items.map((T value) {
             return DropdownMenuItem<T>(
               value: value,
-              child: Text(getItemName(value)), // Отображение имени из модели
+              child: Text(getItemName(value), style: Theme.of(context).textTheme.bodyLarge),
             );
           }).toList(),
           onChanged: onChanged,
@@ -523,10 +514,7 @@ class _AddRequestViewState extends State<AddRequestView> {
   Widget _buildTimePickerField({required DateTime? time, required String hintText, required ValueChanged<DateTime?> onTimeSelected}) {
     return GestureDetector(
       onTap: () async {
-        final TimeOfDay? pickedTime = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-        );
+        final TimeOfDay? pickedTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
         if (pickedTime != null) {
           DateTime now = DateTime.now();
           DateTime newDateTime = DateTime(now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
@@ -548,7 +536,6 @@ class _AddRequestViewState extends State<AddRequestView> {
         );
         if (pickedDate != null) {
           onDateSelected(pickedDate);
-
         }
       },
       child: _buildDateDisplay(date, hintText, dateFormat: 'dd.MM.yyyy'),
@@ -557,9 +544,9 @@ class _AddRequestViewState extends State<AddRequestView> {
 
   Widget _buildDateDisplay(DateTime? date, String hintText, {required String dateFormat}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).inputDecorationTheme.fillColor,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
@@ -567,10 +554,10 @@ class _AddRequestViewState extends State<AddRequestView> {
           Expanded(
             child: Text(
               date == null ? hintText : DateFormat(dateFormat).format(date),
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          Icon(Icons.calendar_today, color: Colors.grey),
+          Icon(Icons.calendar_today, color: Theme.of(context).iconTheme.color?.withOpacity(0.7)),
         ],
       ),
     );
@@ -578,9 +565,9 @@ class _AddRequestViewState extends State<AddRequestView> {
 
   Widget _buildTimeDisplay(DateTime? time, String hintText) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).inputDecorationTheme.fillColor,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
@@ -588,10 +575,10 @@ class _AddRequestViewState extends State<AddRequestView> {
           Expanded(
             child: Text(
               time == null ? hintText : DateFormat('HH:mm').format(time),
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          Icon(Icons.access_time, color: Colors.grey),
+          Icon(Icons.access_time, color: Theme.of(context).iconTheme.color?.withOpacity(0.7)),
         ],
       ),
     );
