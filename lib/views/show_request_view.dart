@@ -12,14 +12,14 @@ import 'package:collection/collection.dart';
 
 class ShowRequestView extends StatefulWidget {
   final int? requestId;
-  final bool isViewed; // новый параметр
+  final bool isViewed;
 
-  ShowRequestView({required this.requestId, this.isViewed = false});
+  const ShowRequestView({Key? key, required this.requestId, this.isViewed = false})
+      : super(key: key);
 
   @override
   _ShowRequestViewState createState() => _ShowRequestViewState();
 }
-
 
 class _ShowRequestViewState extends State<ShowRequestView> {
   bool _isSharing = false;
@@ -28,8 +28,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
   @override
   void initState() {
     super.initState();
+    // Загружаем данные сразу после построения виджета
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final viewModel = Provider.of<ShowRequestViewModel>(context, listen: false);
+      final viewModel =
+      Provider.of<ShowRequestViewModel>(context, listen: false);
       if (widget.requestId != null) {
         viewModel.loadRequest(widget.requestId!);
       }
@@ -37,14 +39,17 @@ class _ShowRequestViewState extends State<ShowRequestView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void dispose() {
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final viewModel = Provider.of<ShowRequestViewModel>(context);
-
+    final theme = Theme.of(context);
     final dateFormat = DateFormat('dd.MM.yyyy');
     final dateTimeFormat = DateFormat('dd.MM.yyyy HH:mm');
-
 
     String zoneInfo = '';
     if (viewModel.planDetailModel?.coordList != null &&
@@ -63,6 +68,14 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     // Если данные загружаются, показываем индикатор загрузки
     if (viewModel.isLoading) {
       return Scaffold(
+        appBar: AppBar(
+          backgroundColor: theme.appBarTheme.backgroundColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -71,25 +84,28 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     if (viewModel.planDetailModel == null) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: theme.appBarTheme.backgroundColor,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
+            icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
             onPressed: () => Navigator.pop(context),
           ),
         ),
         body: Center(
-          child: Text("DELETED"),
+          child: Text(
+            "DELETED",
+            style: theme.textTheme.bodyLarge,
+          ),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -109,24 +125,26 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
                             Text(
-                              "№ ${viewModel.planDetailModel != null ? viewModel.planDetailModel!.applicationNum ?? 'N/A' : 'N/A'}",
-                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              "№ ${viewModel.planDetailModel!.applicationNum ?? 'N/A'}",
+                              style: theme.textTheme.headline6?.copyWith(
+                                  fontWeight: FontWeight.bold, fontSize: 24),
                             ),
-                            if (!widget.isViewed) // показываем иконку редактирования только если isViewed false
+                            if (!widget.isViewed)
                               IconButton(
-                                icon: Icon(Icons.edit),
+                                icon: Icon(Icons.edit, color: theme.iconTheme.color),
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AddRequestView(planDetail: viewModel.planDetailModel),
+                                      builder: (context) => AddRequestView(
+                                          planDetail: viewModel.planDetailModel),
                                     ),
                                   );
                                 },
@@ -134,131 +152,128 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: viewModel.getStatusColor(viewModel.planDetailModel?.stateId ?? 0),
+                            color: viewModel.getStatusColor(
+                                viewModel.planDetailModel!.stateId ?? 0),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            viewModel.getStatusText(viewModel.planDetailModel?.stateId ?? 0, localizations),
-                            style: TextStyle(color: Colors.white),
+                            viewModel.getStatusText(
+                                viewModel.planDetailModel!.stateId ?? 0, localizations),
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(color: Colors.white),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
-                    if (viewModel.planDetailModel?.activity == 1)
+                    const SizedBox(height: 10),
+                    if (true)
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _isSharing ? null : () async { // Отключаем кнопку, если идет загрузка
+                          onPressed: _isSharing
+                              ? null
+                              : () async {
                             await viewModel.handleLocationSharing(context);
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
                           child: _isSharing
                               ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
-                              color: Colors.white, // Цвет индикатора
+                              color: Colors.white,
                               strokeWidth: 2,
                             ),
                           )
-                              : Text(localizations.showRequestView_startLocationSharing),
+                              : Text(
+                            localizations.showRequestView_startLocationSharing,
+                          ),
                         ),
                       ),
-                    if (viewModel.planDetailModel?.execStateId != null &&
-                        (viewModel.planDetailModel?.activity == 1 || viewModel.planDetailModel?.execStateId == 4) &&
-                        viewModel.planDetailModel?.stateId == 2
-                    )
-                      _buildExecStateText(viewModel.planDetailModel?.execStateId, localizations),
-
-
-                    SizedBox(height: 20),
-
+                    if (viewModel.planDetailModel!.execStateId != null &&
+                        (viewModel.planDetailModel!.activity == 1 ||
+                            viewModel.planDetailModel!.execStateId == 4) &&
+                        viewModel.planDetailModel!.stateId == 2)
+                      _buildExecStateText(
+                          viewModel.planDetailModel!.execStateId, localizations),
+                    const SizedBox(height: 20),
                     // Данные заявки
-                    _buildRequestInfo(localizations.showRequestView_flightStartDate,
-                        viewModel.planDetailModel?.planDate != null
+                    _buildRequestInfo(
+                        localizations.showRequestView_flightStartDate,
+                        viewModel.planDetailModel!.planDate != null
                             ? dateFormat.format(viewModel.planDetailModel!.planDate!)
                             : '-'),
-                    _buildRequestInfo(localizations.showRequestView_requesterName,
-                        viewModel.planDetailModel?.applicant ?? '-', isBold: true),
+                    _buildRequestInfo(
+                        localizations.showRequestView_requesterName,
+                        viewModel.planDetailModel!.applicant ?? '-',
+                        isBold: true),
                     _buildRequestInfo(
                       localizations.showRequestView_model,
-                      viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
+                      (viewModel.planDetailModel!.bplaList.isNotEmpty)
                           ? viewModel.planDetailModel!.bplaList
                           .asMap()
                           .entries
-                          .map((entry) => "${entry.key + 1}. ${entry.value.name ?? '-'}")
+                          .map((entry) =>
+                      "${entry.key + 1}. ${entry.value.name ?? '-'}")
                           .join('\n')
                           : '-',
                     ),
-
                     _buildRequestInfo(
                       localizations.showRequestView_flightSign,
-                      viewModel.planDetailModel?.bplaList.isNotEmpty ?? false
+                      (viewModel.planDetailModel!.bplaList.isNotEmpty)
                           ? viewModel.planDetailModel!.bplaList
                           .asMap()
                           .entries
-                          .map((entry) => "${entry.key + 1}. ${entry.value.regnum ?? '-'}")
+                          .map((entry) =>
+                      "${entry.key + 1}. ${entry.value.regnum ?? '-'}")
                           .join('\n')
                           : '-',
                     ),
-
                     _buildRequestInfo(
-                    localizations.showRequestView_flightTimes,
-                    '${viewModel.planDetailModel?.timeFrom ?? '-'}\n${viewModel.planDetailModel?.timeTo ?? '-'}',
+                      localizations.showRequestView_flightTimes,
+                      '${viewModel.planDetailModel!.timeFrom ?? '-'}\n${viewModel.planDetailModel!.timeTo ?? '-'}',
                     ),
-
-                    _buildRequestInfo(localizations.showRequestView_flightOperationArea,
-                        viewModel.planDetailModel?.region ?? '-'),
-
-                    _buildRequestInfo(localizations.showRequestView_flightOperationDistrict,
-                        viewModel.planDetailModel?.district ?? '-'),
-
-                    _buildRequestInfo(localizations.showRequestView_landmark,
-                        viewModel.planDetailModel?.flightArea ?? '-'),
-
+                    _buildRequestInfo(
+                        localizations.showRequestView_flightOperationArea,
+                        viewModel.planDetailModel!.region ?? '-'),
+                    _buildRequestInfo(
+                        localizations.showRequestView_flightOperationDistrict,
+                        viewModel.planDetailModel!.district ?? '-'),
+                    _buildRequestInfo(
+                        localizations.showRequestView_landmark,
+                        viewModel.planDetailModel!.flightArea ?? '-'),
                     _buildRequestInfo(
                       localizations.showRequestView_routeType,
-                      viewModel.planDetailModel?.zoneTypeId == 1
+                      viewModel.planDetailModel!.zoneTypeId == 1
                           ? localizations.showRequestView_routeCircle
-                          : viewModel.planDetailModel?.zoneTypeId == 2
+                          : viewModel.planDetailModel!.zoneTypeId == 2
                           ? localizations.showRequestView_routePolygon
-                          : viewModel.planDetailModel?.zoneTypeId == 3
+                          : viewModel.planDetailModel!.zoneTypeId == 3
                           ? localizations.showRequestView_routeLine
                           : '-',
                     ),
-
-                    // Отображение координат AUTHORIZED ZONE
                     _buildRequestInfo(
                       localizations.showRequestView_coordinates,
                       zoneInfo,
                       linkText: localizations.showRequestView_map,
                       icon: Icons.visibility,
                       ctx: context,
-                      planDetailModel: viewModel.planDetailModel
+                      planDetailModel: viewModel.planDetailModel,
                     ),
-
-                    // Отображение радиуса AUTHORIZED ZONE (если он есть)
-                    if (viewModel.planDetailModel?.coordList.first.radius != null)
+                    if (viewModel.planDetailModel!.coordList!.isNotEmpty &&
+                        viewModel.planDetailModel!.coordList!.first.radius != null)
                       _buildRequestInfo(
                         localizations.showRequestView_flightRadius,
-                        '${viewModel.planDetailModel?.coordList.first.radius} ${localizations.m}',
+                        '${viewModel.planDetailModel!.coordList!.first.radius} ${localizations.m}',
                       ),
-
-                    _buildRequestInfo(localizations.showRequestView_flightHeight,
-                        '${viewModel.planDetailModel?.mAltitude != null
-                            ? viewModel.planDetailModel?.mAltitude
-                            : '-'} ${localizations?.m}'),
-                    _buildRequestInfo(localizations.showRequestView_flightPurpose,
-                        viewModel.planDetailModel?.purpose ?? '-'),
-
+                    _buildRequestInfo(
+                        localizations.showRequestView_flightHeight,
+                        '${viewModel.planDetailModel!.mAltitude != null ? viewModel.planDetailModel!.mAltitude : '-'} ${localizations.m}'),
+                    _buildRequestInfo(
+                        localizations.showRequestView_flightPurpose,
+                        viewModel.planDetailModel!.purpose ?? '-'),
                     _buildRequestInfo(
                       localizations.showRequestView_operatorName,
                       buildOperatorNames(viewModel.planDetailModel!, localizations),
@@ -267,49 +282,47 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       localizations.showRequestView_operatorPhone,
                       buildOperatorPhones(viewModel.planDetailModel!),
                     ),
-
-                    _buildRequestInfo(localizations.showRequestView_email,
-                        viewModel.planDetailModel?.email ?? '-'),
+                    _buildRequestInfo(
+                        localizations.showRequestView_email,
+                        viewModel.planDetailModel!.email ?? '-'),
                     _buildRequestInfo(
                         localizations.showRequestView_specialPermit,
-                        '${viewModel.planDetailModel?.permission?.orgName ?? '-'} '
-                        '${viewModel.planDetailModel?.permission?.docNum ?? '-'} '
-                        '${viewModel.planDetailModel?.permission?.docDate != null
-                        ? dateFormat.format(viewModel.planDetailModel!.permission!.docDate!)
-                            : '-'}'
+                        '${viewModel.planDetailModel!.permission?.orgName ?? '-'} '
+                            '${viewModel.planDetailModel!.permission?.docNum ?? '-'} '
+                            '${viewModel.planDetailModel!.permission?.docDate != null ? dateFormat.format(viewModel.planDetailModel!.permission!.docDate!) : '-'}'
                     ),
                     _buildRequestInfo(
                         localizations.showRequestView_contract,
-                        '${viewModel.planDetailModel?.agreement?.docNum ?? '-'} '
-                        '${viewModel.planDetailModel?.agreement?.docDate != null
-                        ? dateFormat.format(viewModel.planDetailModel!.agreement!.docDate!)
-                            : '-'}'
+                        '${viewModel.planDetailModel!.agreement?.docNum ?? '-'} '
+                            '${viewModel.planDetailModel!.agreement?.docDate != null ? dateFormat.format(viewModel.planDetailModel!.agreement!.docDate!) : '-'}'
                     ),
-                    _buildRequestInfo(localizations.showRequestView_optional,
-                        viewModel.planDetailModel?.notes ?? '-'),
+                    _buildRequestInfo(
+                        localizations.showRequestView_optional,
+                        viewModel.planDetailModel!.notes ?? '-'),
                     const SizedBox(height: 20),
-                    viewModel.planDetailModel?.checkUrl != null && viewModel.planDetailModel!.checkUrl!.isNotEmpty
-                        ? Column(
-                          children: [
-                            Center(
-                              child: BarcodeWidget(
-                                barcode: Barcode.qrCode(), // используем QR код
-                                data: viewModel.planDetailModel!.checkUrl!,
-                                width: 150,
-                                height: 150,
-                              ),
+                    if (viewModel.planDetailModel!.checkUrl != null &&
+                        viewModel.planDetailModel!.checkUrl!.isNotEmpty)
+                      Column(
+                        children: [
+                          Center(
+                            child: BarcodeWidget(
+                              barcode: Barcode.qrCode(),
+                              data: viewModel.planDetailModel!.checkUrl!,
+                              width: 150,
+                              height: 150,
                             ),
-                            const SizedBox(height: 50)
-                          ],
-                        )
-                        : const SizedBox.shrink(),
+                          ),
+                          const SizedBox(height: 50),
+                        ],
+                      )
+                    else
+                      const SizedBox.shrink(),
                   ],
                 ),
               ),
             ),
           ),
-
-          if (viewModel.planDetailModel?.stateId == 1)
+          if (viewModel.planDetailModel!.stateId == 1)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
@@ -324,31 +337,33 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(localizations.showRequestView_delete),
+                  child: Text(
+                    localizations.showRequestView_delete,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
               ),
             )
-          else if (viewModel.planDetailModel?.stateId == 2 &&
-                   viewModel.planDetailModel?.activity == 0 &&
-                   viewModel.planDetailModel?.execStateId != 4
-          )
+          else if (viewModel.planDetailModel!.stateId == 2 &&
+              viewModel.planDetailModel!.activity == 0 &&
+              viewModel.planDetailModel!.execStateId != 4)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // Получаем причину отмены через кастомное диалоговое окно
-                    String? cancelReason = await MyCustomDialog.showCancelReasonDialog(
+                    String? cancelReason =
+                    await MyCustomDialog.showCancelReasonDialog(
                       context,
-                      localizations.showRequestView_cancelRequestDialog, // Заголовок диалога
-                      localizations.showRequestView_enterReasonDialog,   // Подсказка в TextField
+                      localizations.showRequestView_cancelRequestDialog,
+                      localizations.showRequestView_enterReasonDialog,
                       cancelText: localizations.showRequestView_exitDialog,
                       okText: localizations.showRequestView_submit,
                     );
-
                     if (cancelReason != null && cancelReason.isNotEmpty) {
-                      await viewModel.cancelRequest(context, cancelReason: cancelReason);
+                      await viewModel.cancelRequest(context,
+                          cancelReason: cancelReason);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -357,10 +372,13 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(localizations.showRequestView_cancel),
+                  child: Text(
+                    localizations.showRequestView_cancel,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
               ),
-            )
+            ),
         ],
       ),
     );
@@ -370,16 +388,12 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     final operatorPhonesStr = planDetailModel.operatorPhones;
     if (operatorPhonesStr == null || operatorPhonesStr.isEmpty) return '-';
 
-    // Сохраняем порядок телефонов из исходной строки
-    List<String> originalPhones = operatorPhonesStr
-        .split(',')
-        .map((phone) => phone.trim())
-        .toList();
+    List<String> originalPhones =
+    operatorPhonesStr.split(',').map((phone) => phone.trim()).toList();
 
     final operatorList = planDetailModel.operatorList;
     final creatorId = planDetailModel.creatorId;
 
-    // Находим телефон создателя, если он есть и присутствует в оригинальном списке
     String? creatorPhone;
     List<OperatorModel> otherOperators = [];
     for (var op in operatorList) {
@@ -392,23 +406,18 @@ class _ShowRequestViewState extends State<ShowRequestView> {
       }
     }
 
-    // Для остальных операторов: оставляем их в том же порядке, что и для ФИО.
-    // Если оператор имеет телефон, который присутствует в originalPhones, запоминаем его по позиции оператора (начиная с 1).
     Map<int, String> operatorPhoneMapping = {};
     for (int i = 0; i < otherOperators.length; i++) {
       var op = otherOperators[i];
       if (op.phone != null && originalPhones.contains(op.phone!)) {
-        // Номер телефона оператора будет иметь номер, равный (индексу + 1) в списке ФИО
         operatorPhoneMapping[i + 1] = op.phone!;
       }
     }
 
-    // Отмечаем использованные номера (для создателя и операторов)
     Set<String> usedPhones = {};
     if (creatorPhone != null) usedPhones.add(creatorPhone);
     usedPhones.addAll(operatorPhoneMapping.values);
 
-    // Неизвестные номера – те, что есть в оригинальном списке, но не сопоставлены ни с одним оператором
     List<String> unknownPhones = [];
     for (var phone in originalPhones) {
       if (!usedPhones.contains(phone)) {
@@ -416,12 +425,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
       }
     }
 
-    // Формируем итоговую строку
     String result = '';
     if (creatorPhone != null) {
       result += creatorPhone + "\n\n";
     }
-    // Для каждого оператора (по тому же порядку, что и ФИО) выводим номер телефона, если он найден.
     for (int i = 0; i < otherOperators.length; i++) {
       int number = i + 1;
       if (operatorPhoneMapping.containsKey(number)) {
@@ -429,7 +436,6 @@ class _ShowRequestViewState extends State<ShowRequestView> {
       }
     }
     result += '\n';
-    // Добавляем неизвестные номера с префиксом "*"
     for (var phone in unknownPhones) {
       result += "*. $phone\n";
     }
@@ -444,7 +450,6 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     for (var op in operatorList) {
       String info = "${op.surname ?? '-'} ${op.name ?? '-'} ${op.patronymic ?? ''}";
       if (creatorId != null && op.id == creatorId) {
-        // Создатель выводится без нумерации
         creatorInfo = info;
       } else {
         otherOperators.add(info);
@@ -454,7 +459,6 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     if (creatorInfo.isNotEmpty) {
       result += creatorInfo + "\n\n";
     }
-    // Нумеруем остальных операторов согласно порядку в списке
     for (var i = 0; i < otherOperators.length; i++) {
       result += "${i + 1}. ${otherOperators[i]}\n";
     }
@@ -483,22 +487,22 @@ class _ShowRequestViewState extends State<ShowRequestView> {
         text = localizations.showRequestView_execState6;
         break;
       default:
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
     }
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Align(
-        alignment: Alignment.centerRight, // выравнивание вправо
+        alignment: Alignment.centerRight,
         child: Container(
           padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: _themeColorForExecState(context),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             text,
-            style: TextStyle(
+            style: Theme.of(context).textTheme.caption?.copyWith(
               fontSize: 12,
               color: Colors.black87,
             ),
@@ -508,18 +512,32 @@ class _ShowRequestViewState extends State<ShowRequestView> {
     );
   }
 
+  Color _themeColorForExecState(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.grey[800]!
+        : Colors.grey[200]!;
+  }
 
   Widget _buildRequestInfo(String label, String value,
-      {bool isBold = true, String? linkText, IconData? icon, BuildContext? ctx, PlanDetailModel? planDetailModel}) {
+      {bool isBold = true,
+        String? linkText,
+        IconData? icon,
+        BuildContext? ctx,
+        PlanDetailModel? planDetailModel}) {
     final BuildContext effectiveContext = ctx ?? context;
+    final theme = Theme.of(effectiveContext);
     final localizations = AppLocalizations.of(effectiveContext)!;
+
     if (label == localizations.showRequestView_coordinates) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: Colors.grey[600])),
+            Text(
+              label,
+              style: theme.textTheme.subtitle2?.copyWith(color: theme.hintColor),
+            ),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -534,7 +552,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       value,
                       maxLines: _coordinatesExpanded ? null : 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: theme.textTheme.bodyText1?.copyWith(
                         fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                         fontSize: 16,
                       ),
@@ -544,7 +562,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 IconButton(
                   icon: Icon(
                     _coordinatesExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.blue,
+                    color: theme.primaryColor,
                     size: 18,
                   ),
                   onPressed: () {
@@ -590,14 +608,17 @@ class _ShowRequestViewState extends State<ShowRequestView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: Colors.grey[600])),
+            Text(
+              label,
+              style: theme.textTheme.subtitle2?.copyWith(color: theme.hintColor),
+            ),
             const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
                   child: Text(
                     value,
-                    style: TextStyle(
+                    style: theme.textTheme.bodyText1?.copyWith(
                       fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                       fontSize: 16,
                     ),
@@ -636,6 +657,4 @@ class _ShowRequestViewState extends State<ShowRequestView> {
       );
     }
   }
-
-
 }

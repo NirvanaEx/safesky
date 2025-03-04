@@ -10,13 +10,13 @@ import 'package:provider/provider.dart';
 import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
-
 import '../my_custom_views/my_custom_dialog.dart';
 
 class MapShareLocationView extends StatefulWidget {
   final PlanDetailModel? planDetailModel;
 
-  const MapShareLocationView({Key? key, this.planDetailModel}) : super(key: key);
+  const MapShareLocationView({Key? key, this.planDetailModel})
+      : super(key: key);
 
   @override
   _MapShareLocationViewState createState() => _MapShareLocationViewState();
@@ -29,16 +29,16 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   void initState() {
     super.initState();
     _mapController = MapController();
+    final locationVM =
+    Provider.of<MapShareLocationViewModel>(context, listen: false);
 
-    final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
-    // Передача модели в ViewModel при инициализации
+    // Передаём модель в ViewModel после первого кадра
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<MapShareLocationViewModel>(context, listen: false)
           .setPlanDetail(widget.planDetailModel!);
     });
 
-    // Откладываем вызов loadCurrentLocation() до момента,
-    // когда билд уже завершится
+    // Загружаем текущую локацию пользователя после построения
     WidgetsBinding.instance.addPostFrameCallback((_) {
       locationVM.loadCurrentLocation(context);
     });
@@ -51,32 +51,26 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   }
 
   /// Парсим строку вида "411751N" или "0691534E" в double.
-  /// Пример: "411751N" -> 41°17'51" N -> 41.2975 (double).
   double _parseCoordinate(String? coord) {
     if (coord == null) return 0.0;
-    // Подходит для формата DDMMSS + (N|S|E|W).
-    final match = RegExp(r'^(\d{2,3})(\d{2})(\d{2})([NSEW])$').firstMatch(coord);
-    if (match == null) {
-      return 0.0;
-    }
+    final match =
+    RegExp(r'^(\d{2,3})(\d{2})(\d{2})([NSEW])$').firstMatch(coord);
+    if (match == null) return 0.0;
     final deg = int.parse(match.group(1)!);
     final min = int.parse(match.group(2)!);
     final sec = int.parse(match.group(3)!);
     final dir = match.group(4)!;
-
     double result = deg + (min / 60) + (sec / 3600);
-    if (dir == 'S' || dir == 'W') {
-      result = -result;
-    }
-
+    if (dir == 'S' || dir == 'W') result = -result;
     return result;
   }
 
+  /// Вычисляем центр плана.
   LatLng? _getPlanCenter() {
     final detail = widget.planDetailModel;
-    if (detail == null || detail.coordList == null || detail.coordList!.isEmpty) return null;
+    if (detail == null || detail.coordList == null || detail.coordList!.isEmpty)
+      return null;
     if (detail.zoneTypeId == 2) {
-      // Для полигона — усредняем все точки
       double sumLat = 0, sumLng = 0;
       for (var c in detail.coordList!) {
         sumLat += _parseCoordinate(c.latitude);
@@ -85,16 +79,16 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       int count = detail.coordList!.length;
       return LatLng(sumLat / count, sumLng / count);
     } else {
-      // Для круга или линии — берем первую точку
       final c = detail.coordList!.first;
       return LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude));
     }
   }
 
+  /// Анимация плавного перемещения карты к центру плана.
   Future<void> _animateToPlanCenter(LatLng targetLocation) async {
     LatLng startLocation = _mapController.center;
     double startZoom = _mapController.zoom;
-    double targetZoom = 13.0; // или другое значение, которое вам нужно
+    double targetZoom = 13.0;
     const int steps = 30;
     const int delayMilliseconds = 16;
     for (int i = 0; i <= steps; i++) {
@@ -108,22 +102,19 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     }
   }
 
-  /// Плавная анимация карты к текущей локации пользователя.
+  /// Плавная анимация перемещения карты к текущей локации пользователя.
   Future<void> _animateToUserLocation() async {
     final locationVM =
     Provider.of<MapShareLocationViewModel>(context, listen: false);
     if (locationVM.currentLocation == null) return;
-
     LatLng startLocation = _mapController.center;
     double startZoom = _mapController.zoom;
     double startRotation = _mapController.rotation;
     LatLng targetLocation = locationVM.currentLocation!;
     double targetZoom = locationVM.defaultZoom;
     double targetRotation = 0.0;
-
     const int steps = 30;
     const int delayMilliseconds = 16;
-
     for (int i = 0; i <= steps; i++) {
       final double lat = startLocation.latitude +
           (targetLocation.latitude - startLocation.latitude) * (i / steps);
@@ -132,19 +123,17 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
       final double zoom = startZoom + (targetZoom - startZoom) * (i / steps);
       final double rotation =
           startRotation + (targetRotation - startRotation) * (i / steps);
-
       _mapController.moveAndRotate(LatLng(lat, lng), zoom, rotation);
       await Future.delayed(Duration(milliseconds: delayMilliseconds));
     }
   }
 
-  /// Рисуем зоны полёта (круг/полигон) на основе PlanDetailModel.
+  /// Рисуем область плана (круг, полигон, линия) с использованием значений темы.
   Widget _drawArea() {
     final detail = widget.planDetailModel;
+    final theme = Theme.of(context);
     if (detail == null) return const SizedBox();
-
     if (detail.zoneTypeId == 1) {
-      // Круг
       if (detail.coordList != null && detail.coordList!.isNotEmpty) {
         final c = detail.coordList!.first;
         final lat = _parseCoordinate(c.latitude);
@@ -153,8 +142,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           circles: [
             flutter_map.CircleMarker(
               point: LatLng(lat, lng),
-              color: Colors.green.withOpacity(0.3),
-              borderColor: Colors.green,
+              color: theme.colorScheme.secondary.withOpacity(0.3),
+              borderColor: theme.colorScheme.secondary,
               borderStrokeWidth: 2.0,
               radius: (c.radius ?? 0).toDouble(),
               useRadiusInMeter: true,
@@ -163,13 +152,11 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
         );
       }
     } else if (detail.zoneTypeId == 2) {
-      // Полигон
       if (detail.coordList != null && detail.coordList!.isNotEmpty) {
         List<LatLng> points = detail.coordList!
             .map((c) =>
             LatLng(_parseCoordinate(c.latitude), _parseCoordinate(c.longitude)))
             .toList();
-        // Если полигон не замкнут, добавляем первую точку в конец
         if (points.isNotEmpty) {
           final first = points.first;
           final last = points.last;
@@ -181,8 +168,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           polygons: [
             flutter_map.Polygon(
               points: points,
-              color: Colors.blueAccent.withOpacity(0.3),
-              borderColor: Colors.green,
+              color: theme.colorScheme.primary.withOpacity(0.3),
+              borderColor: theme.colorScheme.primary,
               borderStrokeWidth: 2.0,
               isFilled: true,
             ),
@@ -190,7 +177,6 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
         );
       }
     } else if (detail.zoneTypeId == 3) {
-      // Линия
       if (detail.coordList != null && detail.coordList!.isNotEmpty) {
         List<LatLng> points = detail.coordList!
             .map((c) =>
@@ -201,7 +187,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
             flutter_map.Polyline(
               points: points,
               strokeWidth: 2.0,
-              color: Colors.green,
+              color: theme.colorScheme.primary,
             ),
           ],
         );
@@ -210,126 +196,18 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     return const SizedBox();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final locationVM = Provider.of<MapShareLocationViewModel>(context);
-    final localizations = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Stack(
-        children: [
-          // Карта
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              center: locationVM.currentLocation ?? LatLng(41.2995, 69.2401),
-              zoom: 13.0,
-            ),
-            children: [
-              // Подложка OSM
-              TileLayer(
-                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: ['a', 'b', 'c'],
-                tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
-              ),
-              // Маркер текущей локации пользователя (если доступен)
-              if (locationVM.currentLocation != null)
-                flutter_map.MarkerLayer(
-                  markers: [
-                    flutter_map.Marker(
-                      width: 25,
-                      height: 25,
-                      point: locationVM.currentLocation!,
-                      builder: (ctx) => Lottie.asset(
-                        'assets/json/my_position.json',
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
-                  ],
-                ),
-
-              // Рисуем круг (или в будущем полигон) из PlanDetailModel
-              _drawArea(),
-            ],
-          ),
-
-          // Прогресс-бар, если геолокация ещё загружается
-          if (locationVM.isLoadingLocation)
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 10),
-                  Text(
-                    localizations.mapShareLocationView_searchingYourLocation,
-                    style: const TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-
-          // Кнопка быстрого перехода к текущей позиции
-          Positioned(
-            bottom: locationVM.isSharingLocation ? 180 : 120,
-            right: 20,
-            child: FloatingActionButton(
-              onPressed: _animateToUserLocation,
-              mini: true,
-              backgroundColor: Colors.white,
-              child: const Icon(Icons.my_location, color: Colors.black),
-            ),
-          ),
-
-          // В зависимости от состояния sharing показываем SlideAction или меню управления
-          Positioned(
-            bottom: 30,
-            left: 20,
-            right: 20,
-            child: locationVM.isSharingLocation
-                ? _buildSharingMenu(localizations, locationVM)
-                : _buildSlideToStart(localizations, locationVM),
-          ),
-
-          Positioned(
-            bottom: locationVM.isSharingLocation ? 180 : 120,
-            left: 20,
-            child: FloatingActionButton(
-              mini: true,
-              onPressed: () {
-                final planCenter = _getPlanCenter();
-                if (planCenter != null) {
-                  _animateToPlanCenter(planCenter);
-                }
-              },
-              backgroundColor: Colors.white,
-              child: const Icon(Icons.map, color: Colors.black),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Кнопка "Свайпнуть чтобы начать"
+  /// Кнопка "Свайпнуть чтобы начать" с использованием значений темы.
   Widget _buildSlideToStart(
+
       AppLocalizations localizations, MapShareLocationViewModel locationVM) {
+    final theme = Theme.of(context);
+
     return SlideAction(
       text: localizations.mapShareLocationView_startLocationSharing,
-      textStyle: const TextStyle(fontSize: 18, color: Colors.black),
-      innerColor: Colors.black,
-      outerColor: Colors.white,
+      textStyle: theme.textTheme.headline6?.copyWith(color: theme.iconTheme.color),
+      innerColor: theme.floatingActionButtonTheme.backgroundColor ?? Colors.black,
+      outerColor: theme.scaffoldBackgroundColor,
       onSubmit: () {
-        // Получаем ID плана
         final planId = widget.planDetailModel?.planId;
         if (planId != null) {
           locationVM.startLocationSharing(widget.planDetailModel?.uuid ?? '', context);
@@ -337,14 +215,16 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           print("Plan ID is missing. Cannot start location sharing.");
         }
       },
-      sliderButtonIcon: const Icon(Icons.play_arrow, color: Colors.white),
+      sliderButtonIcon: Icon(Icons.play_arrow, color: Colors.white),
       borderRadius: 30,
     );
   }
 
-  /// Если уже идёт sharing, показываем меню (стоп/пауза)
+  /// Меню управления sharing с кнопками "Стоп" и "Пауза/Возобновить".
   Widget _buildSharingMenu(
       AppLocalizations localizations, MapShareLocationViewModel locationVM) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         Container(
@@ -352,7 +232,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
+            color: theme.cardColor.withOpacity(0.85),
             borderRadius: BorderRadius.circular(30),
           ),
           child: Row(
@@ -369,12 +249,12 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   ),
                 ),
               if (locationVM.isPaused)
-                const Icon(Icons.pause, color: Colors.red, size: 24),
+                Icon(Icons.pause, color: Colors.red, size: 24),
               Text(
                 locationVM.isPaused
                     ? localizations.mapShareLocationView_paused
                     : localizations.mapShareLocationView_sharingLocation,
-                style: const TextStyle(color: Colors.red, fontSize: 18),
+                style: theme.textTheme.headline6?.copyWith(color: Colors.red),
               ),
             ],
           ),
@@ -382,7 +262,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Стоп
+            // Кнопка "Стоп"
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () async {
@@ -399,46 +279,169 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: Colors.black,
+                  backgroundColor: theme.brightness == Brightness.light
+                      ? Colors.black
+                      : theme.floatingActionButtonTheme.backgroundColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                icon: const Icon(Icons.stop, color: Colors.white, size: 28),
+                icon: Icon(Icons.stop, color: theme.iconTheme.color, size: 28),
                 label: Text(
                   localizations.mapShareLocationView_stop,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: theme.textTheme.bodyText1
+                      ?.copyWith(color: Colors.white, fontSize: 16),
                 ),
               ),
             ),
             const SizedBox(width: 12),
-            // Пауза / Возобновить
+            // Кнопка "Пауза / Возобновить"
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () => locationVM.togglePause(context),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: Colors.white,
+                  backgroundColor: theme.scaffoldBackgroundColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 icon: Icon(
                   locationVM.isPaused ? Icons.play_arrow : Icons.pause,
-                  color: Colors.black,
+                  color: theme.iconTheme.color,
                   size: 28,
                 ),
                 label: Text(
                   locationVM.isPaused
                       ? localizations.mapShareLocationView_resume
                       : localizations.mapShareLocationView_pause,
-                  style: const TextStyle(color: Colors.black, fontSize: 16),
+                  style: theme.textTheme.bodyText1
+                      ?.copyWith(color: theme.iconTheme.color, fontSize: 16),
                 ),
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final locationVM = Provider.of<MapShareLocationViewModel>(context);
+    final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final lottieColor = isDark ? Colors.white : Colors.black;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.primaryColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Stack(
+        children: [
+          // Карта с динамическим выбором плиток
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              center: locationVM.currentLocation ?? LatLng(41.2995, 69.2401),
+              zoom: 13.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: isDark
+                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                subdomains: ['a', 'b', 'c'],
+                tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
+              ),
+              // Маркер текущей локации пользователя (если доступен)
+              if (locationVM.currentLocation != null)
+                flutter_map.MarkerLayer(
+                  markers: [
+
+                    flutter_map.Marker(
+                      width: 25,
+                      height: 25,
+                      point: locationVM.currentLocation!,
+                      builder: (ctx) => Lottie.asset(
+                        'assets/json/my_position.json',
+                        width: 20,
+                        height: 20,
+                        delegates: LottieDelegates(
+                          values: [
+                            ValueDelegate.color(['**'], value: lottieColor),
+                          ],
+                        ),
+                      )
+                    ),
+                  ],
+                ),
+              // Рисуем зону плана (круг, полигон или линия)
+              _drawArea(),
+            ],
+          ),
+          // Прогресс-бар, если геолокация ещё загружается
+          if (locationVM.isLoadingLocation)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 10),
+                  Text(
+                    localizations.mapShareLocationView_searchingYourLocation,
+                    style: theme.textTheme.bodyText1
+                        ?.copyWith(fontSize: 16, color: theme.hintColor),
+                  ),
+                ],
+              ),
+            ),
+          // Кнопка быстрого перехода к текущей позиции
+          Positioned(
+            bottom: locationVM.isSharingLocation ? 180 : 120,
+            right: 20,
+            child: FloatingActionButton(
+              onPressed: _animateToUserLocation,
+              mini: true,
+              backgroundColor: isDark ? Colors.blue : Colors.white,
+              child: Icon(Icons.my_location,
+                  color: isDark ? Colors.white : Colors.black),
+            ),
+          ),
+          // Кнопка для перемещения карты к центру плана
+          Positioned(
+            bottom: locationVM.isSharingLocation ? 180 : 120,
+            left: 20,
+            child: FloatingActionButton(
+              onPressed: () {
+                final planCenter = _getPlanCenter();
+                if (planCenter != null) {
+                  _animateToPlanCenter(planCenter);
+                }
+              },
+              mini: true,
+              backgroundColor: isDark ? Colors.blue : Colors.white,
+              child: Icon(Icons.map,
+                  color: isDark ? Colors.white : Colors.black),
+            ),
+          ),
+          // Свайп для начала sharing или меню управления
+          Positioned(
+            bottom: 30,
+            left: 20,
+            right: 20,
+            child: locationVM.isSharingLocation
+                ? _buildSharingMenu(localizations, locationVM)
+                : _buildSlideToStart(localizations, locationVM),
+          ),
+        ],
+      ),
     );
   }
 }

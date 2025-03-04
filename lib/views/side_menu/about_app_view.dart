@@ -19,10 +19,8 @@ class AboutAppView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black),
-        elevation: 1,
         centerTitle: true,
+        title: Text(localizations.mainView_aboutApp),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -33,11 +31,12 @@ class AboutAppView extends StatelessWidget {
             SvgPicture.asset(
               'assets/svg/logo.svg',
               height: 80,
-              color: Color(0xFF323955),
+              color: Theme.of(context).iconTheme.color,
             ),
+            SizedBox(height: 16),
             Text(
               localizations.mainView_aboutApp,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             FutureBuilder<String>(
               future: _getAppVersion(),
@@ -46,78 +45,13 @@ class AboutAppView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
                     '${localizations.version}: ${snapshot.data ?? ''}',
-                    style: TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 );
               },
             ),
             Divider(),
-            Row(
-              children: [
-                // Expanded(
-                //   child: Material(
-                //     color: Colors.grey[200],
-                //     borderRadius: BorderRadius.circular(15),
-                //     child: InkWell(
-                //       onTap: () {
-                //         // Получаем код языка
-                //         String pdfPath;
-                //         final locale = Localizations.localeOf(context);
-                //         if (locale.languageCode == 'ru') {
-                //           pdfPath = 'assets/docs/user_agreement_ru.pdf';
-                //         } else if (locale.languageCode == 'uz') {
-                //           pdfPath = 'assets/docs/user_agreement_uz.pdf';
-                //         } else {
-                //           pdfPath = 'assets/docs/user_agreement_en.pdf';
-                //         }
-                //
-                //         Navigator.push(
-                //           context,
-                //           MaterialPageRoute(
-                //             builder: (context) => PdfPageView(
-                //               pdfPath: pdfPath,
-                //             ),
-                //           ),
-                //         );
-                //       },
-                //       borderRadius: BorderRadius.circular(15),
-                //       child: Padding(
-                //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                //         child: Text(
-                //           localizations.userAgreement,
-                //           style: TextStyle(fontSize: 16),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                // Expanded(
-                //   child: Material(
-                //     color: Colors.grey[200],
-                //     borderRadius: BorderRadius.circular(15),
-                //     child: InkWell(
-                //       onTap: () {
-                //         // Логика открытия страницы политики конфиденциальности
-                //       },
-                //       borderRadius: BorderRadius.circular(15),
-                //       child: Padding(
-                //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                //         child: Text(
-                //           localizations.privacyPolicy,
-                //           style: TextStyle(fontSize: 16),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-            Spacer(),
+
           ],
         ),
       ),
