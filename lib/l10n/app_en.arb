@@ -85,6 +85,8 @@
   "profileView_profile": "Profile",
   "profileView_surname": "Surname",
   "profileView_name": "Name",
+  "profileView_patronymic": "Patronymic",
+
   "profileView_phone": "Phone",
   "profileView_password": "Password",
   "profileView_changePassword": "Change password",

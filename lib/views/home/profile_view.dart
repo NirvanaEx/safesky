@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:safe_sky/services/auth_service.dart';
-import 'package:safe_sky/viewmodels/add_request_viewmodel.dart';
-import '../../viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:safe_sky/viewmodels/auth_viewmodel.dart';
+import 'package:safe_sky/viewmodels/profile_viewmodel.dart';
 import '../auth/login_view.dart';
 
 class ProfileView extends StatefulWidget {
@@ -14,10 +13,10 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   final _nameController = TextEditingController(text: "John");
   final _surnameController = TextEditingController(text: "Doe");
+  final _patronymicController = TextEditingController(text: "");
   final _phoneController = TextEditingController(text: "");
 
   String selectedCountryCode = "+998";
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -26,6 +25,7 @@ class _ProfileViewState extends State<ProfileView> {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
       _nameController.text = authViewModel.user?.name ?? '';
       _surnameController.text = authViewModel.user?.surname ?? '';
+      _patronymicController.text = authViewModel.user?.patronymic ?? '';
       _phoneController.text =
           formatPhoneNumber(authViewModel.user?.phoneNumber ?? '');
     });
@@ -42,100 +42,92 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding:
-        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                localizations.profileView_profile,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            _buildLabel(localizations.profileView_name),
-            _buildTextField(_nameController,
-                hintText: localizations.profileView_name),
-            const SizedBox(height: 16),
-            _buildLabel(localizations.profileView_surname),
-            _buildTextField(_surnameController,
-                hintText: localizations.profileView_surname),
-            const SizedBox(height: 16),
-            _buildLabel(localizations.profileView_phone),
-            _buildPhoneField(),
-            const SizedBox(height: 16),
-            _buildLabel(localizations.profileView_password),
-            _buildPasswordField(),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () => _showChangePasswordDialog(context),
-              child: Text(
-                localizations.profileView_changePassword,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(color: Colors.blue, fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Кнопка Save на всю ширину
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: Theme.of(context).elevatedButtonTheme.style,
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  try {
-                    final authService = AuthService();
-                    await authService.changeProfileData(
-                      _nameController.text,
-                      _surnameController.text,
-                      '$selectedCountryCode${_phoneController.text}',
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(
-                              localizations.profileView_profileUpdated)),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  } finally {
-                    setState(() {
-                      isLoading = false;
-                    });
-                  }
-                },
 
-                child: isLoading
-                    ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor:
-                    AlwaysStoppedAnimation<Color>(Colors.white),
+    return ChangeNotifierProvider(
+      create: (_) => ProfileViewModel(),
+      child: Consumer<ProfileViewModel>(
+        builder: (context, viewModel, child) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      localizations.profileView_profile,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                )
-                    : Text(
-                  localizations.profileView_save,
-
-                ),
+                  const SizedBox(height: 20),
+                  _buildLabel(localizations.profileView_name),
+                  _buildTextField(_nameController,
+                      hintText: localizations.profileView_name),
+                  const SizedBox(height: 12),
+                  _buildLabel(localizations.profileView_surname),
+                  _buildTextField(_surnameController,
+                      hintText: localizations.profileView_surname),
+                  const SizedBox(height: 12),
+                  _buildLabel(localizations.profileView_patronymic),
+                  _buildTextField(_patronymicController,
+                      hintText: localizations.profileView_patronymic),
+                  const SizedBox(height: 12),
+                  _buildLabel(localizations.profileView_phone),
+                  _buildPhoneField(),
+                  const SizedBox(height: 12),
+                  _buildLabel(localizations.profileView_password),
+                  _buildPasswordField(),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () => _showChangePasswordDialog(context),
+                    child: Text(
+                      localizations.profileView_changePassword,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: Colors.blue, fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Кнопка Save на всю ширину
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: Theme.of(context).elevatedButtonTheme.style,
+                      onPressed: viewModel.isLoading
+                          ? null
+                          : () async {
+                        await viewModel.saveProfileData(
+                          name: _nameController.text,
+                          surname: _surnameController.text,
+                          patronymic: _patronymicController.text,
+                          phone:
+                          '$selectedCountryCode${_phoneController.text}',
+                          context: context,
+                        );
+                      },
+                      child: viewModel.isLoading
+                          ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white),
+                        ),
+                      )
+                          : Text(localizations.profileView_save),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -266,11 +258,9 @@ class _ProfileViewState extends State<ProfileView> {
                       style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         hintText: localizations.profileView_oldPassword,
-                        // Если убрать явное указание filled/ fillColor,
-                        // то InputDecorationTheme будет применён автоматически.
-                        // Если нужно оставить их, можно использовать:
                         filled: true,
-                        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+                        fillColor:
+                        Theme.of(context).inputDecorationTheme.fillColor,
                         prefixIcon: Icon(Icons.lock,
                             color: Theme.of(context).iconTheme.color),
                         suffixIcon: IconButton(
@@ -296,7 +286,8 @@ class _ProfileViewState extends State<ProfileView> {
                       decoration: InputDecoration(
                         hintText: localizations.profileView_newPassword,
                         filled: true,
-                        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+                        fillColor:
+                        Theme.of(context).inputDecorationTheme.fillColor,
                         prefixIcon: Icon(Icons.lock,
                             color: Theme.of(context).iconTheme.color),
                         suffixIcon: IconButton(
@@ -322,7 +313,8 @@ class _ProfileViewState extends State<ProfileView> {
                       decoration: InputDecoration(
                         hintText: localizations.profileView_confirmPassword,
                         filled: true,
-                        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+                        fillColor:
+                        Theme.of(context).inputDecorationTheme.fillColor,
                         prefixIcon: Icon(Icons.lock,
                             color: Theme.of(context).iconTheme.color),
                         suffixIcon: IconButton(
@@ -342,13 +334,14 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Кнопка Change на всю ширину
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        style: Theme.of(context).elevatedButtonTheme.style,
+                        style:
+                        Theme.of(context).elevatedButtonTheme.style,
                         onPressed: () async {
-                          final isSuccess = await authViewModel.changePassword(
+                          final isSuccess =
+                          await authViewModel.changePassword(
                             oldPasswordController.text,
                             newPasswordController.text,
                             confirmPasswordController.text,
@@ -357,25 +350,24 @@ class _ProfileViewState extends State<ProfileView> {
                             Navigator.pop(context);
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginView()),
+                              MaterialPageRoute(
+                                  builder: (context) => LoginView()),
                                   (route) => false,
                             );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(localizations
-                                      .profileView_successChangedPassword)),
-                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                              content: Text(localizations
+                                  .profileView_successChangedPassword),
+                            ));
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(authViewModel.errorMessage ??
-                                      'Error changing password')),
-                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                              content: Text(authViewModel.errorMessage ??
+                                  'Error changing password'),
+                            ));
                           }
                         },
-                        child: Text(
-                          localizations.profileView_change
-                        ),
+                        child: Text(localizations.profileView_change),
                       ),
                     ),
                   ],
@@ -387,5 +379,4 @@ class _ProfileViewState extends State<ProfileView> {
       },
     );
   }
-
 }

@@ -152,6 +152,22 @@ class AuthViewModel extends ChangeNotifier {
       return false;
     }
   }
+  void updateUser({
+    required String name,
+    required String surname,
+    required String patronymic,
+    required String phoneNumber,
+  }) {
+    if (_user != null) {
+      _user = _user!.copyWith(
+        name: name,
+        surname: surname,
+        patronymic: patronymic,
+        phoneNumber: phoneNumber,
+      );
+      notifyListeners();
+    }
+  }
 
 // Метод для выхода из системы
   Future<void> logout() async {

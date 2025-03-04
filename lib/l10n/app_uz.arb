@@ -85,6 +85,7 @@
 
   "profileView_profile": "Profil",
   "profileView_surname": "Familiya",
+  "profileView_patronymic": "Otasining ismi",
   "profileView_name": "Ism",
   "profileView_phone": "Telefon",
   "profileView_password": "Parol",

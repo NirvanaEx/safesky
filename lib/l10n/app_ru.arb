@@ -86,6 +86,7 @@
   "profileView_profile": "Профиль",
   "profileView_surname": "Фамилия",
   "profileView_name": "Имя",
+  "profileView_patronymic": "Отчество",
   "profileView_phone": "Телефон",
   "profileView_password": "Пароль",
   "profileView_changePassword": "Изменить пароль",

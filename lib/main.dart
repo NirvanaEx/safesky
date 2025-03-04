@@ -7,6 +7,7 @@ import 'package:safe_sky/config/theme_config.dart'; // Импорт темы
 import 'package:safe_sky/utils/theme_manager.dart';
 import 'package:safe_sky/utils/localization_manager.dart';
 import 'package:safe_sky/viewmodels/auth_viewmodel.dart';
+import 'package:safe_sky/viewmodels/profile_viewmodel.dart';
 import 'package:safe_sky/viewmodels/settings_viewmodel.dart';
 import 'package:safe_sky/views/auth/login_view.dart';
 // Остальные импорты
@@ -73,6 +74,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<RequestListViewModel>(create: (_) => RequestListViewModel()),
         ChangeNotifierProvider<ShowRequestViewModel>(create: (_) => ShowRequestViewModel()),
         ChangeNotifierProvider<AuthViewModel>(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider<ProfileViewModel>(create: (_) => ProfileViewModel()),
       ],
       child: Consumer2<LocalizationManager, ThemeManager>(
         builder: (context, localizationManager, themeManager, child) {

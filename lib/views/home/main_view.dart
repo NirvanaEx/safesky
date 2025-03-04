@@ -137,9 +137,16 @@ class _MainViewState extends State<MainView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${localizations.mainView_hi}, ${authViewModel.user?.surname ?? 'John'} ${authViewModel.user?.name ?? 'Doe'}',
-                          style: Theme.of(context).textTheme.headline6,
+                        // Замените этот участок в _buildDrawer:
+                        Consumer<AuthViewModel>(
+                          builder: (context, authViewModel, child) {
+                            return Text(
+                              '${localizations.mainView_hi}, ${authViewModel.user?.surname ?? 'John'} '
+                                  '${authViewModel.user?.name ?? 'Doe'} '
+                                  '${authViewModel.user?.patronymic ?? ''}',
+                              style: Theme.of(context).textTheme.headline6,
+                            );
+                          },
                         ),
                         Divider(),
                         ListTile(
