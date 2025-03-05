@@ -33,6 +33,7 @@
   "tokenFinalMessage": "You have been logged out of your account",
 
   "ok": "OK",
+  "cancel": "Cancel",
 
 
 
@@ -100,7 +101,10 @@
   "profileView_submitRequest": "Submit Request",
   "profileView_passwordChanged": "Your password has been changed successfully.",
   "profileView_profileUpdated": "Profile updated successfully.",
-
+  "profileView_deleteAccount": "Delete Account",
+  "profileView_deleteAccountTitle": "Delete Account",
+  "profileView_deleteAccountConfirmationMessage": "Are you sure you want to delete your account?",
+  "profileView_accountDeletedSuccessfully": "Account deleted successfully",
 
 
 

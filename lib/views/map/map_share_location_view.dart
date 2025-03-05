@@ -286,7 +286,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                icon: Icon(Icons.stop, color: theme.iconTheme.color, size: 28),
+                icon: Icon(Icons.stop, color: Colors.white, size: 28),
                 label: Text(
                   localizations.mapShareLocationView_stop,
                   style: theme.textTheme.bodyText1

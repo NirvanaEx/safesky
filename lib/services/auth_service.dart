@@ -218,17 +218,8 @@ class AuthService {
 
     final String responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonData = jsonDecode(responseBody);
-      UserModel user = UserModel.fromJson({
-        'id': jsonData['id'],
-        'email': jsonData['email'],
-        'name': jsonData['name'],
-        'surname': jsonData['surname'],
-        'phoneNumber': jsonData['phone'],
-        'applicantId': jsonData['applicantId'],
-        'applicant': jsonData['applicant'],
-        'token': await _getToken(),
-      });
+      final jsonData = jsonDecode(responseBody);
+      UserModel user = UserModel.fromJson(jsonData);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('applicant', user.applicant);
@@ -313,6 +304,26 @@ class AuthService {
     }
     await logout();
   }
+
+  Future<void> deleteAccount() async {
+    await _makeAuthorizedRequest((token) async {
+      final defaultHeaders = await getDefaultHeaders();
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
+      final Uri url = Uri.parse(ApiRoutes.deleteProfile); // ApiRoutes.delete должен содержать '/api/v1/profile/delete'
+      final response = await http.post(url, headers: headers);
+      if (response.statusCode != 200) {
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final decodedJson = jsonDecode(decodedBody);
+        var errorMessage = decodedJson['message'] ?? 'Error deleting account';
+        throw Exception(errorMessage);
+      }
+      return response;
+    });
+  }
+
 
   /// Выход из аккаунта – удаление токенов и связанных данных из SharedPreferences.
   Future<void> logout() async {

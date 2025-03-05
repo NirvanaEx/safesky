@@ -3,6 +3,8 @@ import 'package:safe_sky/services/auth_service.dart';
 import 'package:safe_sky/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../views/auth/login_view.dart';
+
 class ProfileViewModel extends ChangeNotifier {
   bool isLoading = false;
   final AuthService _authService = AuthService();
@@ -43,4 +45,29 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      await _authService.deleteAccount();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Аккаунт успешно удалён')),
+      );
+      // После удаления перенаправляем на экран логина
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => LoginView()),
+            (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
 }

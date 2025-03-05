@@ -27,8 +27,8 @@ class UserModel {
       email: json['email'] ?? '',
       name: json['name'] ?? '',
       surname: json['surname'] ?? '',
-      patronymic: json['patronymic'] ?? '', // Чтение из JSON
-      phoneNumber: json['phoneNumber'] ?? '',
+      patronymic: json['patronymic'] ?? '', // Добавляем отчество
+      phoneNumber: json['phone'] ?? json['phoneNumber'] ?? '',
       applicantId: json['applicantId'] ?? 0,
       applicant: json['applicant'] ?? '',
       token: json['token'] ?? '',

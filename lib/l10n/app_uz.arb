@@ -33,6 +33,7 @@
   "tokenFinalMessage": "Siz akkauntingizdan chiqib ketdingiz",
 
   "ok": "OK",
+  "cancel": "Bekor qilish",
 
 
 
@@ -100,6 +101,10 @@
   "profileView_submitRequest": "Arizani yuborish",
   "profileView_passwordChanged": "Parolingiz muvaffaqiyatli o'zgartirildi.",
   "profileView_profileUpdated": "Profil muvaffaqiyatli yangilandi.",
+  "profileView_deleteAccount": "Akkountni o'chirish",
+  "profileView_deleteAccountTitle": "Akkountni o'chirish",
+  "profileView_deleteAccountConfirmationMessage": "Akkountni o'chirishga ishonchingiz komilmi?",
+  "profileView_accountDeletedSuccessfully": "Akkount muvaffaqiyatli o'chirildi",
 
 
 

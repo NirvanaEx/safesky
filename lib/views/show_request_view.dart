@@ -169,7 +169,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    if (true)
+                    if (viewModel.planDetailModel?.activity == 1)
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -310,6 +310,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                               data: viewModel.planDetailModel!.checkUrl!,
                               width: 150,
                               height: 150,
+                              color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                             ),
                           ),
                           const SizedBox(height: 50),
@@ -339,7 +340,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
                   child: Text(
                     localizations.showRequestView_delete,
-                    style: theme.textTheme.bodyLarge,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16
+                    )
                   ),
                 ),
               ),
@@ -374,7 +378,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
                   child: Text(
                     localizations.showRequestView_cancel,
-                    style: theme.textTheme.bodyLarge,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16
+                    )
                   ),
                 ),
               ),

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,28 +23,23 @@ class _InfoViewState extends State<InfoView> {
   final _surnameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordRepeatController = TextEditingController();
-
   final _phoneController = TextEditingController();
-
 
   bool _isPasswordVisible = false;
   String _selectedCountryCode = "+998";
   String _selectedFlag = "🇺🇿";
 
   late TextEditingController _codeController = TextEditingController();
-
   late Timer _timer;
   int _remainingTime = 300; // 5 минут в секундах
   bool _isTimerRunning = true;
 
   final List<Map<String, String>> _countries = [
     {"code": "+998", "flag": "🇺🇿"},
-    // {"code": "+1", "flag": "🇺🇸"},
-    // {"code": "+44", "flag": "🇬🇧"},
-    // {"code": "+7", "flag": "🇷🇺"},
-    // {"code": "+997", "flag": "🇰🇿"},
+    // Дополнительные страны, если необходимо
   ];
 
+  @override
   void initState() {
     super.initState();
     _codeController = TextEditingController();
@@ -63,7 +57,7 @@ class _InfoViewState extends State<InfoView> {
   void _startCountdown() {
     setState(() {
       _isTimerRunning = true;
-      _remainingTime = 300;  // Сброс на 5 минут
+      _remainingTime = 300; // сброс на 5 минут
     });
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -74,7 +68,7 @@ class _InfoViewState extends State<InfoView> {
       } else {
         _timer.cancel();
         setState(() {
-          _isTimerRunning = false;  // Показываем иконку таймера для повторной отправки
+          _isTimerRunning = false; // таймер остановлен, можно повторно отправить код
         });
       }
     });
@@ -82,14 +76,14 @@ class _InfoViewState extends State<InfoView> {
 
   // Функция для повторной отправки кода
   Future<void> _resendCode() async {
-    final authViewModel = Provider.of<AuthViewModel>(context);
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
     try {
       await authViewModel.sendEmail(widget.email);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Код отправлен повторно')),
       );
-      _startCountdown();  // Перезапуск таймера
+      _startCountdown(); // перезапуск таймера
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка при отправке кода')),
@@ -104,21 +98,28 @@ class _InfoViewState extends State<InfoView> {
     return '$minutes:$secs';
   }
 
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final authViewModel = Provider.of<AuthViewModel>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Определяем цвета и стили для полей ввода
+    final fillColor = isDark ? Colors.grey[800] : Colors.white.withOpacity(0.9);
+    final hintTextStyle = isDark ? TextStyle(color: Colors.white.withOpacity(0.7)) : null;
+    final textFieldStyle = isDark ? TextStyle(color: Colors.white) : null;
+    final countryCodeTextStyle = TextStyle(fontSize: 16, color: isDark ? Colors.white : Colors.black);
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset('assets/images/auth_back.png', fit: BoxFit.cover),
-          Container(color: Colors.black.withOpacity(0.5)),
+          Container(color: isDark ? Colors.black.withOpacity(0.8) : Colors.black.withOpacity(0.5)),
           SingleChildScrollView(
             child: Column(
               children: [
+                // Верхняя часть с логотипом и заголовком
                 Padding(
                   padding: const EdgeInsets.only(top: 80),
                   child: Row(
@@ -162,13 +163,16 @@ class _InfoViewState extends State<InfoView> {
                       children: [
                         Text(localizations.infoView_register, style: TextStyle(fontSize: 22, color: Colors.white)),
                         SizedBox(height: 20),
+                        // Поле для имени
                         TextField(
                           controller: _nameController,
+                          style: textFieldStyle,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.person, color: Colors.grey),
+                            prefixIcon: Icon(Icons.person, color: isDark ? Colors.white : Colors.grey),
                             hintText: localizations.infoView_name,
+                            hintStyle: hintTextStyle,
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.9),
+                            fillColor: fillColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                               borderSide: BorderSide.none,
@@ -177,13 +181,16 @@ class _InfoViewState extends State<InfoView> {
                           ),
                         ),
                         SizedBox(height: 16),
+                        // Поле для фамилии
                         TextField(
                           controller: _surnameController,
+                          style: textFieldStyle,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.person_outline, color: Colors.grey),
+                            prefixIcon: Icon(Icons.person_outline, color: isDark ? Colors.white : Colors.grey),
                             hintText: localizations.infoView_surname,
+                            hintStyle: hintTextStyle,
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.9),
+                            fillColor: fillColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                               borderSide: BorderSide.none,
@@ -192,9 +199,10 @@ class _InfoViewState extends State<InfoView> {
                           ),
                         ),
                         SizedBox(height: 16),
+                        // Контейнер для ввода номера телефона
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                            color: fillColor,
                             borderRadius: BorderRadius.circular(30),
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 10),
@@ -202,7 +210,7 @@ class _InfoViewState extends State<InfoView> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(right: 8),
-                                child: Icon(Icons.phone, color: Colors.grey),
+                                child: Icon(Icons.phone, color: isDark ? Colors.white : Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -212,48 +220,55 @@ class _InfoViewState extends State<InfoView> {
                                   children: [
                                     Text(
                                       _selectedFlag,
-                                      style: TextStyle(fontSize: 20),
+                                      style: TextStyle(fontSize: 20, color: isDark ? Colors.white : Colors.black),
                                     ),
                                     SizedBox(width: 0),
-                                    Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                    Icon(Icons.arrow_drop_down, color: isDark ? Colors.white : Colors.grey),
                                     Text(
                                       _selectedCountryCode,
-                                      style: TextStyle(fontSize: 16, color: Colors.black),
+                                      style: countryCodeTextStyle,
                                     ),
                                   ],
                                 ),
                               ),
                               Expanded(
-                                child: TextField(
-                                  controller: _phoneController,
-                                  keyboardType: TextInputType.phone,
-                                  decoration: InputDecoration(
-                                    hintText: localizations.infoView_phone,
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 2.5),
+                                  child: TextField(
+                                    controller: _phoneController,
+                                    keyboardType: TextInputType.phone,
+                                    style: textFieldStyle,
+                                    decoration: InputDecoration(
+                                      hintText: localizations.infoView_phone,
+                                      hintStyle: hintTextStyle,
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                                    ),
                                   ),
-                                  style: TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(height: 16),
+                        // Поле для создания пароля
                         TextField(
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
+                          style: textFieldStyle,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                            prefixIcon: Icon(Icons.lock, color: isDark ? Colors.white : Colors.grey),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                color: Colors.grey,
+                                color: isDark ? Colors.white : Colors.grey,
                               ),
                               onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                             ),
                             hintText: localizations.infoView_createPassword,
+                            hintStyle: hintTextStyle,
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.9),
+                            fillColor: fillColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                               borderSide: BorderSide.none,
@@ -262,21 +277,24 @@ class _InfoViewState extends State<InfoView> {
                           ),
                         ),
                         SizedBox(height: 16),
+                        // Поле для повторного ввода пароля
                         TextField(
                           controller: _passwordRepeatController,
                           obscureText: !_isPasswordVisible,
+                          style: textFieldStyle,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                            prefixIcon: Icon(Icons.lock, color: isDark ? Colors.white : Colors.grey),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                color: Colors.grey,
+                                color: isDark ? Colors.white : Colors.grey,
                               ),
                               onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                             ),
                             hintText: localizations.infoView_repeatPassword,
+                            hintStyle: hintTextStyle,
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.9),
+                            fillColor: fillColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                               borderSide: BorderSide.none,
@@ -285,19 +303,22 @@ class _InfoViewState extends State<InfoView> {
                           ),
                         ),
                         SizedBox(height: 16),
+                        // Поле для ввода кода подтверждения
                         TextField(
                           controller: _codeController,
-                          keyboardType: TextInputType.number,  // Разрешаем ввод только цифр
-                          maxLength: 5,  // Устанавливаем ограничение на 5 символов
+                          keyboardType: TextInputType.number,
+                          maxLength: 5,
                           inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,  // Только цифры
-                            LengthLimitingTextInputFormatter(5),  // Лимит в 5 символов
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(5),
                           ],
+                          style: textFieldStyle,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.verified, color: Colors.grey),
+                            prefixIcon: Icon(Icons.verified, color: isDark ? Colors.white : Colors.grey),
                             hintText: localizations.infoView_confirmationCode,
+                            hintStyle: hintTextStyle,
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.9),
+                            fillColor: fillColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                               borderSide: BorderSide.none,
@@ -308,11 +329,11 @@ class _InfoViewState extends State<InfoView> {
                               padding: const EdgeInsets.all(15.0),
                               child: Text(
                                 _formatTime(_remainingTime),
-                                style: TextStyle(fontSize: 16, color: Colors.grey),
+                                style: TextStyle(fontSize: 16, color: isDark ? Colors.white : Colors.grey),
                               ),
                             )
                                 : IconButton(
-                              icon: Icon(Icons.timer, color: Colors.blue),
+                              icon: Icon(Icons.timer, color: isDark ? Colors.white : Colors.blue),
                               onPressed: _resendCode,
                             ),
                           ),
@@ -321,7 +342,6 @@ class _InfoViewState extends State<InfoView> {
                         ElevatedButton(
                           onPressed: () async {
                             FocusScope.of(context).unfocus();
-
 
                             bool success = await authViewModel.register(
                               _nameController.text,
@@ -333,17 +353,19 @@ class _InfoViewState extends State<InfoView> {
                               _codeController.text,
                             );
                             if (success) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Registration successful')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Registration successful')));
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(builder: (context) => LoginView()),
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(authViewModel.errorMessage ?? 'Registration failed')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(authViewModel.errorMessage ?? 'Registration failed')));
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: isDark ? Colors.blue : Colors.black,
                             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),

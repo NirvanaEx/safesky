@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import '../../viewmodels/auth_viewmodel.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../home/main_view.dart';
 import 'registration/registration_view.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -16,11 +16,15 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final authViewModel = Provider.of<AuthViewModel>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Определяем цвет для поля ввода и стиль подсказки (hint)
+    final fillColor = isDark ? Colors.grey[800] : Colors.white.withOpacity(0.9);
+    final hintTextStyle = isDark ? TextStyle(color: Colors.white.withOpacity(0.7)) : null;
 
     return Scaffold(
       body: Stack(
@@ -35,7 +39,8 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
           ),
-          Container(color: Colors.black.withOpacity(0.5)),
+          // Overlay с разной прозрачностью для светлой/темной темы
+          Container(color: isDark ? Colors.black.withOpacity(0.8) : Colors.black.withOpacity(0.5)),
 
           // Основной контент
           Column(
@@ -87,13 +92,15 @@ class _LoginViewState extends State<LoginView> {
                       style: TextStyle(fontSize: 22, color: Colors.white),
                     ),
                     SizedBox(height: 20),
+                    // Email TextField
                     TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email, color: Colors.grey),
+                        prefixIcon: Icon(Icons.email, color: isDark ? Colors.white : Colors.grey),
                         hintText: localizations.loginView_email,
+                        hintStyle: hintTextStyle,
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
+                        fillColor: fillColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
@@ -102,21 +109,23 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                     SizedBox(height: 16),
+                    // Password TextField
                     TextField(
                       controller: _passwordController,
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                        prefixIcon: Icon(Icons.lock, color: isDark ? Colors.white : Colors.grey),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                            color: Colors.grey,
+                            color: isDark ? Colors.white : Colors.grey,
                           ),
                           onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                         ),
                         hintText: localizations.loginView_password,
+                        hintStyle: hintTextStyle,
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
+                        fillColor: fillColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
@@ -127,15 +136,13 @@ class _LoginViewState extends State<LoginView> {
                     SizedBox(height: 24),
                     TextButton(
                       onPressed: authViewModel.isLoading
-                          ? null  // Блокируем кнопку, если идёт загрузка
+                          ? null // Блокируем кнопку, если идёт загрузка
                           : () async {
                         FocusScope.of(context).unfocus(); // Закрываем клавиатуру
-
                         bool success = await authViewModel.login(
                           _emailController.text,
                           _passwordController.text,
                         );
-
                         if (success) {
                           Navigator.pushReplacement(
                             context,
@@ -145,15 +152,15 @@ class _LoginViewState extends State<LoginView> {
                           // Отображаем сообщение об ошибке
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(authViewModel.errorMessage ?? 'Ошибка авторизации'),
-                              backgroundColor: Colors.red, // Красный цвет для ошибок
-                              duration: Duration(seconds: 3), // Время отображения
+                              content: Text(authViewModel.errorMessage ?? 'Authentication error'),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 3),
                             ),
                           );
                         }
                       },
                       style: TextButton.styleFrom(
-                        backgroundColor: Colors.black, // Чёрный фон кнопки
+                        backgroundColor: isDark ? Colors.blue : Colors.black,
                         padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -161,10 +168,10 @@ class _LoginViewState extends State<LoginView> {
                         minimumSize: Size(double.infinity, 48),
                       ),
                       child: authViewModel.isLoading
-                          ? CircularProgressIndicator(color: Colors.white)  // Индикатор загрузки
+                          ? CircularProgressIndicator(color: Colors.white)
                           : Text(
                         localizations.loginView_login,
-                        style: TextStyle(fontSize: 16, color: Colors.white), // Белый цвет текста
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                     SizedBox(height: 16),
@@ -183,7 +190,10 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         minimumSize: Size(double.infinity, 48),
                       ),
-                      child: Text(localizations.loginView_register, style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: Text(
+                        localizations.loginView_register,
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
                   ],
                 ),
