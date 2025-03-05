@@ -339,7 +339,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
                   child: Text(
                     localizations.showRequestView_delete,
-                    style: theme.textTheme.bodyLarge,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16
+                    )
                   ),
                 ),
               ),
@@ -374,7 +377,10 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                   ),
                   child: Text(
                     localizations.showRequestView_cancel,
-                    style: theme.textTheme.bodyLarge,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16
+                    )
                   ),
                 ),
               ),

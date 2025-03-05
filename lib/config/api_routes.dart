@@ -13,7 +13,7 @@ class ApiRoutes {
   static const String checkToken = '${Config.apiUrl}/profile/check_token';
   static const String changeProfileData = '${Config.apiUrl}/profile/info';
   static const String changePassword = '${Config.apiUrl}/profile/change_password';
-
+  static const String delete = '${Config.apiUrl}/profile/delete';
 
 
   // Заявки
