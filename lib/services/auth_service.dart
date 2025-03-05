@@ -305,6 +305,26 @@ class AuthService {
     await logout();
   }
 
+  Future<void> deleteAccount() async {
+    await _makeAuthorizedRequest((token) async {
+      final defaultHeaders = await getDefaultHeaders();
+      final headers = {
+        ...defaultHeaders,
+        'Authorization': 'Bearer $token',
+      };
+      final Uri url = Uri.parse(ApiRoutes.deleteProfile); // ApiRoutes.delete должен содержать '/api/v1/profile/delete'
+      final response = await http.post(url, headers: headers);
+      if (response.statusCode != 200) {
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final decodedJson = jsonDecode(decodedBody);
+        var errorMessage = decodedJson['message'] ?? 'Error deleting account';
+        throw Exception(errorMessage);
+      }
+      return response;
+    });
+  }
+
+
   /// Выход из аккаунта – удаление токенов и связанных данных из SharedPreferences.
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

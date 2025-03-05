@@ -33,6 +33,7 @@
   "tokenFinalMessage": "Вы вышли с аккаунта",
 
   "ok": "ОК",
+  "cancel": "Отмена",
 
 
 
@@ -100,6 +101,10 @@
   "profileView_submitRequest": "Отправить заявку",
   "profileView_passwordChanged": "Ваш пароль был успешно изменен.",
   "profileView_profileUpdated": "Профиль успешно обновлен.",
+  "profileView_deleteAccount": "Удалить аккаунт",
+  "profileView_deleteAccountTitle": "Удаление аккаунта",
+  "profileView_deleteAccountConfirmationMessage": "Вы уверены, что хотите удалить аккаунт?",
+  "profileView_accountDeletedSuccessfully": "Аккаунт успешно удалён",
 
 
 

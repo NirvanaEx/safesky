@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:safe_sky/viewmodels/auth_viewmodel.dart';
 import 'package:safe_sky/viewmodels/profile_viewmodel.dart';
 import '../auth/login_view.dart';
+import '../my_custom_views/my_custom_dialog.dart';
 
 class ProfileView extends StatefulWidget {
   @override
@@ -123,6 +124,38 @@ class _ProfileViewState extends State<ProfileView> {
                           : Text(localizations.profileView_save),
                     ),
                   ),
+                  // После SizedBox с кнопкой Save:
+                  const SizedBox(height: 150),
+                  Center(
+                    child: InkWell(
+                      onTap: viewModel.isLoading
+                          ? null
+                          : () async {
+                        bool? confirmed = await MyCustomDialog.showOkCancelNotificationDialog(
+                          context,
+                          localizations.profileView_deleteAccountTitle,
+                          localizations.profileView_deleteAccountConfirmationMessage,
+                          cancelText: localizations.cancel,
+                          okText: localizations.ok,
+                        );
+                        if (confirmed == true) {
+                          await viewModel.deleteAccount(context);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          localizations.profileView_deleteAccount,
+                          style: TextStyle(
+                            color: Colors.red, // красный текст
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
                 ],
               ),
             ),
