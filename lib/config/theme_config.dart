@@ -32,7 +32,10 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: lightPrimary,
   scaffoldBackgroundColor: lightScaffoldBackground,
-  backgroundColor: lightBackground,
+  // Убираем backgroundColor или задаём его через colorScheme:
+  colorScheme: ThemeData.light().colorScheme.copyWith(
+    background: lightBackground,
+  ),
   appBarTheme: AppBarTheme(
     backgroundColor: lightAppBarBackground,
     iconTheme: IconThemeData(color: lightAppBarIconColor),
@@ -75,7 +78,6 @@ final ThemeData lightTheme = ThemeData(
       borderRadius: BorderRadius.circular(20),
     ),
   ),
-  // ElevatedButton стиль для светлой темы
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: Colors.black,
@@ -87,14 +89,12 @@ final ThemeData lightTheme = ThemeData(
       textStyle: TextStyle(fontSize: 16),
     ),
   ),
-  // TextButton стиль
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: Colors.blue,
       textStyle: TextStyle(fontSize: 16),
     ),
   ),
-  // Добавленная тема для FloatingActionButton
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: Colors.black,
   ),
@@ -104,7 +104,10 @@ final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: darkPrimary,
   scaffoldBackgroundColor: darkScaffoldBackground,
-  backgroundColor: darkBackground,
+  // Убираем backgroundColor или задаём его через colorScheme:
+  colorScheme: ThemeData.dark().colorScheme.copyWith(
+    background: darkBackground,
+  ),
   appBarTheme: AppBarTheme(
     backgroundColor: darkAppBarBackground,
     iconTheme: IconThemeData(color: darkAppBarIconColor),
@@ -147,7 +150,6 @@ final ThemeData darkTheme = ThemeData(
       borderRadius: BorderRadius.circular(20),
     ),
   ),
-  // ElevatedButton стиль для тёмной темы
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: Colors.blue,
@@ -159,14 +161,12 @@ final ThemeData darkTheme = ThemeData(
       textStyle: TextStyle(fontSize: 16),
     ),
   ),
-  // TextButton стиль
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: Colors.blue,
       textStyle: TextStyle(fontSize: 16),
     ),
   ),
-  // Добавленная тема для FloatingActionButton
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: Colors.blue,
   ),

@@ -29,9 +29,7 @@ class NotificationService {
 
     // Настройки для iOS
     const DarwinInitializationSettings initializationSettingsIOS =
-    DarwinInitializationSettings(
-      onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
-    );
+    DarwinInitializationSettings();
 
     final InitializationSettings initializationSettings =
     InitializationSettings(
