@@ -218,17 +218,8 @@ class AuthService {
 
     final String responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonData = jsonDecode(responseBody);
-      UserModel user = UserModel.fromJson({
-        'id': jsonData['id'],
-        'email': jsonData['email'],
-        'name': jsonData['name'],
-        'surname': jsonData['surname'],
-        'phoneNumber': jsonData['phone'],
-        'applicantId': jsonData['applicantId'],
-        'applicant': jsonData['applicant'],
-        'token': await _getToken(),
-      });
+      final jsonData = jsonDecode(responseBody);
+      UserModel user = UserModel.fromJson(jsonData);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('applicant', user.applicant);
