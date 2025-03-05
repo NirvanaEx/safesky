@@ -57,17 +57,28 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            } else {
+                // Если key.properties не найден, можно либо оставить пустой блок,
+                // либо не указывать signingConfig, что приведет к сборке не подписанной сборки.
+                // Для тестирования можно оставить пустой блок.
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-            // Если нужно, добавьте оптимизацию, ProGuard и т.п.
+            // Применяем signingConfig только если файл key.properties существует
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+            // Если signingConfig не нужен для тестирования, можно убрать signingConfig
+            // или оставить его незаданным.
+            // Другие настройки (например, minification и т.д.) можно оставить.
         }
     }
 
