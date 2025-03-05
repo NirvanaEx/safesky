@@ -44,10 +44,15 @@ class _EmailViewState extends State<EmailView> {
           SnackBar(content: Text(authViewModel.errorMessage!)),
         );
       }
-    } else if (_lastSnackBarTime == null || now.difference(_lastSnackBarTime!) > Duration(seconds: 5)) {
+    } else if (_lastSnackBarTime == null ||
+        now.difference(_lastSnackBarTime!) > Duration(seconds: 5)) {
       _lastSnackBarTime = now;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.emailView_invalidEmailFormat)),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.emailView_invalidEmailFormat,
+          ),
+        ),
       );
     }
   }
@@ -56,13 +61,14 @@ class _EmailViewState extends State<EmailView> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final authViewModel = Provider.of<AuthViewModel>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset('assets/images/auth_back.png', fit: BoxFit.cover),
-          Container(color: Colors.black.withOpacity(0.5)),
+          Container(color: isDark ? Colors.black.withOpacity(0.8) : Colors.black.withOpacity(0.5)),
           Column(
             children: [
               Padding(
@@ -77,7 +83,11 @@ class _EmailViewState extends State<EmailView> {
                       children: [
                         Text(
                           'Uzaeronavigation',
-                          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Container(
                           width: 140,
@@ -100,28 +110,42 @@ class _EmailViewState extends State<EmailView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(localizations.emailView_register, style: TextStyle(fontSize: 22, color: Colors.white)),
+                    Text(
+                      localizations.emailView_register,
+                      style: TextStyle(fontSize: 22, color: Colors.white),
+                    ),
                     SizedBox(height: 20),
                     TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email, color: Colors.grey),
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: isDark ? Colors.white : Colors.grey,
+                        ),
                         hintText: localizations.emailView_email,
+                        hintStyle: isDark
+                            ? TextStyle(color: Colors.white.withOpacity(0.7))
+                            : null,
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
+                        fillColor: isDark
+                            ? Colors.grey[800]
+                            : Colors.white.withOpacity(0.9),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 15),
                       ),
                     ),
                     SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _onContinue,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
+                        backgroundColor:
+                        isDark ? Colors.blue : Colors.black,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 100, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -129,7 +153,10 @@ class _EmailViewState extends State<EmailView> {
                       ),
                       child: authViewModel.isLoading
                           ? CircularProgressIndicator(color: Colors.white)
-                          : Text(localizations.emailView_continueLabel, style: TextStyle(fontSize: 16)),
+                          : Text(
+                        localizations.emailView_continueLabel,
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
                     SizedBox(height: 16),
                     TextButton(
@@ -140,19 +167,27 @@ class _EmailViewState extends State<EmailView> {
                         );
                       },
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                        backgroundColor: Colors.white.withOpacity(0.3),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 12),
+                        backgroundColor:
+                        Colors.white.withOpacity(0.3),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                         minimumSize: Size(double.infinity, 48),
                       ),
-                      child: Text(localizations.emailView_alreadyHaveAccount, style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: Text(
+                        localizations.emailView_alreadyHaveAccount,
+                        style:
+                        TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
                     SizedBox(height: 16),
                     Text(
                       localizations.emailView_termsOfService,
-                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                      style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
                   ],
