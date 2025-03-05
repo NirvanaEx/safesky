@@ -310,6 +310,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                               data: viewModel.planDetailModel!.checkUrl!,
                               width: 150,
                               height: 150,
+                              color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                             ),
                           ),
                           const SizedBox(height: 50),
