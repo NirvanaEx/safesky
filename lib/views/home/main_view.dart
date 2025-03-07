@@ -6,10 +6,8 @@ import '../../viewmodels/auth_viewmodel.dart';
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
 import '../auth/login_view.dart';
-import '../notification_view.dart';
 import '../side_menu/about_app_view.dart';
 import '../side_menu/settings_view.dart';
-import '../side_menu/support_view.dart';
 import 'add_request_view.dart';
 import 'request_list_view.dart';
 
