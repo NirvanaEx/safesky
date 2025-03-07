@@ -204,7 +204,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
 
     return SlideAction(
       text: localizations.mapShareLocationView_startLocationSharing,
-      textStyle: theme.textTheme.headline6?.copyWith(color: theme.iconTheme.color),
+      textStyle: theme.textTheme.bodyLarge?.copyWith(color: theme.iconTheme.color),
       innerColor: theme.floatingActionButtonTheme.backgroundColor ?? Colors.black,
       outerColor: theme.scaffoldBackgroundColor,
       onSubmit: () {
@@ -254,7 +254,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 locationVM.isPaused
                     ? localizations.mapShareLocationView_paused
                     : localizations.mapShareLocationView_sharingLocation,
-                style: theme.textTheme.headline6?.copyWith(color: Colors.red),
+                style: theme.textTheme.bodyLarge?.copyWith(color: Colors.red),
               ),
             ],
           ),
@@ -289,7 +289,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 icon: Icon(Icons.stop, color: Colors.white, size: 28),
                 label: Text(
                   localizations.mapShareLocationView_stop,
-                  style: theme.textTheme.bodyText1
+                  style: theme.textTheme.bodyLarge
                       ?.copyWith(color: Colors.white, fontSize: 16),
                 ),
               ),
@@ -315,7 +315,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   locationVM.isPaused
                       ? localizations.mapShareLocationView_resume
                       : localizations.mapShareLocationView_pause,
-                  style: theme.textTheme.bodyText1
+                  style: theme.textTheme.bodyLarge
                       ?.copyWith(color: theme.iconTheme.color, fontSize: 16),
                 ),
               ),
@@ -396,7 +396,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   const SizedBox(height: 10),
                   Text(
                     localizations.mapShareLocationView_searchingYourLocation,
-                    style: theme.textTheme.bodyText1
+                    style: theme.textTheme.bodyLarge
                         ?.copyWith(fontSize: 16, color: theme.hintColor),
                   ),
                 ],

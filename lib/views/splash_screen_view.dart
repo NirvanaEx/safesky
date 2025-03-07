@@ -94,7 +94,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
                 bottom: containerSize * 0.15,
                 child: Text(
                   'Loading...',
-                  style: theme.textTheme.headline6?.copyWith(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                   ),

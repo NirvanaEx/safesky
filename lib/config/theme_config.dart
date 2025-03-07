@@ -32,7 +32,6 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: lightPrimary,
   scaffoldBackgroundColor: lightScaffoldBackground,
-  backgroundColor: lightBackground,
   appBarTheme: AppBarTheme(
     backgroundColor: lightAppBarBackground,
     iconTheme: IconThemeData(color: lightAppBarIconColor),
@@ -104,7 +103,6 @@ final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: darkPrimary,
   scaffoldBackgroundColor: darkScaffoldBackground,
-  backgroundColor: darkBackground,
   appBarTheme: AppBarTheme(
     backgroundColor: darkAppBarBackground,
     iconTheme: IconThemeData(color: darkAppBarIconColor),

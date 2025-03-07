@@ -133,7 +133,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                           children: [
                             Text(
                               "№ ${viewModel.planDetailModel!.applicationNum ?? 'N/A'}",
-                              style: theme.textTheme.headline6?.copyWith(
+                              style: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.bold, fontSize: 24),
                             ),
                             if (!widget.isViewed)
@@ -509,7 +509,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
           ),
           child: Text(
             text,
-            style: Theme.of(context).textTheme.caption?.copyWith(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontSize: 12,
               color: Colors.black87,
             ),
@@ -559,7 +559,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                       value,
                       maxLines: _coordinatesExpanded ? null : 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyText1?.copyWith(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                         fontSize: 16,
                       ),
@@ -625,7 +625,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
                 Expanded(
                   child: Text(
                     value,
-                    style: theme.textTheme.bodyText1?.copyWith(
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                       fontSize: 16,
                     ),
