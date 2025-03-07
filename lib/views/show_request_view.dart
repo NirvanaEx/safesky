@@ -543,7 +543,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
           children: [
             Text(
               label,
-              style: theme.textTheme.subtitle2?.copyWith(color: theme.hintColor),
+              style: theme.textTheme.bodyLarge?.copyWith(color: theme.hintColor),
             ),
             const SizedBox(height: 4),
             Row(
@@ -617,7 +617,7 @@ class _ShowRequestViewState extends State<ShowRequestView> {
           children: [
             Text(
               label,
-              style: theme.textTheme.subtitle2?.copyWith(color: theme.hintColor),
+              style: theme.textTheme.bodyLarge?.copyWith(color: theme.hintColor),
             ),
             const SizedBox(height: 4),
             Row(
