@@ -7,6 +7,7 @@ import 'package:safe_sky/models/plan_detail_model.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import '../../config/config.dart';
 import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
@@ -334,6 +335,14 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     final isDark = theme.brightness == Brightness.dark;
     final lottieColor = isDark ? Colors.white : Colors.black;
 
+    // Выбор URL тайлов в зависимости от темы: dark или light.
+    final tileUrlTemplate = isDark
+        ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png?api_key=${Config.apiMap}'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    // У Stadia Maps нет необходимости в subdomains
+    final subdomains = isDark ? <String>[] : <String>['a', 'b', 'c'];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.appBarTheme.backgroundColor ?? theme.primaryColor,
@@ -354,10 +363,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
             ),
             children: [
               TileLayer(
-                urlTemplate: isDark
-                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: ['a', 'b', 'c'],
+                urlTemplate: tileUrlTemplate,
+                subdomains: subdomains,
                 tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
               // Маркер текущей локации пользователя (если доступен)

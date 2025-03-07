@@ -46,6 +46,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterMapTileCaching.initialise();
   FMTC.instance('openstreetmap').manage.createAsync();
+  FMTC.instance('stadiamaps').manage.createAsync();
 
   Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
   await NotificationService.init();

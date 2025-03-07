@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../config/config.dart';
 import '../../viewmodels/map_select_location_viewmodel.dart';
 
 
@@ -365,6 +366,15 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
     final localizations = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+
+    // Выбор URL тайлов в зависимости от темы: dark или light.
+    final tileUrlTemplate = isDark
+        ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png?api_key=${Config.apiMap}'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    // У Stadia Maps нет необходимости в subdomains
+    final subdomains = isDark ? <String>[] : <String>['a', 'b', 'c'];
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -389,10 +399,8 @@ class _MapSelectLocationViewState extends State<MapSelectLocationView> {
             ),
             children: [
               TileLayer(
-                urlTemplate: isDark
-                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'],
+                urlTemplate: tileUrlTemplate,
+                subdomains: subdomains,
                 tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
               MarkerLayer(

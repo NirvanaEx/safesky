@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:safe_sky/config/config.dart';
 import 'package:safe_sky/models/plan_detail_model.dart';
 
 class MapShowLocationView extends StatefulWidget {
@@ -33,6 +34,7 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
         _mapController.move(planCenter, 13.0); // Сразу перемещаем карту без анимации
       }
     });
+
   }
 
   /// Преобразование координаты вида "411751N" в double.
@@ -171,9 +173,11 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
 
     // Выбор URL тайлов в зависимости от темы: dark или light.
     final tileUrlTemplate = isDark
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png?api_key=${Config.apiMap}'
         : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    final subdomains = isDark ? ['a', 'b', 'c', 'd'] : ['a', 'b', 'c'];
+
+    // У Stadia Maps нет необходимости в subdomains
+    final subdomains = isDark ? <String>[] : <String>['a', 'b', 'c'];
 
     return Scaffold(
       appBar: AppBar(
@@ -194,7 +198,9 @@ class _MapShowLocationViewState extends State<MapShowLocationView> {
               TileLayer(
                 urlTemplate: tileUrlTemplate,
                 subdomains: subdomains,
-                tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
+                tileProvider: isDark
+                    ? FMTC.instance('stadiamaps').getTileProvider() // отдельный кеш для Stadia
+                    : FMTC.instance('openstreetmap').getTileProvider(),
               ),
               ...buildZones(widget.detailModel),
             ],
