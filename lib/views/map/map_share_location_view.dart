@@ -29,9 +29,10 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
   @override
   void initState() {
     super.initState();
+    final locationVM = Provider.of<MapShareLocationViewModel>(context, listen: false);
+    locationVM.checkLocationAlwaysPermission(context);
+
     _mapController = MapController();
-    final locationVM =
-    Provider.of<MapShareLocationViewModel>(context, listen: false);
 
     // Передаём модель в ViewModel после первого кадра
     WidgetsBinding.instance.addPostFrameCallback((_) {

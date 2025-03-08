@@ -315,7 +315,8 @@
   "mapShareLocationView_confirmStopLocationSharingMessage": "Joylashuv ulashishni yakuniy tarzda to‘xtatishni hohlaysizmi?",
   "mapShareLocationView_confirmStopLocationSharingYes": "Ha",
   "mapShareLocationView_confirmStopLocationSharingNo": "Yo‘q",
-
+  "mapShareLocationView_locationPermissionWarning": "Ilovaning to‘liq ishlashi uchun fon rejimida joylashuvga doimiy kirish ruxsati (Always) talab etiladi.",
+  "mapShareLocationView_settings": "Sozlamalar",
 
 
 

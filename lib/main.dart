@@ -105,17 +105,19 @@ class _MyAppState extends State<MyApp> {
 }
 
 Future<void> requestPermissions() async {
-  LocationPermission locationPermission = await Geolocator.checkPermission();
-  if (locationPermission == LocationPermission.denied) {
-    locationPermission = await Geolocator.requestPermission();
+  // Сначала запрашиваем разрешение на локацию при использовании приложения
+  if (await Permission.locationWhenInUse.isDenied) {
+    await Permission.locationWhenInUse.request();
   }
-  if (locationPermission == LocationPermission.deniedForever) {
-    print("Please enable location permission in settings.");
-  }
-  if (await Permission.locationWhenInUse.isGranted &&
-      await Permission.locationAlways.isDenied) {
+  // Затем запрашиваем разрешение на постоянный доступ к локации
+  if (await Permission.locationAlways.isDenied) {
     await Permission.locationAlways.request();
   }
+  if (await Permission.locationAlways.isPermanentlyDenied) {
+    print("Please enable locationAlways permission in settings.");
+  }
+
+  // Запрашиваем разрешения для камеры и уведомлений
   if (await Permission.camera.isDenied) {
     await Permission.camera.request();
   }

@@ -313,7 +313,8 @@
   "mapShareLocationView_confirmStopLocationSharingMessage": "Do you really want to permanently stop the location sharing?",
   "mapShareLocationView_confirmStopLocationSharingYes": "Yes",
   "mapShareLocationView_confirmStopLocationSharingNo": "No",
-
+  "mapShareLocationView_locationPermissionWarning": "Location access in the background (Always) is required for proper functionality.",
+  "mapShareLocationView_settings": "Settings",
 
 
 

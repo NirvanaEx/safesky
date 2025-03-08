@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_sky/viewmodels/show_request_viewmodel.dart';
-import 'package:safe_sky/views/show_request_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/plan_detail_model.dart';
 import '../services/location_share_service.dart';
 import 'package:flutter_map/flutter_map.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../services/notification_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MapShareLocationViewModel extends ChangeNotifier {
   final LocationShareService _locationShareService = LocationShareService();
@@ -181,6 +181,24 @@ class MapShareLocationViewModel extends ChangeNotifier {
       } else {
         _showSnackbar(context, "Unable to resume: missing UUID");
       }
+    }
+  }
+
+  Future<void> checkLocationAlwaysPermission(BuildContext context) async {
+    final status = await Permission.locationAlways.status;
+    if (!status.isGranted) {
+      final localizations = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.mapShareLocationView_locationPermissionWarning),
+          action: SnackBarAction(
+            label: localizations.mapShareLocationView_settings,
+            onPressed: () {
+              openAppSettings();
+            },
+          ),
+        ),
+      );
     }
   }
 

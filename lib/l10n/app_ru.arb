@@ -314,6 +314,8 @@
   "mapShareLocationView_confirmStopLocationSharingMessage": "Действительно ли вы хотите окончательно завершить трансляцию?",
   "mapShareLocationView_confirmStopLocationSharingYes": "Да",
   "mapShareLocationView_confirmStopLocationSharingNo": "Нет",
+  "mapShareLocationView_locationPermissionWarning": "Для корректной работы требуется доступ к локации в фоновом режиме (Always).",
+  "mapShareLocationView_settings": "Настройки",
 
 
 
