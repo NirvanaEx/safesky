@@ -28,8 +28,7 @@ class NotificationService {
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // Настройки для iOS
-    const DarwinInitializationSettings initializationSettingsIOS =
-    DarwinInitializationSettings();
+    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
 
 
     final InitializationSettings initializationSettings =

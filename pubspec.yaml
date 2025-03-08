@@ -3,7 +3,7 @@ description: Safe Sky
 
 publish_to: 'none'
 
-version: 2.7.15+136
+version: 2.7.19+140
 
 environment:
   sdk: '>=3.1.5 <4.0.0'
@@ -20,10 +20,9 @@ dependencies:
   provider: ^6.0.3
   geolocator: ^9.0.2
   permission_handler: ^10.2.0
-  file_picker: ^5.2.6
   image_picker: ^0.8.7+4
-  url_launcher: ^6.0.20
-  flutter_local_notifications: ^12.0.0
+  url_launcher: ^6.2.4
+  flutter_local_notifications: ^18.0.1
   open_file: ^3.2.1
   syncfusion_flutter_pdfviewer: ^20.3.47
   lottie: ^2.7.0

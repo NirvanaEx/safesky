@@ -7,6 +7,7 @@ import 'package:safe_sky/models/plan_detail_model.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import '../../config/config.dart';
 import '../../viewmodels/map_share_location_viewmodel.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
@@ -204,7 +205,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
 
     return SlideAction(
       text: localizations.mapShareLocationView_startLocationSharing,
-      textStyle: theme.textTheme.headline6?.copyWith(color: theme.iconTheme.color),
+      textStyle: theme.textTheme.bodyLarge?.copyWith(color: theme.iconTheme.color),
       innerColor: theme.floatingActionButtonTheme.backgroundColor ?? Colors.black,
       outerColor: theme.scaffoldBackgroundColor,
       onSubmit: () {
@@ -254,7 +255,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 locationVM.isPaused
                     ? localizations.mapShareLocationView_paused
                     : localizations.mapShareLocationView_sharingLocation,
-                style: theme.textTheme.headline6?.copyWith(color: Colors.red),
+                style: theme.textTheme.bodyLarge?.copyWith(color: Colors.red),
               ),
             ],
           ),
@@ -289,7 +290,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                 icon: Icon(Icons.stop, color: Colors.white, size: 28),
                 label: Text(
                   localizations.mapShareLocationView_stop,
-                  style: theme.textTheme.bodyText1
+                  style: theme.textTheme.bodyLarge
                       ?.copyWith(color: Colors.white, fontSize: 16),
                 ),
               ),
@@ -315,7 +316,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   locationVM.isPaused
                       ? localizations.mapShareLocationView_resume
                       : localizations.mapShareLocationView_pause,
-                  style: theme.textTheme.bodyText1
+                  style: theme.textTheme.bodyLarge
                       ?.copyWith(color: theme.iconTheme.color, fontSize: 16),
                 ),
               ),
@@ -333,6 +334,14 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final lottieColor = isDark ? Colors.white : Colors.black;
+
+    // Выбор URL тайлов в зависимости от темы: dark или light.
+    final tileUrlTemplate = isDark
+        ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png?api_key=${Config.apiMap}'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    // У Stadia Maps нет необходимости в subdomains
+    final subdomains = isDark ? <String>[] : <String>['a', 'b', 'c'];
 
     return Scaffold(
       appBar: AppBar(
@@ -354,10 +363,8 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
             ),
             children: [
               TileLayer(
-                urlTemplate: isDark
-                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: ['a', 'b', 'c'],
+                urlTemplate: tileUrlTemplate,
+                subdomains: subdomains,
                 tileProvider: FMTC.instance('openstreetmap').getTileProvider(),
               ),
               // Маркер текущей локации пользователя (если доступен)
@@ -396,7 +403,7 @@ class _MapShareLocationViewState extends State<MapShareLocationView> {
                   const SizedBox(height: 10),
                   Text(
                     localizations.mapShareLocationView_searchingYourLocation,
-                    style: theme.textTheme.bodyText1
+                    style: theme.textTheme.bodyLarge
                         ?.copyWith(fontSize: 16, color: theme.hintColor),
                   ),
                 ],

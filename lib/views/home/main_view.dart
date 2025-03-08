@@ -6,7 +6,6 @@ import '../../viewmodels/auth_viewmodel.dart';
 import 'package:safe_sky/views/home/profile_view.dart';
 import 'package:safe_sky/views/home/scan_view.dart';
 import '../auth/login_view.dart';
-import '../notification_view.dart';
 import '../side_menu/about_app_view.dart';
 import '../side_menu/settings_view.dart';
 import 'add_request_view.dart';
@@ -143,7 +142,7 @@ class _MainViewState extends State<MainView> {
                               '${localizations.mainView_hi}, ${authViewModel.user?.surname ?? 'John'} '
                                   '${authViewModel.user?.name ?? 'Doe'} '
                                   '${authViewModel.user?.patronymic ?? ''}',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.bodyLarge,
                             );
                           },
                         ),
@@ -151,7 +150,7 @@ class _MainViewState extends State<MainView> {
                         ListTile(
                           leading: Icon(Icons.settings, color: Theme.of(context).iconTheme.color),
                           title: Text(localizations.mainView_settings,
-                              style: Theme.of(context).textTheme.bodyText1),
+                              style: Theme.of(context).textTheme.bodyLarge),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -162,7 +161,7 @@ class _MainViewState extends State<MainView> {
                         ListTile(
                           leading: Icon(Icons.info_outline, color: Theme.of(context).iconTheme.color),
                           title: Text(localizations.mainView_aboutApp,
-                              style: Theme.of(context).textTheme.bodyText1),
+                              style: Theme.of(context).textTheme.bodyLarge),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -173,7 +172,7 @@ class _MainViewState extends State<MainView> {
                         ListTile(
                           leading: Icon(Icons.logout, color: Theme.of(context).iconTheme.color),
                           title: Text(localizations.mainView_logout,
-                              style: Theme.of(context).textTheme.bodyText1),
+                              style: Theme.of(context).textTheme.bodyLarge),
                           onTap: () async {
                             final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
                             await authViewModel.logout();
@@ -208,7 +207,7 @@ class _MainViewState extends State<MainView> {
                           const SizedBox(width: 8),
                           Text(
                             '(78) 140-27-78',
-                            style: Theme.of(context).textTheme.bodyText1?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -220,7 +219,7 @@ class _MainViewState extends State<MainView> {
                           const SizedBox(width: 8),
                           Text(
                             '(78) 140-38-41',
-                            style: Theme.of(context).textTheme.bodyText1?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -232,7 +231,7 @@ class _MainViewState extends State<MainView> {
                           const SizedBox(width: 8),
                           Text(
                             '(78) 140-38-42',
-                            style: Theme.of(context).textTheme.bodyText1?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -240,7 +239,7 @@ class _MainViewState extends State<MainView> {
                       // Под номерами отображается один текст
                       Text(
                         localizations.mainView_available24,
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
